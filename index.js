@@ -42,12 +42,12 @@ function deliverUpdate() {
   // console.log(array);
   for (i = 0; i < array.length; i++) {
     const embed = new Discord.MessageEmbed()
-    .setTitle("Now actively banning abusers 😈")
-    .setColor("#d13606")
+    .setTitle("New hosting 😁")
+    .setColor(Math.floor(Math.random()*16777215).toString(16))
     .setFooter("The Mist Bot - made by R2D2Vader")
     .addFields(
-      { name: "Spammers / other abusers will be banned.", value: "Don't worry, this is temporary and we will unban you after a period of time!" },
-      { name: "Unfortunately, this can only happen on The Mist official server", value: "Please sanction users on other servers yourself." }
+      { name: "Repl.it started to not work, so we transferred to Heroku!", value: "This means better performance as well!" },
+      { name: "Fixed Jan-mode", value: "The bot no longer reacts to any message containing Jan within any word - it requires the word Jan." }
     );
     client.channels.cache.get(array[i]).send(embed);
 }
@@ -94,7 +94,7 @@ client.on("message", message => {
     }
   }
   if (janmode == true) {
-    if (message.content.toLowerCase().includes("jan")) {
+    if (message.content.toLowerCase().includes("jan ")) {
       message.react("🐸");
     }
   }
