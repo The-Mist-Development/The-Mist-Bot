@@ -696,7 +696,7 @@ function sendUpdate(message) {
 //logging requests - keep on top
 app.use(function(req, res, next) {
   console.log(
-    "Request recieved to " + req.url + " from Proxy " + req.headers["x-forwarded-for"]
+    "Request recieved to " + req.url + " from " + req.headers["x-forwarded-for"]
   );
   next();
 });
