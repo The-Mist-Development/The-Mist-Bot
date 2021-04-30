@@ -7,12 +7,12 @@ $(document).ready(()=>{
         const [token, chanID, msgContent, code] = 
             [$("#pwd").val(), $("#chanID").val(), $("#content").val(), $("#code").val()];
         if(chanID && msgContent){
-            $.post("https://The-Mist-Bot-Node-v12.r2d2vaderbeef.repl.co/send", {
+            $.post("/send", {
                 token, chanID, msgContent
             })
         }
         if(code){
-            $.post("https://The-Mist-Bot-Node-v12.r2d2vaderbeef.repl.co/eval", {
+            $.post("/eval", {
                 token, code
             })
         }
