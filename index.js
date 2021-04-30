@@ -331,7 +331,7 @@ function sendHelp(message) {
 
     .setTitle("Commands")
     .setDescription(
-      "[Go to our website](https://the-mist-bot-node-v12.r2d2vaderbeef.repl.co/) to add the bot to your server."
+      "[Go to our website](https://themistbot.herokuapp.com/) to add the bot to your server."
     )
     .setColor("#d5dbe3")
     .setFooter("The Mist Bot - made by R2D2Vader")
