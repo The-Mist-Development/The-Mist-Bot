@@ -704,7 +704,7 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const listener = app.listen("3000", () => {
+const listener = app.listen(process.env.PORT, () => {
   console.log("Listening on port " + listener.address().port);
 });
 
