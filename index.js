@@ -755,12 +755,13 @@ async function updatefromWeb(title, body) {
     .setFooter("The Mist Bot - made by R2D2Vader");
   
   const fields = body.split("#");
-
+  console.log(fields);
+  
   for (i = 0; i < fields.length; i++) {
     const parts = fields[i].split("~");
     console.log("Name: " + parts[0] + " Value: " + parts[1]);
     embed.addFields({name: parts[0], value: parts[1]});
   }
-  
+
   client.channels.cache.get("558651445914632232").send(embed);
 }
