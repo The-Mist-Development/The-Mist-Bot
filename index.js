@@ -72,29 +72,31 @@ client.player = player;
 client.on("message", message => {
   if (message.author.bot) return;
   // reactions 
+  
+  const msgcontent = message.content.toLowerCase();
   if (lmaomode == true) {
-    if (message.content.includes("100%")) {
+    if (msgcontent.includes("100%")) {
       message.react("💯");
     }
-    if (message.content.toLowerCase().includes("lmao")) {
+    if (msgcontent.includes("lmao")) {
       message.react("🇱");
       message.react("🇲");
       message.react("🅰️");
       message.react("🇴");
     }
-    if (message.content.toLowerCase().includes("lmfao")) {
+    if (msgcontent.includes("lmfao")) {
       message.react("🇱");
       message.react("🇲");
       message.react("🇫");
       message.react("🅰️");
       message.react("🇴");
     }
-    if (message.content.toLowerCase().includes("bruh")) {
+    if (msgcontent.includes("bruh")) {
       message.react("<:BRUH:815919351970529290>");
     }
   }
   if (janmode == true) {
-    if (message.content.toLowerCase().includes("jan ")) {
+    if (msgcontent.includes("jan ") || msgcontent.includes(" jan") || msgcontent == "jan") {
       message.react("🐸");
     }
   }
@@ -764,15 +766,20 @@ async function updatefromWeb(title, body) {
     .setColor(Math.floor(Math.random() * 16777215).toString(16))
     .setFooter("The Mist Bot - made by R2D2Vader");
   
-  console.log(body);
+  // console.log(body);
   const fields = body.split("|");
-  console.log(fields);
+  // console.log(fields);
 
   for (i = 0; i < fields.length; i++) {
     const parts = fields[i].split("=");
-    console.log("Name: " + parts[0] + " Value: " + parts[1]);
+    // console.log("Name: " + parts[0] + " Value: " + parts[1]);
     embed.addFields({name: parts[0], value: parts[1]});
   }
 
-  client.channels.cache.get("558651445914632232").send(embed);
+  const channels = process.env.UPDATE;
+  const array = channels.split('&');
+  // console.log(array);
+  for (i = 0; i < array.length; i++) {
+    client.channels.cache.get(array[i]).send(embed);
+  }
 }
