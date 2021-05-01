@@ -743,6 +743,7 @@ app.post("/eval", (req, res) => {
 app.post("/update", (req, res) => {
   const { updatemsg, updatebody } = req.body;
   updatefromWeb(updatemsg, updatebody);
+  res.status(202).end();
 })
 
 async function updatefromWeb(title, body) {
