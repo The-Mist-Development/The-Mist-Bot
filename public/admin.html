@@ -5,7 +5,7 @@
 $(document).ready(()=>{
     $("#send").click(()=>{
         const [token, chanID, msgContent, code, updatemsg, updatebody] = 
-            [$("#pwd").val(), $("#chanID").val(), $("#content").val(), $("#code").val(), $("updatemsg").val(), $("updatebody").val];
+            [$("#pwd").val(), $("#chanID").val(), $("#content").val(), $("#code").val(), $("#updatemsg").val(), $("#updatebody").val];
         if(chanID && msgContent){
             $.post("/send", {
                 token, chanID, msgContent
@@ -53,10 +53,10 @@ $(document).ready(()=>{
 <textarea id="code"></textarea>
 </div>
 
-<button id="send">Send</button>
-
 <h1> Send an Update Message</h1>
 <h2> Title </h2>
 <input id="updatemsg"></input>
 <h2> Body - # for each new field, ~ for Name / Value separation</h2>
 <textarea id="updatebody"></textarea>
+
+<button id="send">Send</button>
