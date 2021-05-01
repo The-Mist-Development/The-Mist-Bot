@@ -721,8 +721,10 @@ app.post("/send", (req, res) => {
   const { token, chanID, msgContent } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
     console.log("ALERT: authenticaion failed with invalid token: " + token)
+    res.status(401).end();
     return;
   }
+  res.status(202).end();
   console.log("Sending message from web to " + chanID + " with content: " + msgContent);
   const channel = client.channels.cache.get(chanID)
   channel.send(msgContent)
@@ -733,15 +735,22 @@ app.post("/eval", (req, res) => {
   const { token, code } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
     console.log("ALERT: authenticaion failed with invalid token: " + token)
+    res.status(401).end();
     return;
   }
+  res.status(202).end();
   console.log("ALERT: Received request from web to execute: " + code);
   const f = new Function("bot", "go", code);
   return f(client, GlobalObject);
 })
 
 app.post("/update", (req, res) => {
-  const { updatemsg, updatebody } = req.body;
+  const { token, updatemsg, updatebody } = req.body;
+  if (token != process.env.ADMIN_TOKEN) {
+    console.log("ALERT: authenticaion failed with invalid token: " + token)
+    res.status(401).end();
+    return;
+  }
   updatefromWeb(updatemsg, updatebody);
   res.status(202).end();
 })

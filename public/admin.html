@@ -19,7 +19,7 @@ $(document).ready(()=>{
         if(updatemsg && updatebody){
             console.log(updatebody);
             $.post("/update", {
-                updatemsg, updatebody
+                token, updatemsg, updatebody
             })
         }
     })
