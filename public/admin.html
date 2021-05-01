@@ -17,6 +17,7 @@ $(document).ready(()=>{
             })
         }
         if(updatemsg && updatebody){
+            console.log(updatebody);
             $.post("/update", {
                 updatemsg, updatebody
             })
@@ -57,7 +58,7 @@ $(document).ready(()=>{
 <h1> Send an Update Message</h1>
 <h2> Title </h2>
 <input id="updatemsg"></input>
-<h2> Body - # for each new field, ~ for Name / Value separation</h2>
+<h2> Body - | for each new field, = for Name / Value separation</h2>
 <textarea id="updatebody"></textarea>
 </div>
 

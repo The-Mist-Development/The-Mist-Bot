@@ -755,11 +755,11 @@ async function updatefromWeb(title, body) {
     .setFooter("The Mist Bot - made by R2D2Vader");
   
   console.log(body);
-  const fields = body.split("#");
+  const fields = body.split("|");
   console.log(fields);
 
   for (i = 0; i < fields.length; i++) {
-    const parts = fields[i].split("~");
+    const parts = fields[i].split("=");
     console.log("Name: " + parts[0] + " Value: " + parts[1]);
     embed.addFields({name: parts[0], value: parts[1]});
   }
