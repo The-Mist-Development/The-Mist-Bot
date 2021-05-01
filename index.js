@@ -42,15 +42,15 @@ function deliverUpdate() {
   // console.log(array);
   for (i = 0; i < array.length; i++) {
     const embed = new Discord.MessageEmbed()
-    .setTitle("New hosting 😁")
-    .setColor(Math.floor(Math.random()*16777215).toString(16))
-    .setFooter("The Mist Bot - made by R2D2Vader")
-    .addFields(
-      { name: "Repl.it started to not work, so we transferred to Heroku!", value: "This means better performance as well!" },
-      { name: "Fixed Jan-mode", value: "The bot no longer reacts to any message containing Jan within any word - it requires the word Jan." }
-    );
+      .setTitle("New hosting 😁")
+      .setColor(Math.floor(Math.random() * 16777215).toString(16))
+      .setFooter("The Mist Bot - made by R2D2Vader")
+      .addFields(
+        { name: "Repl.it started to not work, so we transferred to Heroku!", value: "This means better performance as well!" },
+        { name: "Fixed Jan-mode", value: "The bot no longer reacts to any message containing Jan within any word - it requires the word Jan." }
+      );
     client.channels.cache.get(array[i]).send(embed);
-}
+  }
 }
 async function sendmsg() {
   client.channels.cache.get("780902808353505341").send("bye");
@@ -100,7 +100,7 @@ client.on("message", message => {
   }
 
   if (!message.content.startsWith(prefix)) return;
-  
+
   // args itself is only used by the play function
   const args = message.content
     .slice(prefix.length)
@@ -195,7 +195,7 @@ client.on("message", message => {
       nowPlaying(message);
       break;
     case "skip":
-      if (djmode == true) break; 
+      if (djmode == true) break;
       if (message.member.voice.channel) {
         let isPlaying = client.player.isPlaying(message.guild.id);
         if (isPlaying) {
@@ -226,12 +226,12 @@ client.on("message", message => {
       djAction(message);
       break;
     case "quote":
-      
+
       break;
     case "update":
       // disabled until needed.
       //if (message.member.id == "517742819830399000") {
-        //sendUpdate(message);
+      //sendUpdate(message);
       //}
       break;
     default:
@@ -262,15 +262,15 @@ async function playSong(message, args) {
     if (args[args.length - 1] == "-r") {
       args = ["never", "gonna", "give", "you", "up", "rick", "astley"];
     }
-    
+
     // random rickroll chance
     if (rickrollchance >= 1) {
       random = Math.floor(Math.random() * 100);
       if (random <= rickrollchance) {
         args = ["never", "gonna", "give", "you", "up", "rick", "astley"];
         rickrolld = true;
-      } 
-    } 
+      }
+    }
     // Play the song
     let song = await client.player.play(
       message.member.voice.channel,
@@ -374,7 +374,7 @@ function sendWIP(message) {
     .setDescription("This is a list of all the work-in-progress commands which are not on the help message. You can try them out if you'd like!")
     .addFields(
       { name: "Commands I'm working on:", value: "===" },
-      );
+    );
 
   message.channel.send(embed);
 }
@@ -694,7 +694,7 @@ function sendUpdate(message) {
 // WEBSERVER CODE
 
 //logging requests - keep on top
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   console.log(
     "Request recieved to " + req.url + " from " + req.headers["x-forwarded-for"]
   );
@@ -717,25 +717,50 @@ process.on('unhandledRejection', (reason, promise) => {
 
 const { readFileSync } = require('fs')
 
-app.post("/send", (req, res)=> {
-    const { token, chanID, msgContent } = req.body;
-    if (token != process.env.ADMIN_TOKEN) {
-      console.log("ALERT: authenticaion failed with invalid token: " + token)
-      return;
-    }
-    console.log("Sending message from web to " + chanID + " with content: " + msgContent);
-    const channel = client.channels.cache.get(chanID)
-    channel.send(msgContent)
+app.post("/send", (req, res) => {
+  const { token, chanID, msgContent } = req.body;
+  if (token != process.env.ADMIN_TOKEN) {
+    console.log("ALERT: authenticaion failed with invalid token: " + token)
+    return;
+  }
+  console.log("Sending message from web to " + chanID + " with content: " + msgContent);
+  const channel = client.channels.cache.get(chanID)
+  channel.send(msgContent)
 })
 
 const GlobalObject = {} // for storage
-app.post("/eval", (req, res)=> {
-    const { token, code } = req.body;
-    if (token != process.env.ADMIN_TOKEN) {
-      console.log("ALERT: authenticaion failed with invalid token: " + token)
-      return;
-    }
-    console.log("ALERT: Received request from web to execute: " + code);
-    const f = new Function("bot", "go", code);
-    return f(client, GlobalObject);
+app.post("/eval", (req, res) => {
+  const { token, code } = req.body;
+  if (token != process.env.ADMIN_TOKEN) {
+    console.log("ALERT: authenticaion failed with invalid token: " + token)
+    return;
+  }
+  console.log("ALERT: Received request from web to execute: " + code);
+  const f = new Function("bot", "go", code);
+  return f(client, GlobalObject);
 })
+
+app.post("/update", (req, res) => {
+  const { updatemsg, updatebody } = req.body;
+  updatefromWeb(updatemsg, updatebody);
+})
+
+async function updatefromWeb(title, body) {
+  const embed = new Discord.MessageEmbed()
+    .setTitle(title)
+    .setDescription(
+      "R2D2Vader just patched the bot! Here are the updates."
+    )
+    .setColor(Math.floor(Math.random() * 16777215).toString(16))
+    .setFooter("The Mist Bot - made by R2D2Vader");
+  
+  const fields = body.split("#");
+
+  for (i = 0; i < fields.length; i++) {
+    const parts = fields[i].split("~");
+    console.log("Name: " + parts[0] + " Value: " + parts[1]);
+    embed.addFields({name: parts[0], value: parts[1]});
+  }
+  
+  client.channels.cache.get("558651445914632232").send(embed);
+}
