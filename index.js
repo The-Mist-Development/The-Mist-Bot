@@ -96,7 +96,7 @@ client.on("message", message => {
     }
   }
   if (janmode == true) {
-    if (msgcontent.includes("jan ") || msgcontent.includes(" jan") || msgcontent == "jan") {
+    if (msgcontent.includes("jan ") || msgcontent.includes(" jan ") || msgcontent == "jan") {
       message.react("🐸");
     }
   }
