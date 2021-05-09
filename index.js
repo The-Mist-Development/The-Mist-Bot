@@ -99,6 +99,12 @@ client.on("message", message => {
     if (msgcontent.includes("jan ") || msgcontent.includes(" jan ") || msgcontent == "jan") {
       message.react("🐸");
     }
+    if (msgcontent.includes("alkali")) {
+      message.react("🇦");
+      message.react("🇨");
+      message.react("🇮");
+      message.react("🇩");
+    }
   }
 
   if (!message.content.startsWith(prefix)) return;
