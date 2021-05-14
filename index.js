@@ -71,8 +71,13 @@ client.player = player;
 // Handle Messages
 client.on("message", message => {
   if (message.author.bot) return;
+
+  // art channel validation
+  if (message.channel.id == "838834082183381092") {
+    artValidate(message);
+  }
+
   // reactions 
-  
   const msgcontent = message.content.toLowerCase();
   if (lmaomode == true) {
     if (msgcontent.includes("100%")) {
@@ -699,6 +704,12 @@ function sendUpdate(message) {
   message.channel.send(embed);
 }
 
+async function artValidate (message) {
+  if (!message.attachments) {
+    await message.delete();
+    message.author.send("Hi " + message.member.displayName + "! Please make sure to **only post art** in the <#838834082183381092> channel. Thanks!");
+  }
+}
 // WEBSERVER CODE
 
 //logging requests - keep on top
