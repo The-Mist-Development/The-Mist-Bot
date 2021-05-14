@@ -705,8 +705,10 @@ function sendUpdate(message) {
 }
 
 async function artValidate (message) {
-  if (!message.attachments) {
-    await message.delete();
+  console.log("Validating art message...");
+  if (message.attachments.size == 0) {
+    message.delete();
+    console.log("Deleted message without attachment.");
     message.author.send("Hi " + message.member.displayName + "! Please make sure to **only post art** in the <#838834082183381092> channel. Thanks!");
   }
 }
