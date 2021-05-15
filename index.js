@@ -25,7 +25,7 @@ djuser = "";
 client.login(token).catch(console.error);
 
 client.on("ready", () => {
-  client.user.setActivity(",help (Now slightly faster)", { type: "PLAYING" });
+  client.user.setActivity("Discord's new font SUCKS (,help)", { type: "PLAYING" });
   // send a message on startup
   // client.channels.cache.get("780902808353505341").startTyping();
   // setTimeout(sendmsg, 2000);
