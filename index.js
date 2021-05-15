@@ -58,7 +58,8 @@ async function sendmsg() {
 }
 
 // init music player
-const { Player } = require('./Player/index.js');
+// const { Player } = require('./Player/index.js');
+const { Player } = require('discord-music-player');
 const player = new Player(client, {
   leaveOnEnd: true,
   leaveOnStop: true,
