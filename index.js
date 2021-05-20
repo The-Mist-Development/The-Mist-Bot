@@ -25,7 +25,7 @@ djuser = "";
 client.login(token).catch(console.error);
 
 client.on("ready", () => {
-  client.user.setActivity("Discord's new font SUCKS (,help)", { type: "PLAYING" });
+  client.user.setActivity("(,help) MINECRAFT GONE WRONG [NOT CLICKBAIT] MINECRAFT GLITCHES WORKING 2021 LINK IN DESCRIPTION", { type: "WATCHING" });
   // send a message on startup
   // client.channels.cache.get("780902808353505341").startTyping();
   // setTimeout(sendmsg, 2000);
