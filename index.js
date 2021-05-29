@@ -272,7 +272,7 @@ async function playSong(message, args) {
   } else {
     const loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
     // delete loading if something else errors
-    setTimeout(deleteLoading(loading), 10000);
+    setTimeout(deleteLoading(loading), 9000);
     // check for rickroll
     if (args[args.length - 1] == "-r") {
       args = ["never", "gonna", "give", "you", "up", "rick", "astley"];
@@ -316,7 +316,7 @@ function deleteLoading(message) {
   if (client.player.isPlaying(message.guild.id)) return;
   if (message.deleted) return; 
   message.delete()
-    .catch(err, function () { console.log("Error trying to delete Loading message: " + err) })
+    .catch(err, function (err) { console.log("Error trying to delete Loading message: " + err) })
     .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
 }
 
