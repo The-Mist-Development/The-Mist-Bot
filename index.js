@@ -271,7 +271,8 @@ async function playSong(message, args) {
     message.channel.send(`** ${song.name} ** was added to the queue!`);
   } else {
     const loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
-
+    // delete loading if something else errors
+    setTimeout(deleteLoading(loading), 10000);
     // check for rickroll
     if (args[args.length - 1] == "-r") {
       args = ["never", "gonna", "give", "you", "up", "rick", "astley"];
@@ -309,6 +310,14 @@ async function playSong(message, args) {
       }
     });
   }
+}
+
+function deleteLoading(message) {
+  if (client.player.isPlaying(message.guild.id)) return;
+  if (message.deleted) return; 
+  message.delete()
+    .catch(err, function () { console.log("Error trying to delete Loading message: " + err) })
+    .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
 }
 
 // the ,queue command
@@ -705,7 +714,7 @@ function sendUpdate(message) {
   message.channel.send(embed);
 }
 
-async function artValidate (message) {
+async function artValidate(message) {
   // console.log("Validating art message...");
   if (message.attachments.size == 0) {
     message.delete();
@@ -785,7 +794,7 @@ async function updatefromWeb(title, body) {
     )
     .setColor(Math.floor(Math.random() * 16777215).toString(16))
     .setFooter("The Mist Bot - made by R2D2Vader");
-  
+
   // console.log(body);
   const fields = body.split("|");
   // console.log(fields);
@@ -793,7 +802,7 @@ async function updatefromWeb(title, body) {
   for (i = 0; i < fields.length; i++) {
     const parts = fields[i].split("=");
     // console.log("Name: " + parts[0] + " Value: " + parts[1]);
-    embed.addFields({name: parts[0], value: parts[1]});
+    embed.addFields({ name: parts[0], value: parts[1] });
   }
 
   const channels = process.env.UPDATE;
