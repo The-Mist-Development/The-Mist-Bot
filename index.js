@@ -276,7 +276,6 @@ async function playSong(message, args) {
       if (client.player.isPlaying(loading.guild.id)) return;
       if (loading.deleted) return; 
       loading.delete()
-        .catch(err, function (err) { console.log("Error trying to delete Loading message: " + err) })
         .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") }); 
     }, 10000);
     // check for rickroll
