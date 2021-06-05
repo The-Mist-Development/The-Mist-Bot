@@ -118,8 +118,10 @@ client.player
     }
   });
 
-  client.player.on('songAdd',  (message, queue, song) =>
-      message.channel.send(`** ${song.name} ** was added to the queue!`))
+  client.player.on('songAdd',  (message, queue, song) => {
+      if (client.player.isPlaying(message)) {
+      message.channel.send(`** ${song.name} ** was added to the queue!`)}
+    })
     .on('songFirst',  (message, song) =>
         message.channel.send(`🎵 Playing Now: **${song.name}** 🎶`));
 
