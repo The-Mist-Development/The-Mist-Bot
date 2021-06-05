@@ -449,7 +449,11 @@ async function nowPlaying(message) {
   if (isPlaying) {
     const queue = await client.player.getQueue(message);
 
-    let progressBar = client.player.createProgressBar(message, 40, "🔴", "-");
+    let progressBar = client.player.createProgressBar(message, {
+      size: 40,
+      block: '-',
+      arrow: '🔴'
+    });
 
     const embed = new Discord.MessageEmbed()
       .setTitle("Now Playing: " + queue.songs[0].name)
