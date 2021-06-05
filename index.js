@@ -205,10 +205,10 @@ client.on("message", message => {
     case "pause":
       if (djmode == true) break;
       if (message.member.voice.channel) {
-        let isPlaying = client.player.isPlaying(message.guild.id);
+        let isPlaying = client.player.isPlaying(message);
         if (isPlaying) {
 
-          client.player.pause(message.guild.id);
+          client.player.pause(message);
           message.channel.send("⏸ **Paused!**");
 
         } else {
@@ -223,10 +223,10 @@ client.on("message", message => {
     case "resume":
       if (djmode == true) break;
       if (message.member.voice.channel) {
-        let isPlaying = client.player.isPlaying(message.guild.id);
+        let isPlaying = client.player.isPlaying(message);
         if (isPlaying) {
 
-          client.player.resume(message.guild.id);
+          client.player.resume(message);
           message.channel.send("▶ **Resumed!**");
 
         } else {
@@ -241,9 +241,9 @@ client.on("message", message => {
     case "loop":
       if (djmode == true) break;
       if (message.member.voice.channel) {
-        let isPlaying = client.player.isPlaying(message.guild.id);
+        let isPlaying = client.player.isPlaying(message);
         if (isPlaying) {
-          let toggle = client.player.toggleLoop(message.guild.id);
+          let toggle = client.player.toggleLoop(message);
           if (toggle) message.channel.send("🔁 **Looping the current song**");
           else message.channel.send("**Loop Disabled.**");
         } else {
@@ -265,9 +265,9 @@ client.on("message", message => {
     case "skip":
       if (djmode == true) break;
       if (message.member.voice.channel) {
-        let isPlaying = client.player.isPlaying(message.guild.id);
+        let isPlaying = client.player.isPlaying(message);
         if (isPlaying) {
-          client.player.skip(message.guild.id);
+          client.player.skip(message);
           message.channel.send("⏭ **Skipped!**");
         } else {
           message.channel.send("**Nothing's playing in this server** 😢");
@@ -281,7 +281,7 @@ client.on("message", message => {
     case "leave":
       if (djmode == true) break;
       if (message.member.voice.channel) {
-        client.player.stop(message.guild.id);
+        client.player.stop(message);
         message.channel.send("👋 **Bye!** See you another time.");
       } else {
         return;
@@ -316,11 +316,11 @@ client.on("message", message => {
 
 // the ,play command
 async function playSong(message, args) {
-  let isPlaying = client.player.isPlaying(message.guild.id);
+  let isPlaying = client.player.isPlaying(message);
   // If there's already a song playing
   if (isPlaying) {
     // Add the song to the queue
-    let song = await client.player.addToQueue(message.guild.id, args.join(" "));
+    let song = await client.player.addToQueue(message, args.join(" "));
   } else {
     const loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
     // delete loading if something else errors
@@ -354,27 +354,16 @@ async function playSong(message, args) {
       message.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>");
       rickrolld = false;
     }
-    else if (song) {
-      message.channel.send(`🎵 Playing Now: ** ${song.name} ** 🎶`);
-    }
     loading.delete();
   }
 }
 
-function deleteLoading(message) {
-  if (client.player.isPlaying(message.guild.id)) return;
-  if (message.deleted) return; 
-  message.delete()
-    .catch(err, function (err) { console.log("Error trying to delete Loading message: " + err) })
-    .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
-}
-
 // the ,queue command
 async function getQueue(message) {
-  let isPlaying = client.player.isPlaying(message.guild.id);
+  let isPlaying = client.player.isPlaying(message);
 
   if (isPlaying) {
-    const queue = await client.player.getQueue(message.guild.id);
+    const queue = await client.player.getQueue(message);
 
     const embed = new Discord.MessageEmbed()
       .setTitle("Queue for " + message.guild.name)
@@ -453,12 +442,12 @@ function sendWIP(message) {
 
 // ,np command
 async function nowPlaying(message) {
-  let isPlaying = client.player.isPlaying(message.guild.id);
+  let isPlaying = client.player.isPlaying(message);
 
   if (isPlaying) {
-    const queue = await client.player.getQueue(message.guild.id);
+    const queue = await client.player.getQueue(message);
 
-    let progressBar = client.player.createProgressBar(message.guild.id, 40, "🔴", "-");
+    let progressBar = client.player.createProgressBar(message, 40, "🔴", "-");
 
     const embed = new Discord.MessageEmbed()
       .setTitle("Now Playing: " + queue.songs[0].name)
@@ -533,10 +522,10 @@ async function djAction(message) {
         break;
       case "pause":
         if (message.member.voice.channel) {
-          let isPlaying = client.player.isPlaying(message.guild.id);
+          let isPlaying = client.player.isPlaying(message);
           if (isPlaying) {
 
-            client.player.pause(message.guild.id);
+            client.player.pause(message);
             message.channel.send("⏸ **Paused!**");
 
           } else {
@@ -550,10 +539,10 @@ async function djAction(message) {
         break;
       case "resume":
         if (message.member.voice.channel) {
-          let isPlaying = client.player.isPlaying(message.guild.id);
+          let isPlaying = client.player.isPlaying(message);
           if (isPlaying) {
 
-            client.player.resume(message.guild.id);
+            client.player.resume(message);
             message.channel.send("▶ **Resumed!**");
 
           } else {
@@ -567,9 +556,9 @@ async function djAction(message) {
         break;
       case "loop":
         if (message.member.voice.channel) {
-          let isPlaying = client.player.isPlaying(message.guild.id);
+          let isPlaying = client.player.isPlaying(message);
           if (isPlaying) {
-            let toggle = client.player.toggleLoop(message.guild.id);
+            let toggle = client.player.toggleLoop(message);
             if (toggle) message.channel.send("🔁 **Looping the current song**");
             else message.channel.send("**Loop Disabled.**");
           } else {
@@ -583,9 +572,9 @@ async function djAction(message) {
         break;
       case "skip":
         if (message.member.voice.channel) {
-          let isPlaying = client.player.isPlaying(message.guild.id);
+          let isPlaying = client.player.isPlaying(message);
           if (isPlaying) {
-            client.player.skip(message.guild.id);
+            client.player.skip(message);
             message.channel.send("⏭ **Skipped!**");
           } else {
             message.channel.send("**Nothing's playing**, DJ! Play us a song! 🎚");
@@ -598,7 +587,7 @@ async function djAction(message) {
         break;
       case "leave":
         if (message.member.voice.channel) {
-          client.player.stop(message.guild.id);
+          client.player.stop(message);
           message.channel.send("👋 **Bye DJ!** 🎚");
           djmode = false;
           const djrole = message.guild.roles.cache.find(role => role.name === 'The Mist DJ');
@@ -621,9 +610,9 @@ async function sendLyrics(message) {
   const args = message.content.trim().split(" ");
   args.shift();
   if (args == "") {
-    let isPlaying = client.player.isPlaying(message.guild.id);
+    let isPlaying = client.player.isPlaying(message);
     if (isPlaying) {
-      const queue = await client.player.getQueue(message.guild.id);
+      const queue = await client.player.getQueue(message);
 
       const options = {
         method: "GET",
