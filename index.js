@@ -24,52 +24,6 @@ djuser = "";
 
 client.login(token).catch(console.error);
 
-// error reporting for client.player
-client.player.on('error', (error) => {	
-var today = new Date();
-var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  switch (error) {
-      // Thrown when the YouTube search could not find any song with that query.
-      case 'SearchIsNull':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No song with the provided query was found.`);
-          break;
-      // Thrown when the provided YouTube Playlist could not be found.
-      case 'InvalidPlaylist':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Playlist was found with the provided link.`);
-          break;
-      // Thrown when the provided Spotify Song could not be found.
-      case 'InvalidSpotify':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Spotify Song was found with the provided link.`);
-          break;
-      // Thrown when the Guild Queue does not exist (no music is playing).
-      case 'QueueIsNull':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Guild Queue does not exist - no music is playing.`);
-          break;
-      // Thrown when the Members is not in a VoiceChannel.
-      case 'VoiceChannelTypeInvalid':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Member was not in VC while trying to play music.`);
-          break;
-      // Thrown when the current playing song was an live transmission (that is unsupported).
-      case 'LiveUnsupported':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Attempt to play unsupported YouTube Livestream.`);
-          break;
-      // Thrown when the current playing song was unavailable.
-      case 'VideoUnavailable':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Something went wrong while playing the current song.`);
-          break;
-      // Thrown when provided argument was Not A Number.
-      case 'NotANumber':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | The provided argument was Not A Number.`);
-          break;
-      // Thrown when the first method argument was not a Discord Message object.
-      case 'MessageTypeInvalid':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object.`);
-          break;
-      default:
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred:** ${error}`);
-          break;
-  }
-});
 
 client.on("ready", () => {
   client.user.setActivity("(,help) MINECRAFT GONE WRONG [NOT CLICKBAIT] MINECRAFT GLITCHES WORKING 2021 LINK IN DESCRIPTION", { type: "WATCHING" });
@@ -114,6 +68,53 @@ const player = new Player(client, {
   timeout: 30000
 });
 client.player = player;
+
+// error reporting for client.player (to discord)
+client.player.on('error', (error) => {	
+  var today = new Date();
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    switch (error) {
+        // Thrown when the YouTube search could not find any song with that query.
+        case 'SearchIsNull':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No song with the provided query was found.`);
+            break;
+        // Thrown when the provided YouTube Playlist could not be found.
+        case 'InvalidPlaylist':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Playlist was found with the provided link.`);
+            break;
+        // Thrown when the provided Spotify Song could not be found.
+        case 'InvalidSpotify':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Spotify Song was found with the provided link.`);
+            break;
+        // Thrown when the Guild Queue does not exist (no music is playing).
+        case 'QueueIsNull':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Guild Queue does not exist - no music is playing.`);
+            break;
+        // Thrown when the Members is not in a VoiceChannel.
+        case 'VoiceChannelTypeInvalid':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Member was not in VC while trying to play music.`);
+            break;
+        // Thrown when the current playing song was an live transmission (that is unsupported).
+        case 'LiveUnsupported':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Attempt to play unsupported YouTube Livestream.`);
+            break;
+        // Thrown when the current playing song was unavailable.
+        case 'VideoUnavailable':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Something went wrong while playing the current song.`);
+            break;
+        // Thrown when provided argument was Not A Number.
+        case 'NotANumber':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | The provided argument was Not A Number.`);
+            break;
+        // Thrown when the first method argument was not a Discord Message object.
+        case 'MessageTypeInvalid':
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object.`);
+            break;
+        default:
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred:** ${error}`);
+            break;
+    }
+  });
 
 
 // Handle Messages
