@@ -72,31 +72,6 @@ client.player = player;
 // error reporting for client.player (to discord)
 // Init the event listener only once (at the top of your code).
 client.player
-    // Emitted when channel was empty.
-    .on('channelEmpty',  (message, queue) =>
-    client.channels.cache.get("850844368679862282").send(`The **${queue.connection.channel}** was empty, music was removed!`))
-    // Emitted when a song was added to the queue.
-    .on('songAdd',  (message, queue, song) =>
-    client.channels.cache.get("850844368679862282").send(`**${song.name}** has been added to the queue!`))
-    // Emitted when a playlist was added to the queue.
-    .on('playlistAdd',  (message, queue, playlist) =>
-    client.channels.cache.get("850844368679862282").send(`${playlist.name} playlist with ${playlist.videoCount} songs has been added to the queue!`))
-    // Emitted when there was no more music to play.
-    .on('queueEnd',  (message, queue) =>
-    client.channels.cache.get("850844368679862282").send(`The queue ended, nothing more to play!`))
-    // Emitted when a song changed.
-    .on('songChanged', (message, newSong, oldSong) =>
-    client.channels.cache.get("850844368679862282").send(`**${newSong.name}** is now playing!`))
-    // Emitted when a first song in the queue started playing (after play method).
-    .on('songFirst',  (message, song) =>
-    client.channels.cache.get("850844368679862282").send(`**${song.name}** is now playing!`))
-    // Emitted when someone disconnected the bot from the channel.
-    .on('clientDisconnect', (message, queue) =>
-    client.channels.cache.get("850844368679862282").send(`I got disconnected from the channel, music was removed.`))
-    // Emitted when deafenOnJoin is true and the bot was undeafened
-    .on('clientUndeafen', (message, queue) =>
-    client.channels.cache.get("850844368679862282").send(`I got disconnected from the channel, music was removed.`))
-    // Emitted when there was an error with NonAsync functions.  
   .on('error', (error, message) => {
   var today = new Date();
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -368,7 +343,7 @@ async function playSong(message, args) {
     }
     // Play the song
     let song = await client.player.play(
-      message.member.voice.channel,
+      message,
       args.join(" ")
     );
     song = song.song;
@@ -822,7 +797,7 @@ const listener = app.listen(process.env.PORT, () => {
 // not crash on unhandled promise rejection
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled promise rejection. ' + " \n This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). \n" + reason.stack || reason);
-  client.channels.cache.get("850844368679862282").send("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack || reason + "```");
+  client.channels.cache.get("850844368679862282").send("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
 });
 
 //ADMIN WEB CONSOLE CODE
