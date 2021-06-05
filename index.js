@@ -118,6 +118,10 @@ client.player
     }
   });
 
+  client.player.on('songAdd',  (message, queue, song) =>
+      message.channel.send(`** ${song.name} ** was added to the queue!`))
+    .on('songFirst',  (message, song) =>
+        message.channel.send(`🎵 Playing Now: **${song.name}** 🎶`));
 
 // Handle Messages
 client.on("message", message => {
@@ -317,8 +321,6 @@ async function playSong(message, args) {
   if (isPlaying) {
     // Add the song to the queue
     let song = await client.player.addToQueue(message.guild.id, args.join(" "));
-    song = song.song;
-    message.channel.send(`** ${song.name} ** was added to the queue!`);
   } else {
     const loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
     // delete loading if something else errors
@@ -346,24 +348,16 @@ async function playSong(message, args) {
       message,
       args.join(" ")
     );
-    song = song.song;
+
     // handle random rickroll
     if (rickrolld == true) {
       message.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>");
       rickrolld = false;
     }
-    else {
+    else if (song) {
       message.channel.send(`🎵 Playing Now: ** ${song.name} ** 🎶`);
     }
     loading.delete();
-
-    song.queue.on('songChanged', (oldSong, newSong, skipped, repeatMode) => {
-      if (repeatMode) {
-        message.channel.send(`🔂 Playing again: ** ${newSong.name} ** 🎶`);
-      } else {
-        message.channel.send(`🎵 Playing Now: ** ${newSong.name} ** 🎶`);
-      }
-    });
   }
 }
 
