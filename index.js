@@ -70,7 +70,7 @@ const player = new Player(client, {
 client.player = player;
 
 // error reporting for client.player (to discord)
-client.player.on('error', (error) => {	
+player.on('error', (error) => {	
   var today = new Date();
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     switch (error) {
