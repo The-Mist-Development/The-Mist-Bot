@@ -78,42 +78,47 @@ client.player
     switch (error) {
         // Thrown when the YouTube search could not find any song with that query.
         case 'SearchIsNull':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No song with the provided query was found.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No song with the provided query was found. | ${message.guild}`);
+          message.channel.send("**Couldn't find a song** for that query.")
             break;
         // Thrown when the provided YouTube Playlist could not be found.
         case 'InvalidPlaylist':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Playlist was found with the provided link.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Playlist was found with the provided link. | ${message.guild}`);
             break;
         // Thrown when the provided Spotify Song could not be found.
         case 'InvalidSpotify':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Spotify Song was found with the provided link.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Spotify Song was found with the provided link. | ${message.guild}`);
             break;
         // Thrown when the Guild Queue does not exist (no music is playing).
         case 'QueueIsNull':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Guild Queue does not exist - no music is playing.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Guild Queue does not exist - no music is playing. | ${message.guild}`);
             break;
         // Thrown when the Members is not in a VoiceChannel.
         case 'VoiceChannelTypeInvalid':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Member was not in VC while trying to play music.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Member was not in VC while trying to play music. | ${message.guild}`);
             break;
         // Thrown when the current playing song was an live transmission (that is unsupported).
         case 'LiveUnsupported':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Attempt to play unsupported YouTube Livestream.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Attempt to play unsupported YouTube Livestream. | ${message.guild}`);
+          message.channel.send("Sorry! We **don't support Youtube Livestreams** for now!");
             break;
         // Thrown when the current playing song was unavailable.
         case 'VideoUnavailable':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Something went wrong while playing the current song.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | A song video was unavailable. | ${message.guild}`);
+          message.channel.send("😓 **Something went wrong playing that song!** Please try a different song. If the issue persists, contact R2D2Vader#0693.");
             break;
         // Thrown when provided argument was Not A Number.
         case 'NotANumber':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | The provided argument was Not A Number.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | The provided argument was Not A Number. | ${message.guild}`);
             break;
         // Thrown when the first method argument was not a Discord Message object.
         case 'MessageTypeInvalid':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object.`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object. | ${message.guild}`);
             break;
         default:
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred:** ${error}`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred:** ${error} | ${message.guild}`);
+          message.channel.send("😓 **Something went wrong!** Please try again in a few minutes.");
+          message.channel.send("🤔 We don't support YouTube Livestreams, in case you just tried to play one. 🤔");
             break;
     }
   });
