@@ -116,7 +116,7 @@ client.player
           client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object. | ${message.guild}`);
             break;
         default:
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred:** ${error} | ${message.guild}`);
+          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
           message.channel.send("😓 **Something went wrong!** Please try again in a few minutes.");
           message.channel.send("🤔 We don't support YouTube Livestreams, in case you just tried to play one. 🤔");
             break;
