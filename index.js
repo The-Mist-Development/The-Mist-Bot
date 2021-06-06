@@ -794,6 +794,11 @@ process.on('unhandledRejection', (reason, promise) => {
   client.channels.cache.get("850844368679862282").send("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
 });
 
+process.on('uncaughtException', (reason) => {
+  console.error('Uncaught Error! \n ' + reason.stack || reason);
+  client.channels.cache.get("850844368679862282").send("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
+});
+
 //ADMIN WEB CONSOLE CODE
 
 const { readFileSync } = require('fs')
