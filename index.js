@@ -118,6 +118,10 @@ client.player
         default:
           client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
           message.channel.send("😓 **Something went wrong!** Please try again in a few minutes.");
+          if (error.includes("permission") || error.includes("Permission")) {
+            message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
+            break;
+          }
           message.channel.send("🤔 We don't support YouTube Livestreams, in case you just tried to play one. 🤔");
             break;
     }
@@ -128,7 +132,9 @@ client.player
       message.channel.send(`** ${song.name} ** was added to the queue!`)}
     })
     .on('songFirst',  (message, song) =>
-        message.channel.send(`🎵 Playing Now: **${song.name}** 🎶`));
+        message.channel.send(`🎵 Playing Now: **${song.name}** 🎶`))
+    .on('songChanged', (message, newSong, oldSong) =>
+        message.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`));
 
 // Handle Messages
 client.on("message", message => {
