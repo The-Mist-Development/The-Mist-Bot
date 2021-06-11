@@ -21,6 +21,7 @@ const rickrollchance = 1;
 rickrolld = false;
 djmode = false;
 djuser = "";
+loopingBool = false;
 
 client.login(token).catch(console.error);
 
@@ -133,8 +134,11 @@ client.player
     })
     .on('songFirst',  (message, song) =>
         message.channel.send(`🎵 Playing Now: **${song.name}** 🎶`))
-    .on('songChanged', (message, newSong, oldSong) =>
-        message.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`));
+    .on('songChanged', (message, newSong, oldSong) =>{
+      if (loopingBool == false) {
+        message.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`)
+      }
+    });
 
 // Handle Messages
 client.on("message", message => {
@@ -257,8 +261,14 @@ client.on("message", message => {
         let isPlaying = client.player.isPlaying(message);
         if (isPlaying) {
           let toggle = client.player.toggleLoop(message);
-          if (toggle) message.channel.send("🔁 **Looping the current song**");
-          else message.channel.send("**Loop Disabled.**");
+          if (toggle) {
+            message.channel.send("🔁 **Looping the currenst song**"); 
+            loopingBool = true;
+          }
+          else {
+            message.channel.send("**Loop Disabled.**");
+            loopingBool = false;
+          }
         } else {
           message.channel.send("**Nothing's playing in this server** 😢");
         }
