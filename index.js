@@ -262,7 +262,7 @@ client.on("message", message => {
         if (isPlaying) {
           let toggle = client.player.toggleLoop(message);
           if (toggle) {
-            message.channel.send("🔁 **Looping the currenst song**"); 
+            message.channel.send("🔁 **Looping the current song**"); 
             loopingBool = true;
           }
           else {
@@ -275,6 +275,30 @@ client.on("message", message => {
       } else {
         message.channel.send(
           "**You must be in the Voice Channel to loop the current song!**"
+        );
+      }
+      break;
+    case "loopqueue":
+    case "loopq":
+      if (djmode == true) break;
+      if (message.member.voice.channel) {
+        let isPlaying = client.player.isPlaying(message);
+        if (isPlaying) {
+          let toggle = client.player.toggleQueueLoop(message);
+          if (toggle) {
+            message.channel.send("🔁 **Looping the entire queue**"); 
+            loopingBool = true;
+          }
+          else {
+            message.channel.send("** Queue Loop Disabled.**");
+            loopingBool = false;
+          }
+        } else {
+          message.channel.send("**Nothing's playing in this server** 😢");
+        }
+      } else {
+        message.channel.send(
+          "**You must be in the Voice Channel to loop the queue!**"
         );
       }
       break;
@@ -458,6 +482,7 @@ function sendWIP(message) {
     .setDescription("This is a list of all the work-in-progress commands which are not on the help message. You can try them out if you'd like!")
     .addFields(
       { name: "Commands I'm working on:", value: "===" },
+      { name: "`" + prefix + "loopqueue`", value: "Loops the entire queue." }
     );
 
   message.channel.send(embed);
