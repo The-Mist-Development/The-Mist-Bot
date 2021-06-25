@@ -809,6 +809,7 @@ async function artValidate(message) {
   if (message.attachments.size == 0) {
     message.delete();
     console.log("Deleted art post without attachment by " + message.author.username);
+    client.channels.cache.get("850844368679862282").send("[ART] **" + message.author.username + "** sent an art post without art: ```" + message.cleanContent + "```");
     message.author.send("Hi " + message.member.displayName + "! Please make sure to **only post art** in the <#838834082183381092> channel. Thanks!");
   }
 }
