@@ -12,8 +12,6 @@ const prefix = ",";
 
 const fetch = require('node-fetch');
 
-// const Database = require("@replit/database");
-// const db = new Database();
 
 const lmaomode = true;
 const janmode = true;
@@ -29,36 +27,7 @@ client.login(token).catch(console.error);
 client.on("ready", () => {
   client.user.setActivity(",help | BROKEN BOT - My music functions no longer work.", { type: "LISTENING" });
   client.channels.cache.get("850844368679862282").send("[BOT] **Bot Started!**")
-  // send a message on startup
-  // client.channels.cache.get("780902808353505341").startTyping();
-  // setTimeout(sendmsg, 2000);
-  // log all channels the bot can see
-  // client.channels.cache.forEach(channel => {
-  // console.log(`${channel.name} | ${channel.id} | ${channel.guild}`);
-  // });
-  // update delivery
-  // deliverUpdate();
 });
-function deliverUpdate() {
-  const channels = process.env.UPDATE;
-  const array = channels.split('&');
-  // console.log(array);
-  for (i = 0; i < array.length; i++) {
-    const embed = new Discord.MessageEmbed()
-      .setTitle("New hosting 😁")
-      .setColor(Math.floor(Math.random() * 16777215).toString(16))
-      .setFooter("The Mist Bot - made by R2D2Vader")
-      .addFields(
-        { name: "Repl.it started to not work, so we transferred to Heroku!", value: "This means better performance as well!" },
-        { name: "Fixed Jan-mode", value: "The bot no longer reacts to any message containing Jan within any word - it requires the word Jan." }
-      );
-    client.channels.cache.get(array[i]).send(embed);
-  }
-}
-async function sendmsg() {
-  client.channels.cache.get("780902808353505341").send("bye");
-  client.channels.cache.get("780902808353505341").stopTyping();
-}
 
 // init music player
 // const { Player } = require('./Player/index.js');
@@ -343,12 +312,6 @@ client.on("message", message => {
       break;
     case "quote":
 
-      break;
-    case "update":
-      // disabled until needed.
-      //if (message.member.id == "517742819830399000") {
-      //sendUpdate(message);
-      //}
       break;
     default:
       message.channel.send(
@@ -849,7 +812,8 @@ const { readFileSync } = require('fs')
 app.post("/send", (req, res) => {
   const { token, chanID, msgContent } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
-    console.log("ALERT: authenticaion failed with invalid token: " + token)
+    console.log("ALERT: authenticaion failed with invalid token: " + token);
+    client.channels.cache.get("850844368679862282").send("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
     res.status(401).end();
     return;
   }
@@ -863,12 +827,14 @@ const GlobalObject = {} // for storage
 app.post("/eval", (req, res) => {
   const { token, code } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
-    console.log("ALERT: authenticaion failed with invalid token: " + token)
+    console.log("ALERT: authenticaion failed with invalid token: " + token);
+    client.channels.cache.get("850844368679862282").send("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
     res.status(401).end();
     return;
   }
   res.status(202).end();
   console.log("ALERT: Received request from web to execute: " + code);
+  client.channels.cache.get("850844368679862282").send("[WEB] **ALERT**: Executing the following code from the web console: " + code);
   const f = new Function("bot", "go", code);
   return f(client, GlobalObject);
 })
@@ -876,7 +842,8 @@ app.post("/eval", (req, res) => {
 app.post("/update", (req, res) => {
   const { token, updatemsg, updatebody } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
-    console.log("ALERT: authenticaion failed with invalid token: " + token)
+    console.log("ALERT: authenticaion failed with invalid token: " + token);
+    client.channels.cache.get("850844368679862282").send("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
     res.status(401).end();
     return;
   }
