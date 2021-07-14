@@ -360,21 +360,16 @@ function doCounting(message) {
 }
 
 function continueCounting(message, row) {
-  let count = row.value;
-  if (parseInt(message.content, 10) === count + 1) {
+  let count = parseInt(row.value, 10);
+  if (parseInt(message.content, 10) === (count + 1)) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (count + 1).toString() + "WHERE key='count'");
   }
   else {
     dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
-    message.channel.send("**" + message.author + "** ruined the count! `The count reset to 0.`");
+    message.channel.send("**" + message.member.displayName + "** ruined the count! `The count reset to 0.`");
     message.react("❌");
   }
-}
-
-
-function getCurrentCount() {
-  return dbClient.query("SELECT * FROM exclusive WHERE key='count';");
 }
 
 // the ,play command
