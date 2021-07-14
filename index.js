@@ -140,7 +140,7 @@ client.on("message", message => {
   }
 
   // counting
-  if (message.channel.id == "864912391329939498") {
+  if (message.channel.id == "864513696596492378") {
     doCounting(message);
   }
 
