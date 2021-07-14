@@ -37,7 +37,6 @@ dbClient.connect(err => {
     console.error('Connection error while connecting to database: ' + err.stack)
   } else {
     console.log('Connected to Database');
-    client.cache.channels.get("850844368679862282").send("Connected to the Database");
   }
 });
 
