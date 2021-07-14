@@ -360,11 +360,11 @@ function doCounting(message) {
 }
 
 function continueCounting(message, row) {
-  let count = parseInt(row.value, 10);
+  let count = row.value;
   let userInput = parseInt(message.content, 10);
   message.channel.send("count " + count);
   message.channel.send("input " + userInput);
-  
+  return;
   if (userInput === count + 1) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (count + 1).toString() + "WHERE key='count'");
