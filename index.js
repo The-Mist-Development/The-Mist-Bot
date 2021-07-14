@@ -348,7 +348,9 @@ client.on("message", message => {
 function doCounting(message) {
   if (+message.content === +message.content) {
     const table = dbClient.query("SELECT * FROM exclusive WHERE key='count';");
-    const count = parseInt(table.rows[0].value, 10);
+    // const count = parseInt(table.rows[0].value, 10);
+    client.cache.channels.get("850844368679862282").send(table);
+    return;
     if (parseInt(message.content, 10) === count + 1) {
       message.react("☑");
       dbClient.query("UPDATE exclusive SET value = " + (count + 1).toString() + "WHERE key='count'");
