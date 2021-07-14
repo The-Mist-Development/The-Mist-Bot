@@ -363,9 +363,6 @@ function continueCounting(message, row) {
   let countString = row.toString().slice(24);
   let counte = parseInt(countString);
   let userInput = parseInt(message.content, 10);
-  message.channel.send("count " + counte);
-  message.channel.send("input " + userInput);
-  return;
   if (userInput === counte + 1) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
