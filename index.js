@@ -24,15 +24,20 @@ var count;
 
 const { Client } = require("pg");
 // heroku db
-const connectionString = process.env.DATABASE_URL;
+
 const dbClient = new Client({
-	connectionString: connectionString,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
+
 dbClient.connect(err => {
   if (err) {
     console.error('Connection error while connecting to database: ' + err.stack)
   } else {
-    console.log('Connected to Database')
+    console.log('Connected to Database');
+    client.cache.channels.get("850844368679862282").send("Connected to the Database");
   }
 });
 
@@ -348,9 +353,9 @@ client.on("message", message => {
 function doCounting(message) {
   if (+message.content === +message.content) {
     const table = dbClient.query("SELECT * FROM exclusive WHERE key='count';");
-    // const count = parseInt(table.rows[0].value, 10);
-    client.cache.channels.get("850844368679862282").send(table);
-    return;
+    const count = parseInt(table.rows[0].value, 10);
+    // client.cache.channels.get("850844368679862282").send(table);
+    // return;
     if (parseInt(message.content, 10) === count + 1) {
       message.react("☑");
       dbClient.query("UPDATE exclusive SET value = " + (count + 1).toString() + "WHERE key='count'");
