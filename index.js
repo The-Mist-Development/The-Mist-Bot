@@ -353,7 +353,7 @@ function doCounting(message) {
   if (+message.content === +message.content) {
     const table = dbClient.query("SELECT * FROM exclusive WHERE key='count';");
     // const count = parseInt(table.rows[0].value, 10);
-    client.channels.cache.get("850844368679862282").send("raw response from db:" + table);
+    client.channels.cache.get("850844368679862282").send("raw response from db: " + JSON.stringify(table));
     return;
     if (parseInt(message.content, 10) === count + 1) {
       message.react("☑");
