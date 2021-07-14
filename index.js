@@ -360,8 +360,7 @@ function doCounting(message) {
 }
 
 function continueCounting(message, row) {
-  client.channels.cache.get("850844368679862282").send("raw response from db: " + row);
-  return;
+  let count = row.value;
   if (parseInt(message.content, 10) === count + 1) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (count + 1).toString() + "WHERE key='count'");
