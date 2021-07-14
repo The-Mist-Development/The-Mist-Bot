@@ -16,7 +16,7 @@
     "express": "^4.17.1",
     "merge-options": "^2.0.0",
     "node-fetch": "^2.6.1",
-    "scrape-yt": "^1.4.7",
+    "pg": "^8.6.0",
     "ytdl-core": "^4.8.2",
     "ytsr": "^3.2.2"
   },

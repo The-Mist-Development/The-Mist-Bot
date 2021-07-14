@@ -22,7 +22,8 @@ djuser = "";
 loopingBool = false;
 var count;
 
-// heroku db - using 
+const { Client } = require("pg");
+// heroku db
 const connectionString = process.env.DATABASE_URL;
 const dbClient = new Client({
 	connectionString: connectionString,
