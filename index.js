@@ -20,6 +20,20 @@ rickrolld = false;
 djmode = false;
 djuser = "";
 loopingBool = false;
+var count;
+
+// heroku db - using 
+const connectionString = process.env.DATABASE_URL;
+const dbClient = new Client({
+	connectionString: connectionString,
+});
+dbClient.connect(err => {
+  if (err) {
+    console.error('Connection error while connecting to database: ' + err.stack)
+  } else {
+    console.log('Connected to Database')
+  }
+});
 
 client.login(token).catch(console.error);
 
@@ -117,6 +131,11 @@ client.on("message", message => {
   // art channel validation
   if (message.channel.id == "838834082183381092") {
     artValidate(message);
+  }
+
+  // counting
+  if (message.channel.id == "864912391329939498") {
+    doCounting(message);
   }
 
   // reactions 
@@ -324,6 +343,22 @@ client.on("message", message => {
       break;
   }
 });
+
+function doCounting(message) {
+  if (+message.content === +message.content) {
+    const table = dbClient.query("SELECT * FROM exclusive WHERE key='count';");
+    const count = parseInt(table.rows[0].value, 10);
+    if (parseInt(message.content, 10) === count + 1) {
+      message.react("☑");
+      dbClient.query("UPDATE exclusive SET value = " + (count + 1).toString() + "WHERE key='count'");
+    }
+    else {
+      dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
+      message.channel.send("**" + message.author + "** ruined the count! `The count reset to 0.`");
+      message.react("❌");
+    }
+  }
+} 
 
 // the ,play command
 async function playSong(message, args) {
