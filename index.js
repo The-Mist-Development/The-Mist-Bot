@@ -365,14 +365,15 @@ function continueCounting(message, row) {
   message.channel.send("count " + count);
   message.channel.send("input " + userInput);
   
-  if (userInput == count + 1) {
+  if (userInput === count + 1) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (count + 1).toString() + "WHERE key='count'");
   }
   else {
-    dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
-    message.channel.send("**" + message.member.displayName + "** ruined the count! `The count reset to 0.`");
+    dbClient.query("UPDATE exclusive SET value = 1 WHERE key='count'");
+    message.channel.send("**" + message.member.displayName + "** ruined the count! `The count reset.`");
     message.react("❌");
+    message.channel.send("I'll start: `1`");
   }
 }
 
