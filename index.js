@@ -361,7 +361,7 @@ function doCounting(message) {
 
 function continueCounting(message, row) {
   let count = parseInt(row.value, 10);
-  if (parseInt(message.content, 10) === (count + 1)) {
+  if (parseInt(message.content, 10) == (count + 1)) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (count + 1).toString() + "WHERE key='count'");
   }
