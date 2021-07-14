@@ -360,7 +360,7 @@ function doCounting(message) {
 }
 
 function continueCounting(message, row) {
-  let count = row.value;
+  let count = row;
   let userInput = parseInt(message.content, 10);
   message.channel.send("count " + count);
   message.channel.send("input " + userInput);
