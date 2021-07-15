@@ -368,10 +368,10 @@ function continueCounting(message, row) {
     dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
   }
   else {
-    dbClient.query("UPDATE exclusive SET value = 1 WHERE key='count'");
-    message.channel.send("**" + message.member.displayName + "** ruined the count! `The count reset.`");
+    dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
+    message.channel.send("**" + message.member.displayName + "** ruined the count at " + counte + "! `The count reset.`");
     message.react("❌");
-    message.channel.send("I'll start: `1`");
+    message.channel.send("Next number is `1`.");
   }
 }
 
