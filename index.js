@@ -710,7 +710,7 @@ async function sendLyrics(message) {
         var slicedContent = resdata.data[0].lyrics.substring(0, max);
         content = slicedContent.substring(0, slicedContent.lastIndexOf("\n"));
         if (resdata.data[0].lyrics.length <= max * 2) {
-          content2 = resdata.data[0].lyrics.substring(max);
+          content2 = resdata.data[0].lyrics.substring(slicedContent.lastIndexOf("\n"));
           long = true;
         }
         else {
