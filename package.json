@@ -1,6 +1,6 @@
 {
   "name": "the-mist-bot",
-  "version": "0.1.0-NODE12",
+  "version": "1.0.0-DEV",
   "description": "A Discord bot made for The Mist Discord",
   "main": "server.js",
   "scripts": {
@@ -11,9 +11,10 @@
   "dependencies": {
     "@discordjs/opus": "^0.5.0",
     "body-parser": "^1.19.0",
-    "discord-music-player": "^7.1.4",
+    "discord-music-player": "^7.2.0",
     "discord.js": "^12.5.1",
     "express": "^4.17.1",
+    "ffmpeg-static": "^4.4.0",
     "merge-options": "^2.0.0",
     "node-fetch": "^2.6.1",
     "pg": "^8.6.0",
