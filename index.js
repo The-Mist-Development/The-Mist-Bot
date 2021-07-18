@@ -7,8 +7,8 @@ const app = express();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
-const token = process.env.TOKEN || require("local_env.json").token;
-const prefix = ",";
+const token = process.env.TOKEN || require("./local_env.json").TOKEN;
+const prefix = ",.";
 
 const fetch = require('node-fetch');
 
@@ -44,71 +44,74 @@ client.player = player;
 // Init the event listener only once (at the top of your code).
 client.player
   .on('error', (error, message) => {
-  var today = new Date();
-  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var today = new Date();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     switch (error) {
-        // Thrown when the YouTube search could not find any song with that query.
-        case 'SearchIsNull':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No song with the provided query was found. | ${message.guild}`);
-          message.channel.send("**Couldn't find a song** for that query.")
-            break;
-        // Thrown when the provided YouTube Playlist could not be found.
-        case 'InvalidPlaylist':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Playlist was found with the provided link. | ${message.guild}`);
-            break;
-        // Thrown when the provided Spotify Song could not be found.
-        case 'InvalidSpotify':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Spotify Song was found with the provided link. | ${message.guild}`);
-            break;
-        // Thrown when the Guild Queue does not exist (no music is playing).
-        case 'QueueIsNull':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Guild Queue does not exist - no music is playing. | ${message.guild}`);
-            break;
-        // Thrown when the Members is not in a VoiceChannel.
-        case 'VoiceChannelTypeInvalid':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Member was not in VC while trying to play music. | ${message.guild}`);
-            break;
-        // Thrown when the current playing song was an live transmission (that is unsupported).
-        case 'LiveUnsupported':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Attempt to play unsupported YouTube Livestream. | ${message.guild}`);
-          message.channel.send("Sorry! We **don't support Youtube Livestreams** for now!");
-            break;
-        // Thrown when the current playing song was unavailable.
-        case 'VideoUnavailable':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | A song video was unavailable. | ${message.guild}`);
-          message.channel.send("😓 **Something went wrong playing that song!** Please try a different song. If the issue persists, contact R2D2Vader#0693.");
-            break;
-        // Thrown when provided argument was Not A Number.
-        case 'NotANumber':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | The provided argument was Not A Number. | ${message.guild}`);
-            break;
-        // Thrown when the first method argument was not a Discord Message object.
-        case 'MessageTypeInvalid':
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object. | ${message.guild}`);
-            break;
-        default:
-          client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
-          message.channel.send("😓 **Something went wrong!** Please try again in a few minutes.");
-          if (error.includes("permission") || error.includes("Permission")) {
-            message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
-            break;
-          }
-          message.channel.send("🤔 We don't support YouTube Livestreams, in case you just tried to play one. 🤔");
-            break;
+      // Thrown when the YouTube search could not find any song with that query.
+      case 'SearchIsNull':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No song with the provided query was found. | ${message.guild}`);
+        message.channel.send("**Couldn't find a song** for that query.")
+        break;
+      // Thrown when the provided YouTube Playlist could not be found.
+      case 'InvalidPlaylist':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Playlist was found with the provided link. | ${message.guild}`);
+        break;
+      // Thrown when the provided Spotify Song could not be found.
+      case 'InvalidSpotify':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Spotify Song was found with the provided link. | ${message.guild}`);
+        break;
+      // Thrown when the Guild Queue does not exist (no music is playing).
+      case 'QueueIsNull':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Guild Queue does not exist - no music is playing. | ${message.guild}`);
+        break;
+      // Thrown when the Members is not in a VoiceChannel.
+      case 'VoiceChannelTypeInvalid':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Member was not in VC while trying to play music. | ${message.guild}`);
+        break;
+      // Thrown when the current playing song was an live transmission (that is unsupported).
+      case 'LiveUnsupported':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Attempt to play unsupported YouTube Livestream. | ${message.guild}`);
+        message.channel.send("Sorry! We **don't support Youtube Livestreams** for now!");
+        break;
+      // Thrown when the current playing song was unavailable.
+      case 'VideoUnavailable':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | A song video was unavailable. | ${message.guild}`);
+        message.channel.send("😓 **Something went wrong playing that song!** Please try a different song. If the issue persists, contact R2D2Vader#0693.");
+        break;
+      // Thrown when provided argument was Not A Number.
+      case 'NotANumber':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | The provided argument was Not A Number. | ${message.guild}`);
+        break;
+      // Thrown when the first method argument was not a Discord Message object.
+      case 'MessageTypeInvalid':
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object. | ${message.guild}`);
+        break;
+      default:
+        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
+        
+        if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes."); }
+        else { client.channels.cache.get(error.stack || error).send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693");}
+
+        if (error.includes("permission") || error.includes("Permission")) {
+          message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
+          break;
+        }
+        break;
     }
   });
 
-  client.player.on('songAdd',  (message, queue, song) => {
-      if (client.player.isPlaying(message)) {
-      message.channel.send(`** ${song.name} ** was added to the queue!`)}
-    })
-    .on('songFirst',  (message, song) =>
-        message.channel.send(`🎵 Playing Now: **${song.name}** 🎶`))
-    .on('songChanged', (message, newSong, oldSong) =>{
-      if (loopingBool == false) {
-        message.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`)
-      }
-    });
+client.player.on('songAdd', (message, queue, song) => {
+  if (client.player.isPlaying(message)) {
+    message.channel.send(`** ${song.name} ** was added to the queue!`)
+  }
+})
+  .on('songFirst', (message, song) =>
+    message.channel.send(`🎵 Playing Now: **${song.name}** 🎶`))
+  .on('songChanged', (message, newSong, oldSong) => {
+    if (loopingBool == false) {
+      message.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`)
+    }
+  });
 
 // Handle Messages
 client.on("message", message => {
@@ -232,7 +235,7 @@ client.on("message", message => {
         if (isPlaying) {
           let toggle = client.player.toggleLoop(message);
           if (toggle) {
-            message.channel.send("🔁 **Looping the current song**"); 
+            message.channel.send("🔁 **Looping the current song**");
             loopingBool = true;
           }
           else {
@@ -256,7 +259,7 @@ client.on("message", message => {
         if (isPlaying) {
           let toggle = client.player.toggleQueueLoop(message);
           if (toggle) {
-            message.channel.send("🔁 **Looping the entire queue**"); 
+            message.channel.send("🔁 **Looping the entire queue**");
             loopingBool = true;
           }
           else {
@@ -331,15 +334,18 @@ async function playSong(message, args) {
   // If there's already a song playing
   if (isPlaying) {
     // Add the song to the queue
-    let song = await client.player.addToQueue(message, args.join(" "));
+    let song = await client.player.play(
+      message,
+      args.join(" ")
+    );
   } else {
     const loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
     // delete loading if something else errors
-    setTimeout(function(){ 
+    setTimeout(function () {
       if (client.player.isPlaying(loading.guild.id)) return;
-      if (loading.deleted) return; 
+      if (loading.deleted) return;
       loading.delete()
-        .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") }); 
+        .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
     }, 10000);
     // check for rickroll
     if (args[args.length - 1] == "-r") {
