@@ -373,11 +373,6 @@ function continueCounting(message, row) {
   if (userInput === counte + 1) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
-
-    dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, res) => {
-      let maxString = JSON.stringify(res.rows[0]).toString().slice(27);
-      client.channels.cache.get("850844368679862282").send(maxString);
-    });
   }
   else {
     dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
@@ -385,6 +380,15 @@ function continueCounting(message, row) {
     message.react("❌");
     message.channel.send("Next number is `1`.");
   }
+
+  dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, res) => {
+    let maxString = JSON.stringify(res.rows[0]).toString().slice(27);
+    let oldMax = parseInt(maxString);
+
+    if (counte + 1 > oldMax) {
+      dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='maxcount'");
+    }
+  });
 }
 
 // the ,play command for playlists
