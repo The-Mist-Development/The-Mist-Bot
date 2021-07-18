@@ -894,13 +894,11 @@ app.get("/count", (req, res) => {
   let recordCount = 0;
   dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, dbres) => {
     currentCount = parseInt(JSON.stringify(dbres.rows[0]).toString().slice(24));
+    dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, dbres2) => {
+      recordCount = parseInt(JSON.stringify(dbres2.rows[0]).toString().slice(27));
+      res.send({ "currentCount": currentCount, "recordCount": recordCount });
+    });
   });
-
-  dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, dbres2) => {
-    recordCount = parseInt(JSON.stringify(dbres2.rows[0]).toString().slice(27));
-  });
-
-  res.send({ "currentCount": currentCount, "recordCount": recordCount });
 });
 
 const listener = app.listen(process.env.PORT, () => {
