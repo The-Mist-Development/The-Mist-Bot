@@ -7,8 +7,8 @@ const app = express();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
-const token = process.env.TOKEN;
-const prefix = ",";
+const token = process.env.TOKEN || require("./local_env.json").TOKEN;
+const prefix = ",.";
 
 const fetch = require('node-fetch');
 
@@ -44,8 +44,8 @@ client.login(token).catch(console.error);
 
 
 client.on("ready", () => {
-  client.user.setActivity(",help | BROKEN BOT - My music functions no longer work.", { type: "LISTENING" });
-  client.channels.cache.get("850844368679862282").send("[BOT] **Bot Started!**")
+  client.user.setActivity(",help | WORKING AGAIN???", { type: "LISTENING" });
+  client.channels.cache.get("850844368679862282").send("[BOT] **Bot Started!**");
 });
 
 // init music player
@@ -107,12 +107,15 @@ client.player
         break;
       default:
         client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
-        message.channel.send("😓 **Something went wrong!** Please try again in a few minutes.");
+        
+        if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes."); }
+        else { client.channels.cache.get(error.stack || error).send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693");}
+
+
         if (error.includes("permission") || error.includes("Permission")) {
           message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
           break;
         }
-        message.channel.send("🤔 We don't support YouTube Livestreams, in case you just tried to play one. 🤔");
         break;
     }
   });
@@ -381,7 +384,10 @@ async function playSong(message, args) {
   // If there's already a song playing
   if (isPlaying) {
     // Add the song to the queue
-    let song = await client.player.addToQueue(message, args.join(" "));
+    let song = await client.player.play(
+      message,
+      args.join(" ")
+    );
   } else {
     const loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
     // delete loading if something else errors
