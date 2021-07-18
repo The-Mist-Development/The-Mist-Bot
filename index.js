@@ -110,9 +110,8 @@ client.player
       default:
         client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
         
-        if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes."); }
+        if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); }
         else { client.channels.cache.get(error.stack || error).send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693");}
-
 
         if (error.includes("permission") || error.includes("Permission")) {
           message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
