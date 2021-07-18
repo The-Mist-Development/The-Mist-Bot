@@ -10,9 +10,9 @@
   </a><br>
   <a href="/admin.html">
     Admin Login
-  </a>
-  <p>Record Highest Count:</p>
-  <p id="count"></p>
+  </a> <br> <br>
+  <p style="display:inline;">Record Highest Count:</p>
+  <p style="display:inline;" id="count"></p>
   <script>
     async function getCount() {
       const response = await fetch("/count");
@@ -23,7 +23,7 @@
     }
 
     getCount();
-    
+
   </script>
 </body>
 
