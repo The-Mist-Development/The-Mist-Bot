@@ -375,8 +375,8 @@ function continueCounting(message, row) {
     dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
 
     dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, res) => {
-      let maxrow = JSON.stringify(res.rows[0]);
-      client.channels.cache.get("850844368679862282").send(maxrow.value);
+      let maxString = JSON.stringify(res.rows[0]).toString().slice(27);
+      client.channels.cache.get("850844368679862282").send(maxString);
     });
   }
   else {
