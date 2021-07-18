@@ -6,8 +6,7 @@ const app = express();
 // init discord bot
 const Discord = require("discord.js");
 const client = new Discord.Client();
-
-const token = process.env.TOKEN;
+const token = process.env.TOKEN || require("./local_env.json").TOKEN;
 const prefix = ",";
 
 const fetch = require('node-fetch');
