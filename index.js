@@ -25,8 +25,8 @@ client.login(token).catch(console.error);
 
 
 client.on("ready", () => {
-  client.user.setActivity(",help | BROKEN BOT - My music functions no longer work.", { type: "LISTENING" });
-  client.channels.cache.get("850844368679862282").send("[BOT] **Bot Started!**")
+  client.user.setActivity(",help | WORKING AGAIN???", { type: "LISTENING" });
+  client.channels.cache.get("850844368679862282").send("[BOT] **Bot Started!**");
 });
 
 // init music player
