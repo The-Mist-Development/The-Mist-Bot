@@ -109,9 +109,9 @@ client.player
         break;
       default:
         client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
-        
+
         if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); }
-        else { client.channels.cache.get(error.stack || error).send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693");}
+        else { client.channels.cache.get(error.stack || error).send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); }
 
         if (error.includes("permission") || error.includes("Permission")) {
           message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
@@ -133,9 +133,9 @@ client.player.on('songAdd', (message, queue, song) => {
       message.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`)
     }
   })
-  .on('playlistAdd',  (message, queue, playlist) => {
-        message.channel.send(`Playlist **${playlist.name}** with ${playlist.videoCount} videos was added to the queue!`)
-    });
+  .on('playlistAdd', (message, queue, playlist) => {
+    message.channel.send(`Playlist **${playlist.name}** with ${playlist.videoCount} videos was added to the queue!`)
+  });
 
 // Handle Messages
 client.on("message", message => {
@@ -392,7 +392,7 @@ function continueCounting(message, row) {
 }
 
 // the ,play command for playlists
-async function playNotSong(message,args) {
+async function playNotSong(message, args) {
   let isPlaying = client.player.isPlaying(message);
   // If there's already a song playing
   if (isPlaying) {
@@ -400,7 +400,7 @@ async function playNotSong(message,args) {
     await client.player.playlist(message, {
       search: args.join(' '),
       maxSongs: -1
-  });
+    });
   } else {
     const loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
     // delete loading if something else errors
@@ -888,6 +888,19 @@ app.use(function (req, res, next) {
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.get("/count", (req, res) => {
+  let currentCount = 0;
+  let recordCount = 0;
+  dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, dbres) => {
+    currentCount = parseInt(JSON.stringify(dbres.rows[0]).toString().slice(24));
+  }).then(
+    dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, dbres2) => {
+    recordCount = parseInt(JSON.stringify(dbres2.rows[0]).toString().slice(27));
+  }).then(
+    res.send({"currentCount": currentCount, "recordCount": recordCount})
+  ))
+});
 
 const listener = app.listen(process.env.PORT, () => {
   console.log("Listening on port " + listener.address().port);
