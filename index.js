@@ -373,6 +373,11 @@ function continueCounting(message, row) {
   if (userInput === counte + 1) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
+
+    dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, res) => {
+      let maxrow = JSON.stringify(res.rows[0]);
+      client.channels.cache.get("850844368679862282").send(maxrow.value);
+    });
   }
   else {
     dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
