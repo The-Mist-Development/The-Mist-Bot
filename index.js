@@ -20,6 +20,25 @@ rickrolld = false;
 djmode = false;
 djuser = "";
 loopingBool = false;
+var count;
+
+const { Client } = require("pg");
+// heroku db
+
+const dbClient = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+dbClient.connect(err => {
+  if (err) {
+    console.error('Connection error while connecting to database: ' + err.stack)
+  } else {
+    console.log('Connected to Database');
+  }
+});
 
 client.login(token).catch(console.error);
 
@@ -92,6 +111,7 @@ client.player
         if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes."); }
         else { client.channels.cache.get(error.stack || error).send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693");}
 
+
         if (error.includes("permission") || error.includes("Permission")) {
           message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
           break;
@@ -120,6 +140,11 @@ client.on("message", message => {
   // art channel validation
   if (message.channel.id == "838834082183381092") {
     artValidate(message);
+  }
+
+  // counting
+  if (message.channel.id == "864513696596492378") {
+    doCounting(message);
   }
 
   // reactions 
@@ -327,6 +352,31 @@ client.on("message", message => {
       break;
   }
 });
+
+function doCounting(message) {
+  if (+message.content === +message.content) {
+    dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, res) => {
+      let row = (JSON.stringify(res.rows[0]));
+      continueCounting(message, row);
+    });
+  }
+}
+
+function continueCounting(message, row) {
+  let countString = row.toString().slice(24);
+  let counte = parseInt(countString);
+  let userInput = parseInt(message.content, 10);
+  if (userInput === counte + 1) {
+    message.react("☑");
+    dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
+  }
+  else {
+    dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
+    message.channel.send("**" + message.member.displayName + "** ruined the count at " + counte + "! `The count reset.`");
+    message.react("❌");
+    message.channel.send("Next number is `1`.");
+  }
+}
 
 // the ,play command
 async function playSong(message, args) {

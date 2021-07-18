@@ -17,6 +17,7 @@
     "ffmpeg-static": "^4.4.0",
     "merge-options": "^2.0.0",
     "node-fetch": "^2.6.1",
+    "pg": "^8.6.0",
     "ytdl-core": "^4.8.2",
     "ytsr": "^3.2.2"
   },
