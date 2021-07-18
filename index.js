@@ -75,6 +75,7 @@ client.player
       // Thrown when the provided YouTube Playlist could not be found.
       case 'InvalidPlaylist':
         client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Playlist was found with the provided link. | ${message.guild}`);
+        message.channel.send("**Couldn't find that playlist**. Are you sure it exists?")
         break;
       // Thrown when the provided Spotify Song could not be found.
       case 'InvalidSpotify':
@@ -132,7 +133,10 @@ client.player.on('songAdd', (message, queue, song) => {
     if (loopingBool == false) {
       message.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`)
     }
-  });
+  })
+  .on('playlistAdd',  (message, queue, playlist) => {
+        message.channel.send(`Playlist **${playlist.name}** with ${playlist.videoCount} videos was added to the queue!`)
+    });
 
 // Handle Messages
 client.on("message", message => {
@@ -207,7 +211,7 @@ client.on("message", message => {
       if (args.length == 0) return;
       if (message.member.voice.channel) {
         if (message.content.toLowerCase().includes("list=")) {
-          message.channel.send("😢 I **don't support playlists** for now!")
+          playNotSong(message, args);
         }
         else {
           playSong(message, args);
@@ -379,6 +383,36 @@ function continueCounting(message, row) {
   }
 }
 
+// the ,play command for playlists
+async function playNotSong(message,args) {
+  let isPlaying = client.player.isPlaying(message);
+  // If there's already a song playing
+  if (isPlaying) {
+    // Add the song to the queue
+    await client.player.playlist(message, {
+      search: args.join(' '),
+      maxSongs: -1
+  });
+  } else {
+    const loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
+    // delete loading if something else errors
+    setTimeout(function () {
+      if (client.player.isPlaying(loading.guild.id)) return;
+      if (loading.deleted) return;
+      loading.delete()
+        .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
+    }, 10000);
+
+    let list = await client.player.playlist(message, {
+      search: args.join(' '),
+      maxSongs: -1
+    });
+
+    loading.delete();
+  }
+}
+
+
 // the ,play command
 async function playSong(message, args) {
   let isPlaying = client.player.isPlaying(message);
@@ -473,8 +507,8 @@ function sendHelp(message) {
       },
       { name: "🎵 Music Commands", value: "===" },
       {
-        name: "`" + prefix + "play <Song Name / URL>`",
-        value: "Play the first result on YouTube for the Song Name, or the YouTube video at the URL you provide."
+        name: "`" + prefix + "play <Song Name / URL / Playlist URL>`",
+        value: "Play the first result on YouTube for the Song Name, or the YouTube video at the URL you provide. Alternatively, add every song in a YouTube Playlist to the queue by providing its link."
       },
       {
         name: "`" + prefix + "pause` / " + "`" + prefix + "resume`",
@@ -581,7 +615,7 @@ async function djAction(message) {
       case "play":
         if (message.member.voice.channel) {
           if (message.content.toLowerCase().includes("list=")) {
-            message.channel.send("😢 I **don't support playlists** for now! Sorry DJ! 💿")
+            playNotSong(message, args);
           }
           else {
             args.shift();
@@ -864,7 +898,8 @@ process.on('uncaughtException', (reason) => {
 
 //ADMIN WEB CONSOLE CODE
 
-const { readFileSync } = require('fs')
+const { readFileSync } = require('fs');
+const { deserializeOptionsPlaylist } = require('discord-music-player/src/Util');
 
 app.post("/send", (req, res) => {
   const { token, chanID, msgContent } = req.body;
