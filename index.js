@@ -7,7 +7,7 @@ const app = express();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
-const token = process.env.TOKEN;
+const token = process.env.TOKEN || require("local_env.json").token;
 const prefix = ",";
 
 const fetch = require('node-fetch');
