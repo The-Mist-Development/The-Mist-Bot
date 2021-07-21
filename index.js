@@ -387,6 +387,8 @@ function continueCounting(message, row) {
     message.channel.send("**" + message.member.displayName + "** ruined the count at " + counte + "! `The count reset.`");
     message.react("❌");
     message.channel.send("Next number is `1`.");
+    // quick fix to make the maxcount work
+    counte = counte - 1;
   }
 
   dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, res) => {
