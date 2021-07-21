@@ -24,6 +24,14 @@ loopingBool = false;
 var count;
 
 const { Client } = require("pg");
+
+
+function debug(message) {
+  console.log(message)
+  client.channels.cache.get("850844368679862282").send(message);
+}
+
+
 // heroku db
 
 const dbClient = new Client({
