@@ -372,11 +372,13 @@ client.on("message", message => {
 
 client.on('messageDelete', message => {
   if (message.channel.id != "864513696596492378") return;
-  if (cachedCount == -1) {
-    message.channel.send("⚠ A message by " + message.author.username + " was deleted! 🤔 I'm not sure what the count is now... try checking further up in the channel.")
-  }
-  else {
-    message.channel.send("⚠ A message by " + message.author.username + " was deleted! The count is still " + cachedCount);
+  if (+message.content === +message.content) {
+    if (cachedCount == -1) {
+      message.channel.send("⚠ A message by " + message.author.username + " was deleted! 🤔 I'm not sure what the count is now... **try checking further up in the channel**.")
+    }
+    else {
+      message.channel.send("⚠ A message by " + message.author.username + " was deleted! **The last number sent was " + cachedCount + "**.");
+    }
   }
 });
 
