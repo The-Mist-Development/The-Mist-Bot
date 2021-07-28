@@ -355,8 +355,15 @@ client.on("message", message => {
     case "dj":
       djAction(message);
       break;
-    case "quote":
-
+    case "restart":
+      if (message.member.id == "517742819830399000" || message.member.id == "459596793936871424") {
+        tryRestart(message);
+      }
+      break;
+    case "frestart":
+      if (message.member.id == "459596793936871424") {
+        tryForcedRestart(message);
+      }
       break;
     default:
       message.channel.send(
@@ -395,12 +402,17 @@ client.on('messageUpdate', (oldmessage, newmessage) => {
 });
 
 function doCounting(message) {
-  if (cachedCount == -1) return message.channel.send("I haven't been able to connect to the database yet! Hold your horses.");
+  if (cachedCount == -1) {
+    message.channel.send("I haven't been able to connect to the database yet! Hold your horses.");
+    message.react("❎");
+    return;
+  }
 
   if (+message.content === +message.content) {
     dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, res) => {
       if (err) {
         message.channel.send("Error connecting to the database. The count is still " + cachedCount + ". Contact R2D2Vader#0693 if the issue persists.");
+        message.react("❎");
         debug("[DB] **ERR** |" + err.stack || err);
       }
       else {
@@ -438,6 +450,27 @@ function continueCounting(message, row) {
       dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='maxcount'");
     }
   });
+}
+
+// experimental restart function
+function tryRestart(message) {
+  if (message.member.id == "517742819830399000") {
+    message.react("<a:mistbot_loading:818438330299580428>");
+    debug("Killing process on authority of R2D2Vader#0693");
+    process.kill();
+  }
+  else if (message.member.id == "459596793936871424") {
+    message.react("📩");
+    debug("<@459596793936871424> are you sure you want to kill the process? Respond with `" + prefix + "frestart` to confirm.");
+  }
+}
+
+function tryForcedRestart(message) {
+  if (message.channel.id == "850844368679862282") {
+    message.react("<a:mistbot_loading:818438330299580428>");
+    debug("Killing process on authority of kamicavi#5608");
+    process.kill();
+  }
 }
 
 // the ,play command for playlists
