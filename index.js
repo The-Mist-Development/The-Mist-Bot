@@ -59,7 +59,7 @@ client.login(token).catch(console.error);
 
 client.on("ready", () => {
   client.user.setActivity(",help | WORKING AGAIN???", { type: "LISTENING" });
-  client.channels.cache.get("850844368679862282").send("[BOT] **Bot Started!**");
+  debug("[BOT] **Bot Started!**");
 });
 
 // init music player
@@ -82,46 +82,46 @@ client.player
     switch (error) {
       // Thrown when the YouTube search could not find any song with that query.
       case 'SearchIsNull':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No song with the provided query was found. | ${message.guild}`);
+        debug(`[PLAYER] ${time} | No song with the provided query was found. | ${message.guild}`);
         message.channel.send("**Couldn't find a song** for that query.")
         break;
       // Thrown when the provided YouTube Playlist could not be found.
       case 'InvalidPlaylist':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Playlist was found with the provided link. | ${message.guild}`);
+        debug(`[PLAYER] ${time} | No Playlist was found with the provided link. | ${message.guild}`);
         message.channel.send("**Couldn't find that playlist**. Are you sure it exists?")
         break;
       // Thrown when the provided Spotify Song could not be found.
       case 'InvalidSpotify':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | No Spotify Song was found with the provided link. | ${message.guild}`);
+        debug(`[PLAYER] ${time} | No Spotify Song was found with the provided link. | ${message.guild}`);
         break;
       // Thrown when the Guild Queue does not exist (no music is playing).
       case 'QueueIsNull':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Guild Queue does not exist - no music is playing. | ${message.guild}`);
+        debug(`[PLAYER] ${time} | Guild Queue does not exist - no music is playing. | ${message.guild}`);
         break;
       // Thrown when the Members is not in a VoiceChannel.
       case 'VoiceChannelTypeInvalid':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Member was not in VC while trying to play music. | ${message.guild}`);
+        debug(`[PLAYER] ${time} | Member was not in VC while trying to play music. | ${message.guild}`);
         break;
       // Thrown when the current playing song was an live transmission (that is unsupported).
       case 'LiveUnsupported':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] ${time} | Attempt to play unsupported YouTube Livestream. | ${message.guild}`);
+        debug(`[PLAYER] ${time} | Attempt to play unsupported YouTube Livestream. | ${message.guild}`);
         message.channel.send("Sorry! We **don't support Youtube Livestreams** for now!");
         break;
       // Thrown when the current playing song was unavailable.
       case 'VideoUnavailable':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | A song video was unavailable. | ${message.guild}`);
+        debug(`[PLAYER] **ERR** | ${time} | A song video was unavailable. | ${message.guild}`);
         message.channel.send("😓 **Something went wrong playing that song!** Please try a different song. If the issue persists, contact R2D2Vader#0693.");
         break;
       // Thrown when provided argument was Not A Number.
       case 'NotANumber':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | The provided argument was Not A Number. | ${message.guild}`);
+        debug(`[PLAYER] **ERR** | ${time} | The provided argument was Not A Number. | ${message.guild}`);
         break;
       // Thrown when the first method argument was not a Discord Message object.
       case 'MessageTypeInvalid':
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object. | ${message.guild}`);
+        debug(`[PLAYER] **ERR** | ${time} | Discord-Music-Player did not receive the Message object. | ${message.guild}`);
         break;
       default:
-        client.channels.cache.get("850844368679862282").send(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
+        debug(`[PLAYER] **ERR** | ${time} | **Unknown Error Ocurred** | ${message.guild} | ` + "```" + (error.stack || error) + "```");
 
         if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); }
         else { client.channels.cache.get(error.stack || error).send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); }
@@ -906,8 +906,8 @@ async function artValidate(message) {
   // console.log("Validating art message...");
   if (message.attachments.size == 0) {
     message.delete();
-    console.log("Deleted art post without attachment by " + message.author.username);
-    client.channels.cache.get("850844368679862282").send("[ART] **" + message.author.username + "** sent an art post without art: ```" + message.cleanContent + "```");
+    //console.log("Deleted art post without attachment by " + message.author.username);
+    debug("[ART] **" + message.author.username + "** sent an art post without art: ```" + message.cleanContent + "```");
     message.author.send("Hi " + message.member.displayName + "! Please make sure to **only post art** in the <#838834082183381092> channel. Thanks!");
   }
 }
@@ -943,12 +943,12 @@ const listener = app.listen(process.env.PORT, () => {
 // not crash on unhandled promise rejection
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled promise rejection. ' + " \n This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). \n" + reason.stack || reason);
-  client.channels.cache.get("850844368679862282").send("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
+  debug("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
 });
 
 process.on('uncaughtException', (reason) => {
   console.error('Uncaught Error! \n ' + reason.stack || reason);
-  client.channels.cache.get("850844368679862282").send("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
+  debug("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
 });
 
 //ADMIN WEB CONSOLE CODE
@@ -960,13 +960,12 @@ const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 app.post("/send", (req, res) => {
   const { token, chanID, msgContent } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
-    console.log("ALERT: authenticaion failed with invalid token: " + token);
-    client.channels.cache.get("850844368679862282").send("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
+    debug("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
     res.status(401).end();
     return;
   }
   res.status(202).end();
-  console.log("Sending message from web to " + chanID + " with content: " + msgContent);
+  debug("Sending message from web to " + chanID + " with content: " + msgContent);
   const channel = client.channels.cache.get(chanID)
   channel.send(msgContent)
 })
@@ -975,14 +974,12 @@ const GlobalObject = {} // for storage
 app.post("/eval", (req, res) => {
   const { token, code } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
-    console.log("ALERT: authenticaion failed with invalid token: " + token);
-    client.channels.cache.get("850844368679862282").send("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
+    debug("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
     res.status(401).end();
     return;
   }
   res.status(202).end();
-  console.log("ALERT: Received request from web to execute: " + code);
-  client.channels.cache.get("850844368679862282").send("[WEB] **ALERT**: Executing the following code from the web console: " + code);
+  debug("[WEB] **ALERT**: Executing the following code from the web console: " + code);
   const f = new Function("bot", "go", code);
   return f(client, GlobalObject);
 })
@@ -990,8 +987,7 @@ app.post("/eval", (req, res) => {
 app.post("/update", (req, res) => {
   const { token, updatemsg, updatebody } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
-    console.log("ALERT: authenticaion failed with invalid token: " + token);
-    client.channels.cache.get("850844368679862282").send("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
+    debug("[WEB] **ALERT**: Authentication failed with invalid token: " + token);
     res.status(401).end();
     return;
   }
