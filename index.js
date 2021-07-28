@@ -457,7 +457,7 @@ function tryRestart(message) {
   if (message.member.id == "517742819830399000") {
     message.react("<a:mistbot_loading:818438330299580428>");
     debug("Killing process on authority of R2D2Vader#0693");
-    process.kill();
+    process.kill(process.pid, 'SIGTERM');
   }
   else if (message.member.id == "459596793936871424") {
     message.react("📩");
@@ -469,7 +469,7 @@ function tryForcedRestart(message) {
   if (message.channel.id == "850844368679862282") {
     message.react("<a:mistbot_loading:818438330299580428>");
     debug("Killing process on authority of kamicavi#5608");
-    process.kill();
+    process.kill(process.pid, 'SIGTERM');
   }
 }
 
