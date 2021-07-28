@@ -21,7 +21,7 @@ rickrolld = false;
 djmode = false;
 djuser = "";
 loopingBool = false;
-var count;
+let cachedCount = -1;
 
 const { Client } = require("pg");
 
@@ -46,6 +46,11 @@ dbClient.connect(err => {
     console.error('Connection error while connecting to database: ' + err.stack)
   } else {
     console.log('Connected to Database');
+    dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, res) => {
+      let row = (JSON.stringify(res.rows[0]));
+      let countString = row.toString().slice(24);
+      cachedCount = parseInt(countString);
+    });
   }
 });
 
@@ -365,11 +370,29 @@ client.on("message", message => {
   }
 });
 
+client.on('messageDelete', message => {
+  if (message.channel.id != "864513696596492378") return;
+  if (cachedCount == -1) {
+    message.channel.send("⚠ A message by " + message.author.username + " was deleted! 🤔 I'm not sure what the count is now... try checking further up in the channel.")
+  }
+  else {
+    message.channel.send("⚠ A message by " + message.author.username + " was deleted! The count is still " + cachedCount);
+  }
+});
+
 function doCounting(message) {
+  if (cachedCount == -1) return message.channel.send("I haven't been able to connect to the database yet! Hold your horses.");
+
   if (+message.content === +message.content) {
     dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, res) => {
-      let row = (JSON.stringify(res.rows[0]));
-      continueCounting(message, row);
+      if (err) {
+        message.channel.send("Error connecting to the database. The count is still " + cachedCount + ". Contact R2D2Vader#0693 if the issue persists.");
+        debug("[DB] **ERR** |" + err.stack || err);
+      }
+      else {
+        let row = (JSON.stringify(res.rows[0]));
+        continueCounting(message, row);
+      }
     });
   }
 }
@@ -381,6 +404,7 @@ function continueCounting(message, row) {
   if (userInput === counte + 1) {
     message.react("☑");
     dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
+    cachedCount = counte + 1;
   }
   else {
     dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
@@ -389,6 +413,7 @@ function continueCounting(message, row) {
     message.channel.send("Next number is `1`.");
     // quick fix to make the maxcount work
     counte = counte - 1;
+    cachedCount = 0;
   }
 
   dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, res) => {
@@ -930,6 +955,7 @@ process.on('uncaughtException', (reason) => {
 
 const { readFileSync } = require('fs');
 const { deserializeOptionsPlaylist } = require('discord-music-player/src/Util');
+const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 
 app.post("/send", (req, res) => {
   const { token, chanID, msgContent } = req.body;
