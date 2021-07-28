@@ -386,10 +386,10 @@ client.on('messageUpdate', (oldmessage, newmessage) => {
   if (oldmessage.channel.id != "864513696596492378") return;
   if (+oldmessage.content === +oldmessage.content) {
     if (cachedCount == -1) {
-      oldmessage.channel.send("⚠ A message by " + oldmessage.author.username + " was edited! 🤔 I'm not sure what the count is now... **try checking further up in the channel**.")
+      oldmessage.channel.send("⚠ " + oldmessage.author.username + ", we all saw you edit that message! 🤔 I'm not sure what the count is now... **try checking further up in the channel**.")
     }
     else {
-      oldmessage.channel.send("⚠ A message by " + oldmessage.author.username + " was edited! **The last number sent was " + cachedCount + "**.");
+      oldmessage.channel.send("⚠ " + oldmessage.author.username + ", we all saw you edit that message! **The last number sent was " + cachedCount + "**.");
     }
   }
 });
