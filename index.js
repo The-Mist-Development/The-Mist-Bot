@@ -382,6 +382,18 @@ client.on('messageDelete', message => {
   }
 });
 
+client.on('messageUpdate', (oldmessage, newmessage) => {
+  if (oldmessage.channel.id != "864513696596492378") return;
+  if (+oldmessage.content === +oldmessage.content) {
+    if (cachedCount == -1) {
+      oldmessage.channel.send("⚠ A message by " + oldmessage.author.username + " was edited! 🤔 I'm not sure what the count is now... **try checking further up in the channel**.")
+    }
+    else {
+      oldmessage.channel.send("⚠ A message by " + oldmessage.author.username + " was edited! **The last number sent was " + cachedCount + "**.");
+    }
+  }
+});
+
 function doCounting(message) {
   if (cachedCount == -1) return message.channel.send("I haven't been able to connect to the database yet! Hold your horses.");
 
