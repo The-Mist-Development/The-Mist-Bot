@@ -428,7 +428,7 @@ function continueCounting(message, row) {
   let counte = parseInt(countString);
   let userInput = parseInt(message.content, 10);
   if (userInput === counte + 1) {
-    message.react("<a:mistbot_confirmed:970070841268928552>");
+    message.react("<a:mistbot_confirmed:870070841268928552>");
     dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
     cachedCount = counte + 1;
   }
