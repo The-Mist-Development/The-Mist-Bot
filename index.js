@@ -153,6 +153,7 @@ client.player.on('songAdd', (message, queue, song) => {
 // Handle Messages
 client.on("message", message => {
   if (message.author.bot) return;
+  if (!message.content) return;
 
   // art channel validation
   if (message.channel.id == "838834082183381092") {
