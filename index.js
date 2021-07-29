@@ -1028,8 +1028,7 @@ app.post("/eval", (req, res) => {
   res.status(202).end();
   debug("[WEB] **ALERT**: Executing the following code from the web console: " + code);
   eval(code)
-  // const f = new Function("bot", "go", code); 
-  return //f(client, GlobalObject);
+  return;
 })
 
 app.post("/update", (req, res) => {
