@@ -434,7 +434,7 @@ function continueCounting(message, row) {
   }
   else {
     dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
-    message.channel.send("**" + message.member.displayName + "** ruined the count at " + counte + "! `The count reset.`");
+    message.channel.send("**" + message.member.displayName + "** ruined the count at `" + counte + "`! `The count reset.`");
     message.react("❌");
     message.channel.send("Next number is `1`.");
     // quick fix to make the maxcount work
@@ -1027,8 +1027,9 @@ app.post("/eval", (req, res) => {
   }
   res.status(202).end();
   debug("[WEB] **ALERT**: Executing the following code from the web console: " + code);
-  const f = new Function("bot", "go", code);
-  return f(client, GlobalObject);
+  eval(code)
+  // const f = new Function("bot", "go", code); 
+  return //f(client, GlobalObject);
 })
 
 app.post("/update", (req, res) => {
