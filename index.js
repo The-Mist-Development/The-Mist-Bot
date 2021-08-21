@@ -422,6 +422,9 @@ function doCounting(message) {
       }
     });
   }
+  else {
+    message.react("👌");
+  }
 }
 
 function continueCounting(message, row) {
