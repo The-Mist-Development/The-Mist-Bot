@@ -23,9 +23,8 @@ djuser = "";
 loopingBool = false;
 let cachedCount = -1;
 
-const { Client } = require("pg");
 
-
+// overall debug function
 function debug(message) {
   console.log(message)
   client.channels.cache.get("850844368679862282").send(message);
@@ -34,6 +33,7 @@ function debug(message) {
 
 // heroku db
 
+const { Client } = require("pg");
 const dbClient = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -54,13 +54,26 @@ dbClient.connect(err => {
   }
 });
 
+// discord bot login
 client.login(token).catch(console.error);
-
 
 client.on("ready", () => {
   client.user.setActivity(",help | WORKING AGAIN???", { type: "LISTENING" });
   debug("[BOT] **Bot Started!**");
+  clearPlayground.start();
 });
+
+// cron job for clearing dark playground every week
+const CronJob = require('cron').CronJob;
+
+const clearPlayground = new CronJob('0 30 19 * * 0', async function () {
+  let fetched;
+  do {
+    fetched = await client.channels.cache.get("878638710726475867").messages.fetch({ limit: 100 });
+    message.channel.bulkDelete(fetched);
+  }
+  while (fetched.size >= 2);
+}, null, true, 'Europe/London');
 
 // init music player
 // const { Player } = require('./Player/index.js');
