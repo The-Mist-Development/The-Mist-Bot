@@ -68,9 +68,10 @@ const CronJob = require('cron').CronJob;
 
 const clearPlayground = new CronJob('0 30 19 * * 0', async function () {
   let fetched;
+  const naughtychannel = client.channels.cache.get("878638710726475867");
   do {
-    fetched = await client.channels.cache.get("878638710726475867").messages.fetch({ limit: 100 });
-    message.channel.bulkDelete(fetched);
+    fetched = await naughtychannel.messages.fetch({ limit: 100 });
+    naughtychannel.bulkDelete(fetched);
   }
   while (fetched.size >= 2);
 }, null, true, 'Europe/London');
