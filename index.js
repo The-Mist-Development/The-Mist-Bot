@@ -66,7 +66,7 @@ client.on("ready", () => {
 // cron job for clearing dark playground every week
 const CronJob = require('cron').CronJob;
 
-const clearPlayground = new CronJob('0 30 19 * * 0', async function () {
+const clearPlayground = new CronJob('0 35 19 * * 0', async function () {
   let fetched;
   const naughtychannel = client.channels.cache.get("878638710726475867");
   do {
