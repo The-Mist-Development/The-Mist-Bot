@@ -144,6 +144,11 @@ client.player
           message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
           break;
         }
+        else if (error.includes("Status code:")) {
+          message.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
+          debug("Killing process to try and fix error status code.");
+          setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 1000)
+        }
         break;
     }
   });
@@ -475,7 +480,7 @@ function tryRestart(message) {
   if (message.member.id == "517742819830399000") {
     message.react("<a:mistbot_loading:818438330299580428>");
     debug("Killing process on authority of R2D2Vader#0693");
-    process.kill(process.pid, 'SIGTERM');
+    setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 1000)
   }
   else if (message.member.id == "459596793936871424") {
     message.react("📩");
@@ -484,10 +489,10 @@ function tryRestart(message) {
 }
 
 function tryForcedRestart(message) {
-  if (message.channel.id == "850844368679862282") {
+  if (message.channel.id == "850844368679862282" && message.member.id == "459596793936871424") {
     message.react("<a:mistbot_loading:818438330299580428>");
     debug("Killing process on authority of kamicavi#5608");
-    process.kill(process.pid, 'SIGTERM');
+    setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 1000)
   }
 }
 
