@@ -841,7 +841,7 @@ async function sendLyrics(message) {
         },
       };
 
-      const response = await fetch("https://api.ksoft.si/lyrics/search?q=" + queue.songs[0].name + "&limit=1", options);
+      const response = await fetch("https://api.ksoft.si/lyrics/search?q=" + encodeURIComponent(queue.songs[0].name) + "&limit=1", options);
       const resdata = await response.json();
       // resdata.data[0].property
 
@@ -903,7 +903,7 @@ async function sendLyrics(message) {
       },
     };
 
-    const response = await fetch("https://api.ksoft.si/lyrics/search?q=" + args.join(" ") + "&limit=1", options);
+    const response = await fetch("https://api.ksoft.si/lyrics/search?q=" + encodeURIComponent(args.join(" ")) + "&limit=1", options);
     const resdata = await response.json();
     // resdata.data[0].property
 
