@@ -30,6 +30,7 @@ function debug(message) {
   client.channels.cache.get("850844368679862282").send(message);
 }
 
+let killTimeout = null;
 
 // heroku db
 
@@ -385,6 +386,14 @@ client.on("message", message => {
         tryForcedRestart(message);
       }
       break;
+    case "cancel":
+      if (message.member.id == "517742819830399000" || message.member.id == "459596793936871424" || message.member.id == "692847955530743879") {
+      if (killTimeout != null) {
+        clearTimeout(killTimeout);
+        killTimeout = null;
+        debug("Restart was **cancelled** by " + message.member.displayName);
+      }
+    }
     default:
       message.channel.send(
         "`" +
@@ -635,7 +644,6 @@ function sendHelp(message) {
       { name: "`" + prefix + "leave`", value: "Stops playing, clears the queue, and leaves." },
       { name: "`" + prefix + "skip`", value: "Skips the current song." },
       { name: "`" + prefix + "loop`", value: "Toggles looping the current song." },
-      { name: "`" + prefix + "lyrics <Optional Song Name and Artist>`", value: "Gets lyrics of either the currently playing song, or the Song Name you specify. \n If specifying the song name, specify the Artist as well for better results" },
       { name: "`" + prefix + "dj`", value: "Starts a DJ session where only the DJ controls the music. The DJ uses `,dj <command>` to control the music." }
     );
 
@@ -1010,10 +1018,11 @@ const listener = app.listen(process.env.PORT, () => {
   console.log("Listening on port " + listener.address().port);
 });
 
-// not crash on unhandled promise rejection
+// not crash on unhandled promise rejection, but restart "gracefully"
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled promise rejection. ' + " \n This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). \n" + reason.stack || reason);
   debug("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
+  debug("Restarting in 20 seconds. Run " + prefix + "`cancel` to cancel.");
+  killTimeout = setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 20000)
 });
 
 process.on('uncaughtException', (reason) => {
