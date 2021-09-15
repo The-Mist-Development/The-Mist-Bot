@@ -1021,7 +1021,7 @@ const listener = app.listen(process.env.PORT, () => {
 // not crash on unhandled promise rejection, but restart "gracefully"
 process.on('unhandledRejection', (reason, promise) => {
   debug("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
-  debug("Restarting in 20 seconds. Run " + prefix + "`cancel` to cancel.");
+  debug("Restarting in 20 seconds. Run `" + prefix + "cancel` to cancel.");
   killTimeout = setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 20000)
 });
 
