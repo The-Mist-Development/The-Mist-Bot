@@ -148,7 +148,7 @@ client.player
         else if (error.includes("Status code:")) {
           message.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
           debug("Killing process to try and fix error status code.");
-          setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 1000)
+          setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000)
         }
         break;
     }
@@ -377,23 +377,24 @@ client.on("message", message => {
       djAction(message);
       break;
     case "restart":
-      if (message.member.id == "517742819830399000" || message.member.id == "459596793936871424") {
+      if (message.member.id == "517742819830399000" || message.member.id == "459596793936871424" || message.member.id == "692847955530743879") {
         tryRestart(message);
+        break;
       }
-      break;
     case "frestart":
-      if (message.member.id == "459596793936871424") {
+      if (message.member.id == "459596793936871424" || message.member.id == "517742819830399000" || message.member.id == "692847955530743879") {
         tryForcedRestart(message);
+        break;
       }
-      break;
     case "cancel":
       if (message.member.id == "517742819830399000" || message.member.id == "459596793936871424" || message.member.id == "692847955530743879") {
-      if (killTimeout != null) {
-        clearTimeout(killTimeout);
-        killTimeout = null;
-        debug("Restart was **cancelled** by " + message.member.displayName);
+        if (killTimeout != null) {
+          clearTimeout(killTimeout);
+          killTimeout = null;
+          debug("Restart was **cancelled** by " + message.member.displayName);
+        }
+        break;
       }
-    }
     default:
       message.channel.send(
         "`" +
@@ -489,19 +490,21 @@ function tryRestart(message) {
   if (message.member.id == "517742819830399000") {
     message.react("<a:mistbot_loading:818438330299580428>");
     debug("Killing process on authority of R2D2Vader#0693");
-    setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 1000)
+    setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000)
   }
-  else if (message.member.id == "459596793936871424") {
+  else if (message.member.id == "459596793936871424" || message.member.id == "692847955530743879") {
     message.react("📩");
-    debug("<@459596793936871424> are you sure you want to kill the process? Respond with `" + prefix + "frestart` to confirm.");
+    debug("<@" + message.member.id + "> are you sure you want to kill the process? Respond with `" + prefix + "frestart` to confirm.");
   }
 }
 
 function tryForcedRestart(message) {
-  if (message.channel.id == "850844368679862282" && message.member.id == "459596793936871424") {
-    message.react("<a:mistbot_loading:818438330299580428>");
-    debug("Killing process on authority of kamicavi#5608");
-    setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 1000)
+  if (message.channel.id == "850844368679862282") {
+    if (message.member.id == "459596793936871424" || message.member.id == "692847955530743879") {
+      message.react("<a:mistbot_loading:818438330299580428>");
+      debug("Killing process on authority of " + message.member.displayName);
+      setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000)
+    }
   }
 }
 
@@ -1022,7 +1025,7 @@ const listener = app.listen(process.env.PORT, () => {
 process.on('unhandledRejection', (reason, promise) => {
   debug("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
   debug("Restarting in 20 seconds. Run `" + prefix + "cancel` to cancel.");
-  killTimeout = setTimeout(function() {process.kill(process.pid, 'SIGTERM');}, 20000)
+  killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 20000)
 });
 
 process.on('uncaughtException', (reason) => {
