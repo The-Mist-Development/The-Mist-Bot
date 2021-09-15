@@ -370,7 +370,7 @@ client.on("message", message => {
       }
       break;
     case "lyrics":
-      sendLyrics(message);
+      message.channel.send("Our lyrics provider **shut down** because of some legal issues. RIP 😢");
       break;
     case "dj":
       djAction(message);
