@@ -435,21 +435,10 @@ client.on('messageUpdate', (oldmessage, newmessage) => {
 });
 
 function findVC(message) {
-  let channels = [];
-  message.guild.channels.forEach(channel => {
-    if (channel.type == "voice") {
-      if (channel.name.toLowerCase().includes("music")) {
-        return channel.id;
-      }
-      else {
-        channels.push(channel.id)
-      }
-    }
-  });
-  if (channels.length > 0) {
-    return channels[0]
-  }
+  const channels = message.guild.channels.cache.filter(c => c.type == "voice");
+  return message.guild.channels.cache.get(channels.first().id);
 }
+
 // Most of the below function is taken from https://github.com/DevAndromeda/youtube-together-bot
 // Credit goes to DevAndromeda. The source repo had no LICENSE. 
 function openYouTubeTogether(message, args) {
