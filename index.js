@@ -437,7 +437,7 @@ client.on('messageUpdate', (oldmessage, newmessage) => {
 // Most of the below function is taken from https://github.com/DevAndromeda/youtube-together-bot
 // Credit goes to DevAndromeda. The source repo had no LICENSE. 
 function openYouTubeTogether(message, args) {
-  const channel = message.guild.channels.cache.get(args[0]);
+  const channel = message.mentions.channels.first() || message.guild.channels.cache.get(args[0]);
   if (!channel || channel.type !== "voice") return message.channel.send("Invalid channel specified! Please specify an existing Voice Chat.");
   if (!channel.permissionsFor(message.guild.me).has("CREATE_INSTANT_INVITE")) return message.channel.send("I **don't have the Create Instant Invite permission** which I need for this 😦");
   fetch(`https://discord.com/api/v8/channels/${channel.id}/invites`, {
@@ -458,7 +458,7 @@ function openYouTubeTogether(message, args) {
     .then(res => res.json())
     .then(invite => {
       if (invite.error || !invite.code) return message.channel.send("Could not start **YouTube Together** for an unknown reason.");
-      message.channel.send(`Click here to start **YouTube Together** in ${channel.name}: <https://discord.gg/${invite.code}>`);
+      message.channel.send(`Click the link to start **YouTube Together** in **${channel.name}**: <https://discord.gg/${invite.code}>`);
     })
     .catch(e => {
       message.channel.send("Could not start **YouTube Together**. Sorry!");
