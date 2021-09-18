@@ -208,7 +208,7 @@ client.on("message", message => {
       message.react("<:BRUH:815919351970529290>");
     }
   }
-  if (janmode == true) {
+  if (janmode == true && message.guild.id == "780901822734532659") {
     if (msgcontent.includes("jan ") || msgcontent.includes(" jan ") || msgcontent == "jan") {
       message.react("🐸");
     }
@@ -395,6 +395,9 @@ client.on("message", message => {
         }
         break;
       }
+    case "ytparty":
+      openYouTubeTogether(message, args);
+      break;
     default:
       message.channel.send(
         "`" +
@@ -430,6 +433,39 @@ client.on('messageUpdate', (oldmessage, newmessage) => {
     }
   }
 });
+
+// Most of the below function is taken from https://github.com/DevAndromeda/youtube-together-bot
+// Credit goes to DevAndromeda. The source repo had no LICENSE. 
+function openYouTubeTogether(message, args) {
+  const channel = message.guild.channels.cache.get(args[0]);
+  if (!channel || channel.type !== "voice") return message.channel.send("Invalid channel specified! Please specify an existing Voice Chat.");
+  if (!channel.permissionsFor(message.guild.me).has("CREATE_INSTANT_INVITE")) return message.channel.send("I **don't have the Create Instant Invite permission** which I need for this 😦");
+  fetch(`https://discord.com/api/v8/channels/${channel.id}/invites`, {
+    method: "POST",
+    body: JSON.stringify({
+      max_age: 86400,
+      max_uses: 0,
+      target_application_id: "755600276941176913", // youtube together
+      target_type: 2,
+      temporary: false,
+      validate: null
+    }),
+    headers: {
+      "Authorization": `Bot ${client.token}`,
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => res.json())
+    .then(invite => {
+      if (invite.error || !invite.code) return message.channel.send("Could not start **YouTube Together** for an unknown reason.");
+      message.channel.send(`Click here to start **YouTube Together** in ${channel.name}: <https://discord.gg/${invite.code}>`);
+    })
+    .catch(e => {
+      message.channel.send("Could not start **YouTube Together**. Sorry!");
+      debug("[YTOGETHER] [ERR]" + e)
+    })
+}
+// End of borrowed code.
 
 function doCounting(message) {
   if (cachedCount == -1) {
@@ -661,7 +697,8 @@ function sendWIP(message) {
     .setDescription("This is a list of all the work-in-progress commands which are not on the help message. You can try them out if you'd like!")
     .addFields(
       { name: "Commands I'm working on:", value: "===" },
-      { name: "`" + prefix + "loopqueue`", value: "Loops the entire queue." }
+      { name: "`" + prefix + "loopqueue`", value: "Loops the entire queue." },
+      { name: "`" + prefix + "ytparty`", value: "Opens YouTube Together in the Voice Channel you specify." }
     );
 
   message.channel.send(embed);
