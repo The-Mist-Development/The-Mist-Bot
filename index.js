@@ -434,10 +434,20 @@ client.on('messageUpdate', (oldmessage, newmessage) => {
   }
 });
 
+function findVC(message) {
+  const channels = message.guild.channels.filter(c => c.type == "voice");
+  for (let channel of channels) {
+    if (channel.name.toLowerCase.includes("music")) return channel.id;
+  }
+  return channels[0].id;
+}
 // Most of the below function is taken from https://github.com/DevAndromeda/youtube-together-bot
 // Credit goes to DevAndromeda. The source repo had no LICENSE. 
 function openYouTubeTogether(message, args) {
-  const channel = message.mentions.channels.first() || message.guild.channels.cache.get(args[0]);
+  let channel;
+  if (args[0]) { channel = message.guild.channels.cache.get(args[0]); }
+  else { channel = findVC(message); }
+
   if (!channel || channel.type !== "voice") return message.channel.send("Invalid channel specified! Please specify an existing Voice Chat.");
   if (!channel.permissionsFor(message.guild.me).has("CREATE_INSTANT_INVITE")) return message.channel.send("I **don't have the Create Instant Invite permission** which I need for this 😦");
   fetch(`https://discord.com/api/v8/channels/${channel.id}/invites`, {
