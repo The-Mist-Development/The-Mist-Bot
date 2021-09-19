@@ -435,6 +435,8 @@ client.on('messageUpdate', (oldmessage, newmessage) => {
 });
 
 function findVC(message) {
+  let connectedVC = message.guild.members.cache.get(message.member.id).voice.channel;
+  if (connectedVC) return connectedVC;
   const channels = message.guild.channels.cache.filter(c => c.type == "voice");
   return message.guild.channels.cache.get(channels.first().id);
 }
