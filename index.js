@@ -26,11 +26,28 @@ loopingBool = false;
 let cachedCount = -1;
 
 
+
 // overall debug function
 function debug(message) {
   console.log(message)
   client.channels.cache.get("850844368679862282").send(message);
 }
+
+// not crash on unhandled promise rejection, but restart "gracefully"
+process.on('unhandledRejection', (reason, promise) => {
+  debug("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
+  debug("Restarting in 20 seconds. Run `" + prefix + "cancel` to cancel.");
+  killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 20000)
+});
+
+process.on('uncaughtException', (reason) => {
+  console.error('Uncaught Error! \n ' + reason.stack || reason);
+  debug("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
+  if (reason.stack?.startsWith("error: terminating connection due to administrator command") || reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
+    debug("Looks like a database disconnect! Restarting in 10 seconds. Run `" + prefix + "cancel` to cancel.");
+    killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
+  }
+});
 
 
 let killTimeout = null;
