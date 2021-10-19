@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 // init site
 const express = require('express');
 const bodyParser = require("body-parser");
@@ -7,12 +9,10 @@ const app = express();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
-const token = process.env.TOKEN || require("./local_env.json").TOKEN;
-const prefix = ",";
-
-
 const fetch = require('node-fetch');
 
+const token = process.env.TOKEN 
+const prefix = ";";
 
 const lmaomode = true;
 const janmode = true;
@@ -21,12 +21,12 @@ rickrolld = false;
 djmode = false;
 djuser = "";
 loopingBool = false;
-let cachedCount = -1;
+dbConnected = false
 
 
 // overall debug function
 function debug(message) {
-  console.log(message)
+  console.log(message);
   client.channels.cache.get("850844368679862282").send(message);
 }
 
@@ -47,13 +47,14 @@ dbClient.connect(err => {
     console.error('Connection error while connecting to database: ' + err.stack)
   } else {
     console.log('Connected to Database');
-    dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, res) => {
-      let row = (JSON.stringify(res.rows[0]));
-      let countString = row.toString().slice(24);
-      cachedCount = parseInt(countString);
-    });
+    dbConnected = true 
   }
 });
+
+async function checkCountingChannels(channelid) {
+  const res = await dbClient.query("SELECT channelid FROM counting");
+  return res.rows.map(x => x["channelid"]).includes(channelid);
+}
 
 // discord bot login
 client.login(token).catch(console.error);
@@ -63,6 +64,7 @@ client.on("ready", () => {
   debug("[BOT] **Bot Started!**");
   clearPlayground.start();
 });
+
 
 // cron job for clearing dark playground every week
 const CronJob = require('cron').CronJob;
@@ -76,6 +78,7 @@ const clearPlayground = new CronJob('0 35 19 * * 0', async function () {
   }
   while (fetched.size >= 2);
 }, null, true, 'Europe/London');
+
 
 // init music player
 // const { Player } = require('./Player/index.js');
@@ -170,6 +173,7 @@ client.player.on('songAdd', (message, queue, song) => {
     message.channel.send(`Playlist **${playlist.name}** with ${playlist.videoCount} videos was added to the queue!`)
   });
 
+
 // Handle Messages
 client.on("message", message => {
   if (message.author.bot) return;
@@ -181,7 +185,7 @@ client.on("message", message => {
   }
 
   // counting
-  if (message.channel.id == "864513696596492378") {
+  if (checkCountingChannels(message.channel.id)) {
     doCounting(message);
   }
 
@@ -398,6 +402,32 @@ client.on("message", message => {
     case "ytparty":
       openYouTubeTogether(message, args);
       break;
+    case "enablecounting":
+      if (!message.member.permissions.has("MANAGE_CHANNELS")) {
+        message.channel.send("You don't have permission to do that. Ask someone with MANAGE_CHANNELS permissions to set counting up for you!");
+        break;
+      }
+      if (checkCountingChannels(message.channel.id)) {
+        message.channel.send("Counting is already set up in this channel!");
+        break;
+      } else {
+        dbClient.query(`INSERT INTO counting (channelid, maxcount, count) VALUES (${message.channel.id},0,0)`);
+        message.channel.send("Counting is now enabled! The next number is `1`.")
+        break;
+      }
+    case "disablecounting":
+      if (!message.member.permissions.has("MANAGE_CHANNELS")) {
+        message.channel.send("You don't have permission to do that. Ask someone with MANAGE_CHANNELS permissions to disable counting for you!");
+        break;
+      }
+      if (checkCountingChannels(message.channel.id)) {
+        dbClient.query(`DELETE FROM counting WHERE channelid = '${message.channel.id}'`);
+        message.channel.send("Counting is now disabled!")
+
+      } else {
+        message.channel.send("Counting isn't enabled in this channel!");
+      }
+      break;
     default:
       message.channel.send(
         "`" +
@@ -411,26 +441,16 @@ client.on("message", message => {
 });
 
 client.on('messageDelete', message => {
-  if (message.channel.id != "864513696596492378") return;
+  if (!checkCountingChannels(message.channel.id)) return;
   if (+message.content === +message.content) {
-    if (cachedCount == -1) {
-      message.channel.send("⚠ A message by " + message.author.username + " was deleted! 🤔 I'm not sure what the count is now... **try checking further up in the channel**.")
-    }
-    else {
-      message.channel.send("⚠ A message by " + message.author.username + " was deleted! **The last number sent was " + cachedCount + "**.");
-    }
+    message.channel.send("⚠ A message by " + message.author.username + " was deleted! 🤔 I'm not sure what the count is now... **try checking further up in the channel**.")
   }
 });
 
 client.on('messageUpdate', (oldmessage, newmessage) => {
-  if (oldmessage.channel.id != "864513696596492378") return;
+  if (!checkCountingChannels(message.channel.id)) return;
   if (+oldmessage.content === +oldmessage.content) {
-    if (cachedCount == -1) {
-      oldmessage.channel.send("⚠ " + oldmessage.author.username + ", we all saw you edit that message! 🤔 I'm not sure what the count is now... **try checking further up in the channel**.")
-    }
-    else {
-      oldmessage.channel.send("⚠ " + oldmessage.author.username + ", we all saw you edit that message! **The last number sent was " + cachedCount + "**.");
-    }
+    oldmessage.channel.send("⚠ " + oldmessage.author.username + ", we all saw you edit that message! 🤔 I'm not sure what the count is now... **try checking further up in the channel**.")
   }
 });
 
@@ -478,21 +498,21 @@ function openYouTubeTogether(message, args) {
 // End of borrowed code.
 
 function doCounting(message) {
-  if (cachedCount == -1) {
+  if (!dbConnected) {
     message.channel.send("I haven't been able to connect to the database yet! Hold your horses.");
     message.react("❎");
     return;
   }
 
   if (+message.content === +message.content) {
-    dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, res) => {
+    dbClient.query(`SELECT * FROM counting WHERE channelid='${message.channel.id}';`, (err, res) => {
       if (err) {
-        message.channel.send("Error connecting to the database. The count is still " + cachedCount + ". Contact R2D2Vader#0693 if the issue persists.");
+        message.channel.send("Error connecting to the database. The count has not changed" + ". Contact R2D2Vader#0693 if the issue persists.");
         message.react("❎");
         debug("[DB] **ERR** |" + err.stack || err);
       }
       else {
-        let row = (JSON.stringify(res.rows[0]));
+        let row = res.rows[0]
         continueCounting(message, row);
       }
     });
@@ -503,32 +523,20 @@ function doCounting(message) {
 }
 
 function continueCounting(message, row) {
-  let countString = row.toString().slice(24);
-  let counte = parseInt(countString);
+  let count = row["count"]
   let userInput = parseInt(message.content, 10);
-  if (userInput === counte + 1) {
+  if (userInput === count + 1) {
     message.react("<a:mistbot_confirmed:870070841268928552>");
-    dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='count'");
-    cachedCount = counte + 1;
-  }
-  else {
-    dbClient.query("UPDATE exclusive SET value = 0 WHERE key='count'");
-    message.channel.send("**" + message.member.displayName + "** ruined the count at `" + counte + "`! `The count reset.`");
+    dbClient.query(`UPDATE counting SET count = ${count+1} WHERE channelid='${message.channel.id}'`);
+  } else {
+    dbClient.query(`UPDATE counting SET count = 0 WHERE channelid='${message.channel.id}'`);
+    message.channel.send("**" + message.member.displayName + "** ruined the count at `" + count + "`! `The count reset.`");
     message.react("❌");
     message.channel.send("Next number is `1`.");
-    // quick fix to make the maxcount work
-    counte = counte - 1;
-    cachedCount = 0;
   }
-
-  dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, res) => {
-    let maxString = JSON.stringify(res.rows[0]).toString().slice(27);
-    let oldMax = parseInt(maxString);
-
-    if (counte + 1 > oldMax) {
-      dbClient.query("UPDATE exclusive SET value = " + (counte + 1).toString() + "WHERE key='maxcount'");
-    }
-  });
+  if (row["count"] > row["maxcount"]) {
+  dbClient.query(`UPDATE counting SET maxcount = ${count} WHERE channelid = '${message.channel.id}`)
+  }
 }
 
 // experimental restart function
@@ -1053,14 +1061,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get("/count", (req, res) => {
-  let currentCount = 0;
-  let recordCount = 0;
-  dbClient.query("SELECT * FROM exclusive WHERE key='count';", (err, dbres) => {
-    currentCount = parseInt(JSON.stringify(dbres.rows[0]).toString().slice(24));
-    dbClient.query("SELECT * FROM exclusive WHERE key='maxcount';", (err, dbres2) => {
-      recordCount = parseInt(JSON.stringify(dbres2.rows[0]).toString().slice(27));
-      res.send({ "currentCount": currentCount, "recordCount": recordCount });
-    });
+  dbClient.query("SELECT maxcount FROM counting;", (err, dbres) => {
+    maxcounts = dbres.rows.map(x => x["maxcount"]);
+    res.send({"recordCount": Math.max(...maxcounts) });
   });
 });
 
@@ -1099,7 +1102,6 @@ app.post("/send", (req, res) => {
   channel.send(msgContent)
 })
 
-const GlobalObject = {} // for storage
 app.post("/eval", (req, res) => {
   const { token, code } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
