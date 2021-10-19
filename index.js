@@ -32,6 +32,7 @@ function debug(message) {
   client.channels.cache.get("850844368679862282").send(message);
 }
 
+
 let killTimeout = null;
 
 // heroku db
@@ -66,6 +67,7 @@ client.on("ready", () => {
   clearPlayground.start();
 });
 
+
 // cron job for clearing dark playground every week
 const CronJob = require('cron').CronJob;
 
@@ -78,6 +80,7 @@ const clearPlayground = new CronJob('0 35 19 * * 0', async function () {
   }
   while (fetched.size >= 2);
 }, null, true, 'Europe/London');
+
 
 // init music player
 // const { Player } = require('./Player/index.js');
@@ -156,6 +159,7 @@ client.player
     }
   });
 
+
 client.player.on('songAdd', (message, queue, song) => {
   if (client.player.isPlaying(message)) {
     message.channel.send(`** ${song.name} ** was added to the queue!`)
@@ -171,6 +175,8 @@ client.player.on('songAdd', (message, queue, song) => {
   .on('playlistAdd', (message, queue, playlist) => {
     message.channel.send(`Playlist **${playlist.name}** with ${playlist.videoCount} videos was added to the queue!`)
   });
+
+
 
 // Handle Messages
 client.on("message", message => {
@@ -412,6 +418,7 @@ client.on("message", message => {
   }
 });
 
+
 client.on('messageDelete', message => {
   if (message.channel.id != "864513696596492378") return;
   if (+message.content === +message.content) {
@@ -435,6 +442,7 @@ client.on('messageUpdate', (oldmessage, newmessage) => {
     }
   }
 });
+
 
 function findVC(message) {
   let connectedVC = message.guild.members.cache.get(message.member.id).voice.channel;
@@ -478,6 +486,8 @@ function openYouTubeTogether(message, args) {
     })
 }
 // End of borrowed code.
+
+
 
 function doCounting(message) {
   if (cachedCount == -1) {
@@ -533,6 +543,7 @@ function continueCounting(message, row) {
   });
 }
 
+
 // experimental restart function
 function tryRestart(message) {
   if (message.member.id == "517742819830399000") {
@@ -555,6 +566,7 @@ function tryForcedRestart(message) {
     }
   }
 }
+
 
 // the ,play command for playlists
 async function playNotSong(message, args) {
@@ -584,7 +596,6 @@ async function playNotSong(message, args) {
     loading.delete();
   }
 }
-
 
 // the ,play command
 async function playSong(message, args) {
@@ -751,6 +762,7 @@ async function nowPlaying(message) {
   }
 }
 
+
 // Complex ,DJ control command
 async function djAction(message) {
   if (message.guild.id !== "780901822734532659") return;
@@ -885,6 +897,7 @@ async function djAction(message) {
   }
 }
 
+
 // lyrics command, powered by api.ksoft.si
 async function sendLyrics(message) {
   const args = message.content.trim().split(" ");
@@ -1015,6 +1028,7 @@ async function sendLyrics(message) {
   }
 }
 
+
 // Patch update - disabled for now in switch
 function sendUpdate(message) {
   const embed = new Discord.MessageEmbed()
@@ -1032,6 +1046,7 @@ function sendUpdate(message) {
   message.channel.send(embed);
 }
 
+
 async function artValidate(message) {
   // console.log("Validating art message...");
   if (message.attachments.size == 0) {
@@ -1041,6 +1056,9 @@ async function artValidate(message) {
     message.author.send("Hi " + message.member.displayName + "! Please make sure to **only post art** in the <#838834082183381092> channel. Thanks!");
   }
 }
+
+
+
 // WEBSERVER CODE
 
 //logging requests - keep on top
@@ -1070,22 +1088,6 @@ const listener = app.listen(process.env.PORT, () => {
   console.log("Listening on port " + listener.address().port);
 });
 
-// not crash on unhandled promise rejection, but restart "gracefully"
-process.on('unhandledRejection', (reason, promise) => {
-  debug("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
-  debug("Restarting in 20 seconds. Run `" + prefix + "cancel` to cancel.");
-  killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 20000)
-});
-
-process.on('uncaughtException', (reason) => {
-  console.error('Uncaught Error! \n ' + reason.stack || reason);
-  debug("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
-  if (reason.stack?.startsWith("error: terminating connection due to administrator command") || reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
-    debug("Looks like a database disconnect! Restarting in 10 seconds. Run `" + prefix + "cancel` to cancel.");
-    killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
-  }
-});
-
 //ADMIN WEB CONSOLE CODE
 
 const { readFileSync } = require('fs');
@@ -1105,7 +1107,6 @@ app.post("/send", (req, res) => {
   channel.send(msgContent)
 })
 
-const GlobalObject = {} // for storage
 app.post("/eval", (req, res) => {
   const { token, code } = req.body;
   if (token != process.env.ADMIN_TOKEN) {
