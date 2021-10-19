@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 // init site
 const express = require('express');
 const bodyParser = require("body-parser");
