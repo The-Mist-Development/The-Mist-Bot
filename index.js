@@ -59,7 +59,7 @@ dbClient.connect(err => {
 client.login(token).catch(console.error);
 
 client.on("ready", () => {
-  client.user.setActivity(",help | WORKING AGAIN???", { type: "LISTENING" });
+  client.user.setActivity(`${prefix}help | WORKING AGAIN???`, { type: "LISTENING" });
   debug("[BOT] **Bot Started!**");
   clearPlayground.start();
 });
@@ -1078,6 +1078,10 @@ process.on('unhandledRejection', (reason, promise) => {
 process.on('uncaughtException', (reason) => {
   console.error('Uncaught Error! \n ' + reason.stack || reason);
   debug("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
+  if (reason.stack?.startsWith("error: terminating connection due to administrator command") || reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
+    debug("Looks like a database disconnect! Restarting in 10 seconds. Run `" + prefix + "cancel` to cancel.");
+    killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
+  }
 });
 
 //ADMIN WEB CONSOLE CODE
