@@ -1,8 +1,9 @@
 // Debug Functiom
-import { debug } from "./botmain";
+const { log } = require("./botmain");
 
 // Constants
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+
 
