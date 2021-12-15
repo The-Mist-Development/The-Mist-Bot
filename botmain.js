@@ -1,12 +1,17 @@
-const { Client, Intents, MessageEmbed} = require("discord.js");
+const { Client, Intents, MessageEmbed } = require("discord.js");
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES], partials: ["CHANNEL"]});
 
 const token = process.env.TOKEN;
-const prefix = ","
+const prefix = ",";
+
+// Import other files
+const { respond } = require("./bot/commands.js");
+const { react } = require("./bot/reactions.js");
+const { artValidate } = require("./bot/exclusive.js");
 
 let ready = false;
 
-client.login(token).catch(this.debug);
+client.login(token).catch(log);
 
 client.on("ready", () => {
   ready = true;
@@ -15,9 +20,31 @@ client.on("ready", () => {
   clearPlayground.start();
 });
 
+client.on("messageCreate", async function (message) {
+  if (message.author.bot) return;
+  if (!message.content) return;
+
+  // art channel validation
+  if (message.channel.id == "838834082183381092") {
+    let result = (await artValidate(message)).valueOf();
+    if (result != "valid") {
+      log(result);
+    }
+  }
+  
+
+  // command handling
+  if (message.content.startsWith(prefix)) {
+    respond(message);
+  }
+
+  // reactions
+  react(message);
+});
+
 // Global logging function used for important things in every file
 function log(message) {
-  console.log(message);
+  console.log(message.replaceAll("**", "").replaceAll("```", ""));
   if (ready == true) {
     client.channels.cache.get("850844368679862282").send(message);
   }
