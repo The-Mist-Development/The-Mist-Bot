@@ -2,7 +2,7 @@ const { Client, Intents, MessageEmbed } = require("discord.js");
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES], partials: ["CHANNEL"]});
 
 const token = process.env.TOKEN;
-const prefix = ",";
+const prefix = process.env.PREFIX;
 
 // Import other files
 const { respond } = require("./bot/commands.js");
@@ -31,7 +31,6 @@ client.on("messageCreate", async function (message) {
       log(result);
     }
   }
-  
 
   // command handling
   if (message.content.startsWith(prefix)) {
@@ -39,10 +38,12 @@ client.on("messageCreate", async function (message) {
   }
 
   // reactions
-  react(message);
+  if (message.guild) {
+    react(message);
+  }
 });
 
-// Global logging function used for important things in every file
+// Global logging function used for important things in many places
 function log(message) {
   console.log(message.replaceAll("**", "").replaceAll("```", ""));
   if (ready == true) {
