@@ -7,6 +7,20 @@ function log(message) {
     client.channels.cache.get("850844368679862282").send(message);
 }
 
+function runtimeErrorHandle(error, message) {
+    log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\``);
+    if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); }
+
+    if (error.message.includes("permission") || error.message.includes("Permission")) {
+        message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
+    }
+    else if (error.message.includes("Status code:")) {
+        message.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
+        log("[PLAYER] Killing process to try and fix error status code. This restart is **uncancellable!**");
+        setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000);
+    }
+}
+
 module.exports = {
     setup: function (variable) {
         client = variable;
@@ -52,13 +66,13 @@ module.exports = {
                 console.log(`I got undefeanded.`))
             // Emitted when there was an error in runtime
             .on('error', (error, queue) => {
-                log(`[PLAYER] Error in ${queue.guild.name}: \r\`\`\`\r${error}\r\`\`\``);
+                log(`[PLAYER] Error in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\``);
                 if (queue.data.channel) { queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); }
 
-                if (error.includes("permission") || error.includes("Permission")) {
+                if (error.message.includes("permission") || error.includes("Permission")) {
                     queue.data.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
                 }
-                else if (error.includes("Status code:")) {
+                else if (error.message.includes("Status code:")) {
                     queue.data.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
                     log("[PLAYER] Killing process to try and fix error status code. This restart is **uncancellable!**");
                     setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000);
@@ -126,10 +140,14 @@ async function playSong(message, args) {
         await queue.join(message.member.voice.channel);
 
         if (message.content.toLowerCase().includes("list=")) {
-            let song = await queue.playlist(args.join(' '));
+            let song = await queue.playlist(args.join(' ')).catch(err => {
+                runtimeErrorHandle(err, message)
+            });
         }
         else {
-            let song = await queue.play(args.join(' '));
+            let song = await queue.play(args.join(' ')).catch(err => {
+                runtimeErrorHandle(err, message)
+            });
         }
 
     } else {
