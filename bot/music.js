@@ -111,7 +111,7 @@ module.exports = {
                     case "remove":
                         if (args.length == 0) break;
                         let index = parseInt(args[0]);
-                        if (guildQueue.songs.length > index && index < 0) {
+                        if (index < guildQueue.songs.length && index > 0) {
                             let name = guildQueue.songs[index].name;
                             guildQueue.remove(index);
                             message.channel.send(`📤 Removed **${name}** from the queue.`);
