@@ -3,40 +3,44 @@ const { Player } = require("discord-music-player");
 let client;
 
 module.exports = {
-    setup: function(variable) {
+    setup: function (variable) {
         client = variable;
         const newPlayer = new Player(client, {
             leaveOnEnd: true,
             leaveOnStop: true,
             leaveOnEmpty: true,
-            timeout: 30000 
+            timeout: 30000
         });
         client.player = newPlayer;
         console.log("[BOT] **Music Module Loaded**");
     },
-    music: function(message, command, args) {
+    music: function (message, command, args) {
+        if (command == "play") {
+            return playSong(message, args);
+        }
         let guildQueue = client.player.getQueue(message.guild.id);
         if (!guildQueue) {
-            if (command == "play") {
-                playSong(message, args);
-            }
-            else return message.channel.send("Nothing's playing in this server 😢");
+            return message.channel.send("**Nothing's playing in this server** 😢");
         }
         else {
-            if (message.member.voice.channel){
+            if (message.member.voice.channel) {
                 switch (command) {
-                    case "play":
-                        // add to queue
-                        break;
                     case "pause":
+                        guildQueue.setPaused(true);
                         break;
                     case "resume":
+                        guildQueue.setPaused(false);
                         break;
                     case "skip":
+                        guildQueue.skip();
                         break;
                     case "stop":
+                        guildQueue.stop();
                         break;
                     default:
+                        message.channel.send("😅⁉ w-w-what's happening?");
+                        message.channel.send(`${message.member.displayName} has made the advancement \`Congratulations, You Broke It\``);
+                        message.author.send("Achievement Get: `Congratulations, You Broke It`");
                         break;
                 }
             }
@@ -46,19 +50,30 @@ module.exports = {
 
 async function playSong(message, args) {
     if (args.length == 0) return;
-      if (message.member.voice.channel) {
-        if (message.content.toLowerCase().includes("list=")) {
-          // play playlist
+
+    let guildQueue = client.player.getQueue(message.guild.id);
+
+    if (message.member.voice.channel) {
+
+        let queue;
+        if (guildQueue) {
+            queue = guildQueue;
         }
         else {
-            let queue = client.player.createQueue(message.guild.id);
-            await queue.join(message.member.voice.channel);
-            let song = await queue.play(args.join(' '));
-            message.channel.send(`🎵 Playing Now: **${song.name}** 🎶`)
+            queue = client.player.createQueue(message.guild.id);
         }
-      } else {
+        await queue.join(message.member.voice.channel);
+
+        if (message.content.toLowerCase().includes("list=")) {
+            let song = await queue.playlist(args.join(' '));
+        }
+        else {
+            let song = await queue.play(args.join(' '));
+        }
+
+    } else {
         message.channel.send(
-          "🔊 **Join a Voice Channel** to play music!"
+            "🔊 **Join a Voice Channel** to play music!"
         );
-      }
+    }
 }

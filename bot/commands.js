@@ -8,63 +8,63 @@ let client;
 let staffArray = process.env.STAFF_IDS.split('&');
 
 module.exports = {
-    setClient: function(variable) {
-        client = variable;
-    },
-    respond: function (message) {
-        let args = message.content
-            .slice(prefix.length)
-            .trim()
-            .split(/ +/);
-        let command = args.shift().toLowerCase();
+  setClient: function (variable) {
+    client = variable;
+  },
+  respond: function (message) {
+    let args = message.content
+      .slice(prefix.length)
+      .trim()
+      .split(/ +/);
+    let command = args.shift().toLowerCase();
 
-        switch (command) {
-            case "help":
-                helpMsg(message);
-                break;
-            case "ahelp":
-                adminHelpMsg(message);
-                break;
-            case "restart":
-                tryRestart(message);
-                break;
-            case "cancel":
-                if (killTimeout != null) { 
-                  if (message.member.id == process.env.OWNER_ID || staffArray.includes(message.member.id)) {
-                    clearTimeout(killTimeout);
-                    message.react("👍");
-                    killTimeout = null;
-                    log("[BOT] Restart cancelled by <@" + message.member.id + ">.");
-                  }
-                }
-                break;
-            case "play":
-            case "pause":
-            case "resume":
-            case "skip":
-            case "stop":
-                music(message, command, args);
-                break;
-            default:
-                message.channel.send(
-                  `\`${command}\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**`
-                );
-                break;
+    switch (command) {
+      case "help":
+        helpMsg(message);
+        break;
+      case "ahelp":
+        adminHelpMsg(message);
+        break;
+      case "restart":
+        tryRestart(message);
+        break;
+      case "cancel":
+        if (killTimeout != null) {
+          if (message.member.id == process.env.OWNER_ID || staffArray.includes(message.member.id)) {
+            clearTimeout(killTimeout);
+            message.react("👍");
+            killTimeout = null;
+            log("[BOT] Restart cancelled by <@" + message.member.id + ">.");
+          }
         }
-        return;
+        break;
+      case "play":
+      case "pause":
+      case "resume":
+      case "skip":
+      case "stop":
+        music(message, command, args);
+        break;
+      default:
+        message.channel.send(
+          `\`${command}\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**`
+        );
+        break;
     }
+    return;
+  }
 }
 
 // This file's log message
 function log(message) {
   console.log(message.replaceAll("*", "").replaceAll("`", ""));
-    client.channels.cache.get("850844368679862282").send(message);
+  client.channels.cache.get("850844368679862282").send(message);
 }
 
 // Help and Admin commands
 
 function helpMsg(message) {
-    const embed = new Discord.MessageEmbed()
+  const embed = new Discord.MessageEmbed()
     .setTitle("Commands")
     .setDescription(
       "[Go to our website](https://themistbot.herokuapp.com/) to add the bot to your server."
@@ -80,18 +80,18 @@ function helpMsg(message) {
       },
     );
 
-    message.channel.send({embeds: [embed]});
+  message.channel.send({ embeds: [embed] });
 }
 
 function adminHelpMsg(message) {
-    const embed = new Discord.MessageEmbed()
+  const embed = new Discord.MessageEmbed()
     .setTitle("Admin Commands")
     .setColor("#b9ceeb")
     .setFooter("The Mist Bot - made by R2D2Vader")
     .addFields(
-        { name: `My global prefix is \`${prefix}\``, value: "===" },
-        { name: "Admin Page", value: "Click [here](https://themistbot.herokuapp.com/admin.html) to visit the Admin page and send messages or changelogs." },
-        {
+      { name: `My global prefix is \`${prefix}\``, value: "===" },
+      { name: "Admin Page", value: "Click [here](https://themistbot.herokuapp.com/admin.html) to visit the Admin page and send messages or changelogs." },
+      {
         name: "`" + prefix + "restart`",
         value: "Restarts the bot. Do this mainly to solve weird, bot-breaking issues."
       },
@@ -101,20 +101,20 @@ function adminHelpMsg(message) {
       },
     );
 
-    if (message.member.id == process.env.OWNER_ID) {
-        embed.setDescription(
-            `Hello, Bot Owner **${message.author.username}**!`
-          )
-        message.author.send({embeds: [embed]});
-        message.react("💌");
-    }
-    else if (staffArray.includes(message.member.id)) {
-            embed.setDescription(
-                `Hello, Bot Admin **${message.author.username}**!`
-              )
-            message.author.send({embeds: [embed]});
-            message.react("📩");
-        }  
+  if (message.member.id == process.env.OWNER_ID) {
+    embed.setDescription(
+      `Hello, Bot Owner **${message.author.username}**!`
+    )
+    message.author.send({ embeds: [embed] });
+    message.react("💌");
+  }
+  else if (staffArray.includes(message.member.id)) {
+    embed.setDescription(
+      `Hello, Bot Admin **${message.author.username}**!`
+    )
+    message.author.send({ embeds: [embed] });
+    message.react("📩");
+  }
 }
 
 function tryRestart(message) {
