@@ -177,7 +177,7 @@ async function playSong(message, args) {
             });
         }
 
-        loading.delete();
+        if (loading != null) loading.delete();
 
     } else {
         message.channel.send(
