@@ -47,7 +47,7 @@ client.on("messageCreate", async function (message) {
 
 // Global logging function used for important things in many places
 function log(message) {
-  console.log(message.replaceAll("**", "").replaceAll("```", ""));
+  console.log(message.replaceAll("*", "").replaceAll("`", ""));
   if (ready == true) {
     client.channels.cache.get("850844368679862282").send(message);
   }
