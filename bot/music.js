@@ -1,18 +1,24 @@
 const Discord = require("discord.js");
 const { Player } = require("discord-music-player");
 let client;
+let rickrollchance = 1;
 
 function log(message) {
-    console.log(message.replaceAll("*", "").replaceAll("`", ""));
+    console.log(message.replaceAll("*", "").replaceAll("```", ""));
     client.channels.cache.get("850844368679862282").send(message);
 }
 
 function runtimeErrorHandle(error, message) {
     log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\``);
-    if (message.channel) { message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); }
+    if (message.channel) {
 
-    if (error.message.includes("permission") || error.message.includes("Permission")) {
-        message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
+        if (error.message.includes("no YouTube song found")) return message.channel.send("🔎 **No YouTube video found** for that query!");
+
+        message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693");
+
+        if (error.message.includes("permission") || error.message.includes("Permission")) {
+            message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
+        }
     }
     else if (error.message.includes("Status code:")) {
         message.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
@@ -166,6 +172,7 @@ async function playSong(message, args) {
 
     if (message.member.voice.channel) {
         let loading = null;
+        let rickrolled = false;
 
         let queue;
         if (guildQueue) {
@@ -183,6 +190,14 @@ async function playSong(message, args) {
                 loading.delete()
                     .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
             }, 10000);
+
+            if (args[args.length - 1] == "-r") {
+                args = ["never", "gonna", "give", "you", "up", "rick", "astley"];
+            }
+            else if (Math.floor(Math.random() * 100) <= rickrollchance) {
+                args = ["never", "gonna", "give", "you", "up", "rick", "astley"];
+                rickrolled = true;
+            }
         }
         await queue.join(message.member.voice.channel);
 
@@ -200,6 +215,7 @@ async function playSong(message, args) {
         }
 
         if (loading != null) loading.delete();
+        if (rickrolled == true) setTimeout(function () { message.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>"); }, 2000);
 
     } else {
         message.channel.send(
@@ -251,5 +267,5 @@ function sendNowPlaying(message, queue) {
             }
         );
 
-    message.channel.send({embeds: [embed]});
+    message.channel.send({ embeds: [embed] });
 }
