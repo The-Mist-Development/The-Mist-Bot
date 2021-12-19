@@ -46,6 +46,8 @@ module.exports = {
       case "queue":
       case "remove":
       case "np":
+      case "loop":
+      case "loopqueue":
         music(message, command, args);
         break;
       default:

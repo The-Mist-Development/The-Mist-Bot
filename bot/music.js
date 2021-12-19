@@ -51,7 +51,7 @@ module.exports = {
                 queue.data.channel.send(`🎤 The queue has **ended**. Add some more songs!`))
             // Emitted when a song changed.
             .on('songChanged', (queue, newSong, oldSong) => {
-                if (oldSong.url == newSong.url) queue.data.channel.send(`🎵 Playing Again: **${newSong.name}** 🔂`);
+                if (oldSong.url == newSong.url) queue.data.channel.send(`🔂 Playing Again: **${newSong.name}** 🎶`);
                 else queue.data.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`);
             })
             // Emitted when a first song in the queue started playing.
@@ -123,6 +123,26 @@ module.exports = {
                         break;
                     case "np":
                         sendNowPlaying(message, guildQueue);
+                        break;
+                    case "loop":
+                        if (guildQueue.repeatMode == 0) {
+                            guildQueue.setRepeatMode(1);
+                            message.channel.send("🔂 **Looping the current song**");
+                        }
+                        else {
+                            guildQueue.setRepeatMode(0);
+                            message.channel.send("**Loop Disabled**");
+                        }
+                        break;
+                    case "loopqueue":
+                        if (guildQueue.repeatMode == 0) {
+                            guildQueue.setRepeatMode(2);
+                            message.channel.send("🔁 **Looping the entire queue**");
+                        }
+                        else {
+                            guildQueue.setRepeatMode(0);
+                            message.channel.send("**Loop Disabled**");
+                        }
                         break;
                     default:
                         message.channel.send("😅⁉ w-w-what's happening?");
