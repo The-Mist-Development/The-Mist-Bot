@@ -31,7 +31,6 @@ module.exports = {
             timeout: 30000
         });
         client.player = newPlayer;
-        console.log("[BOT] **Music Module Loaded**");
 
         client.player
             // Emitted when channel was empty.
@@ -40,7 +39,7 @@ module.exports = {
             })
             // Emitted when a song was added to the queue.
             .on('songAdd', (queue, song) =>
-                queue.data.channel.send(`** ${song.name} ** was added to the queue!`))
+                queue.data.channel.send(`**${song.name}** was added to the queue!`))
             // Emitted when a playlist was added to the queue.
             .on('playlistAdd', (queue, playlist) =>
                 queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist}** to the queue.`))
@@ -106,6 +105,25 @@ module.exports = {
                         guildQueue.stop();
                         message.react("⏹");
                         break;
+                    case "queue":
+                        sendQueue(message, guildQueue);
+                        break;
+                    case "remove":
+                        if (args.length == 0) break;
+                        let index = parseInt(args[0]);
+                        if (guildQueue.songs.length > index && index < 0) {
+                            let name = guildQueue.songs[index].name;
+                            guildQueue.remove(index);
+                            message.channel.send(`📤 Removed **${name}** from the queue.`);
+                        }
+                        else {
+                            let explanation = index == 0 ? "You cannot remove the currently playing song" : "There are not that many songs in the queue."
+                            message.channel.send("🚫 **Invalid Index** - " + explanation);
+                        }
+                        break;
+                    case "np":
+                        sendNowPlaying(message, guildQueue);
+                        break;
                     default:
                         message.channel.send("😅⁉ w-w-what's happening?");
                         message.channel.send(`${message.member.displayName} has made the advancement \`Congratulations, You Broke It\``);
@@ -125,6 +143,7 @@ async function playSong(message, args) {
     let guildQueue = client.player.getQueue(message.guild.id);
 
     if (message.member.voice.channel) {
+        let loading = null;
 
         let queue;
         if (guildQueue) {
@@ -136,23 +155,79 @@ async function playSong(message, args) {
                     channel: message.channel,
                 }
             });
+            loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
+            setTimeout(function () {
+                if (loading.deleted) return;
+                loading.delete()
+                    .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
+            }, 10000);
         }
         await queue.join(message.member.voice.channel);
 
         if (message.content.toLowerCase().includes("list=")) {
             let song = await queue.playlist(args.join(' ')).catch(err => {
                 runtimeErrorHandle(err, message)
+                if (loading != null) loading.delete();
             });
         }
         else {
             let song = await queue.play(args.join(' ')).catch(err => {
                 runtimeErrorHandle(err, message)
+                if (loading != null) loading.delete();
             });
         }
+
+        loading.delete();
 
     } else {
         message.channel.send(
             "🔊 **Join a Voice Channel** to play music!"
         );
     }
+}
+
+function sendQueue(message, queue) {
+    const embed = new Discord.MessageEmbed()
+        .setTitle("Queue for " + message.guild.name)
+        .setFooter("The Mist Bot - made by R2D2Vader")
+        .setColor("#066643")
+        .addFields({
+            name: "`Now Playing` **" + queue.songs[0].name + "**",
+            value: "Duration: " + queue.songs[0].duration
+        });
+
+    for (let i = 1; i < queue.songs.length; i++) {
+        embed.addFields({
+            name: "`" + i + "` **" + queue.songs[i].name + "**",
+            value: "Duration: " + queue.songs[i].duration
+        });
+    }
+
+    message.channel.send({ embeds: [embed] });
+}
+
+function sendNowPlaying(message, queue) {
+    let progressBar = queue.createProgressBar({
+        size: 40,
+        block: '-',
+        arrow: '🔴'
+    });
+
+    const embed = new Discord.MessageEmbed()
+        .setTitle("Now Playing: " + queue.songs[0].name)
+        .setURL(queue.songs[0].url)
+        .setFooter("The Mist Bot - made by R2D2Vader")
+        .setThumbnail(queue.songs[0].thumbnail)
+        .addFields(
+            {
+                name: "👤",
+                value: "Channel: " + queue.songs[0].author
+            },
+            {
+                name: "⌚",
+                value: "`" + progressBar + "`"
+            }
+        );
+
+    message.channel.send({embeds: [embed]});
 }
