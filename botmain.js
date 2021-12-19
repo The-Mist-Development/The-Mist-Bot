@@ -1,5 +1,5 @@
 const { Client, Intents, MessageEmbed } = require("discord.js");
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES], partials: ["CHANNEL"]});
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES], partials: ["CHANNEL"]});
 
 const token = process.env.TOKEN;
 const prefix = process.env.PREFIX;
@@ -8,6 +8,7 @@ const prefix = process.env.PREFIX;
 const { respond, setClient } = require("./bot/commands.js");
 const { react } = require("./bot/reactions.js");
 const { artValidate } = require("./bot/exclusive.js");
+const { setup } = require("./bot/music.js");
 
 let ready = false;
 
@@ -18,6 +19,7 @@ client.on("ready", () => {
   client.user.setActivity(`${prefix}help | I am being refactored!`, { type: "LISTENING" });
   log("[BOT] **Bot Started**");
   setClient(client);
+  setup(client);
   clearPlayground.start();
 });
 

@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const { music } = require("./music.js");
 
 const prefix = process.env.PREFIX;
 let killTimeout = null;
@@ -11,11 +12,11 @@ module.exports = {
         client = variable;
     },
     respond: function (message) {
-        const args = message.content
+        let args = message.content
             .slice(prefix.length)
             .trim()
             .split(/ +/);
-        const command = args.shift().toLowerCase();
+        let command = args.shift().toLowerCase();
 
         switch (command) {
             case "help":
@@ -36,6 +37,13 @@ module.exports = {
                     log("[BOT] Restart cancelled by <@" + message.member.id + ">.");
                   }
                 }
+                break;
+            case "play":
+            case "pause":
+            case "resume":
+            case "skip":
+            case "stop":
+                music(message, command, args);
                 break;
             default:
                 message.channel.send(
