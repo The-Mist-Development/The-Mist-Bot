@@ -79,7 +79,7 @@ module.exports = {
             });
     },
     music: function (message, command, args) {
-        if (command == "play") {
+        if (command == "play" || command == "p") {
             return playSong(message, args);
         }
         let guildQueue = client.player.getQueue(message.guild.id);
@@ -106,6 +106,7 @@ module.exports = {
                         message.react("⏹");
                         break;
                     case "queue":
+                    case "q":
                         sendQueue(message, guildQueue);
                         break;
                     case "remove":
@@ -135,6 +136,7 @@ module.exports = {
                         }
                         break;
                     case "loopqueue":
+                    case "loopq":
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(2);
                             message.channel.send("🔁 **Looping the entire queue**");

@@ -39,15 +39,18 @@ module.exports = {
         }
         break;
       case "play":
+      case "p":
       case "pause":
       case "resume":
       case "skip":
       case "stop":
       case "queue":
+      case "q":
       case "remove":
       case "np":
       case "loop":
       case "loopqueue":
+      case "loopq":
         music(message, command, args);
         break;
       default:
@@ -83,6 +86,40 @@ function helpMsg(message) {
         name: "`" + prefix + "ahelp`",
         value: "If you are on the bot team, this will DM you the admin commands!"
       },
+      { name: "🎵 Music Commands", value: "===" },
+      {
+        name: "`" + prefix + "play <Song Name / URL / Playlist URL>`",
+        value: "Play the first result on YouTube for the Song Name, or the YouTube video / playlist at the link you provide."
+      },
+      {
+        name: "`" + prefix + "pause` / `" + prefix + "resume`",
+        value: "Pause or Resume the music."
+      },
+      {
+        name: "`" + prefix + "skip`",
+        value: "Skip the currently playing song."
+      },
+      {
+        name: "`" + prefix + "stop`",
+        value: "Clear the queue and stop the music."
+      },
+      {
+        name: "`" + prefix + "queue`",
+        value: "View the queue."
+      },
+      {
+        name: "`" + prefix + "remove <Song Index>`",
+        value: "Remove the specified song from the queue."
+      },
+      {
+        name: "`" + prefix + "np`",
+        value: "View information about the currently playing song."
+      },
+      {
+        name: "`" + prefix + "loop` / `" + prefix + "loopqueue`",
+        value: "Toggle either looping the current song or looping the whole queue."
+      },
+      
     );
 
   message.channel.send({ embeds: [embed] });
