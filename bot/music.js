@@ -173,6 +173,8 @@ async function playSong(message, args) {
     if (message.member.voice.channel) {
         let loading = null;
         let rickrolled = false;
+        let loTimeout = false;
+        let deleted = false;
 
         let queue;
         if (guildQueue) {
@@ -185,8 +187,9 @@ async function playSong(message, args) {
                 }
             });
             loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
-            setTimeout(function () {
-                if (loading.deleted) return;
+            loTimeout = setTimeout(function () {
+                if (deleted) return;
+                deleted = true;
                 loading.delete()
                     .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
             }, 10000);
@@ -204,17 +207,28 @@ async function playSong(message, args) {
         if (message.content.toLowerCase().includes("list=")) {
             let song = await queue.playlist(args.join(' ')).catch(err => {
                 runtimeErrorHandle(err, message)
-                if (loading != null) loading.delete();
+                if (loading != null && deleted == false) {
+                    loading.delete();
+                    deleted = true;
+                }
+                if (loTimeout) clearTimeout(loTimeout);
             });
         }
         else {
             let song = await queue.play(args.join(' ')).catch(err => {
                 runtimeErrorHandle(err, message)
-                if (loading != null) loading.delete();
+                if (loading != null && deleted == false) {
+                    loading.delete();
+                    deleted = true;
+                }
+                if (loTimeout) clearTimeout(loTimeout)
             });
         }
 
-        if (loading != null) loading.delete();
+        if (loading != null && deleted == false) {
+            loading.delete();
+            deleted = true;
+        }
         if (rickrolled == true) setTimeout(function () { message.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>"); }, 2000);
 
     } else {
