@@ -1,8 +1,15 @@
 const Discord = require("discord.js");
 
-const prefix = process.env.PREFIX
+const prefix = process.env.PREFIX;
+let killTimeout = null;
+let client;
+
+let staffArray = process.env.STAFF_IDS.split('&');
 
 module.exports = {
+    setClient: function(variable) {
+        client = variable;
+    },
     respond: function (message) {
         const args = message.content
             .slice(prefix.length)
@@ -17,6 +24,19 @@ module.exports = {
             case "ahelp":
                 adminHelpMsg(message);
                 break;
+            case "restart":
+                tryRestart(message);
+                break;
+            case "cancel":
+                if (killTimeout != null) { 
+                  if (message.member.id == process.env.OWNER_ID || staffArray.includes(message.member.id)) {
+                    clearTimeout(killTimeout);
+                    message.react("👍");
+                    killTimeout = null;
+                    log("[BOT] Restart cancelled by <@" + message.member.id + ">.");
+                  }
+                }
+                break;
             default:
                 message.channel.send(
                   `\`${command}\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**`
@@ -26,6 +46,14 @@ module.exports = {
         return;
     }
 }
+
+// This file's log message
+function log(message) {
+  console.log(message.replaceAll("*", "").replaceAll("`", ""));
+    client.channels.cache.get("850844368679862282").send(message);
+}
+
+// Help and Admin commands
 
 function helpMsg(message) {
     const embed = new Discord.MessageEmbed()
@@ -59,6 +87,10 @@ function adminHelpMsg(message) {
         name: "`" + prefix + "restart`",
         value: "Restarts the bot. Do this mainly to solve weird, bot-breaking issues."
       },
+      {
+        name: "`" + prefix + "cancel`",
+        value: "Cancel a manual or automatic restart."
+      },
     );
 
     if (message.member.id == process.env.OWNER_ID) {
@@ -68,15 +100,19 @@ function adminHelpMsg(message) {
         message.author.send({embeds: [embed]});
         message.react("💌");
     }
-    else {
-        let staff = process.env.STAFF_IDS;
-        let array = staff.split('&');
-        if (array.includes(message.member.id)) {
+    else if (staffArray.includes(message.member.id)) {
             embed.setDescription(
-                `Hello, Admin **${message.author.username}**!`
+                `Hello, Bot Admin **${message.author.username}**!`
               )
             message.author.send({embeds: [embed]});
             message.react("📩");
-        }
-    }
+        }  
+}
+
+function tryRestart(message) {
+  if (message.member.id == process.env.OWNER_ID || staffArray.includes(message.member.id)) {
+    message.react("<a:mistbot_loading:818438330299580428>");
+    log("[BOT] Killing process in 10 seconds on the authority of <@" + message.member.id + ">. Run `" + prefix + "cancel` to cancel.");
+    killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
+  }
 }

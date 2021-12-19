@@ -5,7 +5,7 @@ const token = process.env.TOKEN;
 const prefix = process.env.PREFIX;
 
 // Import other files
-const { respond } = require("./bot/commands.js");
+const { respond, setClient } = require("./bot/commands.js");
 const { react } = require("./bot/reactions.js");
 const { artValidate } = require("./bot/exclusive.js");
 
@@ -17,13 +17,13 @@ client.on("ready", () => {
   ready = true;
   client.user.setActivity(`${prefix}help | I am being refactored!`, { type: "LISTENING" });
   log("[BOT] **Bot Started**");
+  setClient(client);
   clearPlayground.start();
 });
 
 client.on("messageCreate", async function (message) {
   if (message.author.bot) return;
   if (!message.content) return;
-
   // art channel validation
   if (message.channel.id == "838834082183381092") {
     let result = (await artValidate(message)).valueOf();
