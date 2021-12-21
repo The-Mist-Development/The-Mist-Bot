@@ -70,6 +70,23 @@ function log(message) {
   client.channels.cache.get("850844368679862282").send(message);
 }
 
+// Error Handling
+// not crash on unhandled promise rejection, log then exit (auto restarts on Heroku)
+process.on('unhandledRejection', (reason, promise) => {
+  log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
+  log("Restarting in 20 seconds. Run `" + prefix + "cancel` to cancel.");
+  killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 20000)
+});
+
+process.on('uncaughtException', (reason) => {
+  console.error('Uncaught Error! \n ' + reason.stack || reason);
+  log("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
+  if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
+    log("Looks like a database disconnect! Restarting in 10 seconds. Run `" + prefix + "cancel` to cancel.");
+    killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
+  }
+});
+
 // Help and Admin commands
 
 function helpMsg(message) {

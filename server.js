@@ -7,8 +7,7 @@ const bodyParser = require("body-parser");
 const app = express();
 
 //app.use(function (req, res, next) {
-//    // We console.log here because there's no reason to log every request in Discord. This is just for debugging. 
-//    // I'll probably comment it out when deployed anyway as Heroku Router provides this logging for us.
+//    // This is just for debugging. I'll probably comment it out when deployed anyway as Heroku Router provides this logging for us.
 //    console.log(
 //      "[ROUTER] Request recieved to " + req.url + " from " + req.headers["x-forwarded-for"] || req.ip
 //    );
