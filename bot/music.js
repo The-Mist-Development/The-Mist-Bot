@@ -305,9 +305,10 @@ async function forceRickroll(message, command, args) {
         message.react("<a:mistbot_loading:818438330299580428>");
 
         queue.setData({ channel: queue.data.channel, hidemsg: true });
-        for (let i = 0; i < len; i++) {
+        // Please don't edit the below, IDK how but it works
+        queue.remove(1);
+        for (let i = 1; i < len; i++) {
             queue.remove(i);
-            // message.channel.send("[debug] removed the index " + i + " which should be " + clone[i].name);
         }
         let song = await queue.play("never gonna give you up rick astley").catch(err => {
             runtimeErrorHandle(err, message);
