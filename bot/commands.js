@@ -30,11 +30,11 @@ module.exports = {
         break;
       case "cancel":
         if (killTimeout != null) {
-          if (message.member.id == process.env.OWNER_ID || staffArray.includes(message.member.id)) {
+          if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
             clearTimeout(killTimeout);
             message.react("👍");
             killTimeout = null;
-            log("[BOT] Restart cancelled by <@" + message.member.id + ">.");
+            log("[BOT] Restart cancelled by <@" + message.author.id + ">.");
           }
         }
         break;
@@ -148,14 +148,14 @@ function adminHelpMsg(message) {
       },
     );
 
-  if (message.member.id == process.env.OWNER_ID) {
+  if (message.author.id == process.env.OWNER_ID) {
     embed.setDescription(
       `Hello, Bot Owner **${message.author.username}**!`
     )
     message.author.send({ embeds: [embed] });
     message.react("💌");
   }
-  else if (staffArray.includes(message.member.id)) {
+  else if (staffArray.includes(message.author.id)) {
     embed.setDescription(
       `Hello, Bot Admin **${message.author.username}**!`
     )
@@ -165,9 +165,9 @@ function adminHelpMsg(message) {
 }
 
 function tryRestart(message) {
-  if (message.member.id == process.env.OWNER_ID || staffArray.includes(message.member.id)) {
+  if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
     message.react("<a:mistbot_loading:818438330299580428>");
-    log("[BOT] Killing process in 10 seconds on the authority of <@" + message.member.id + ">. Run `" + prefix + "cancel` to cancel.");
+    log("[BOT] Killing process in 10 seconds on the authority of <@" + message.author.id + ">. Run `" + prefix + "cancel` to cancel.");
     killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
   }
 }

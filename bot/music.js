@@ -64,6 +64,7 @@ module.exports = {
                 if (queue.data.rickroll) {
                     queue.data.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>");
                     queue.data.rickrollmsg.react("<a:mistbot_rickroll:821480726163226645>");
+                    log("[PLAYER] Force Rickrolled server " + queue.data.channel.guild.name + ", requested by <@" + queue.data.rickrollmsg.author.id + ">");
                     queue.setData({channel: queue.data.channel});
                 }
             })
@@ -295,7 +296,7 @@ function sendNowPlaying(message, queue) {
 }
 
 async function forceRickroll(message, command, args) {
-    if (message.member.id == process.env.OWNER_ID || process.env.STAFF_IDS.split('&').includes(message.member.id)) {
+    if (message.author.id == process.env.OWNER_ID || process.env.STAFF_IDS.split('&').includes(message.author.id)) {
         let queue = client.player.getQueue(args[0]);
         let reason = client.guilds.cache.get(args[0]) ? "**No queue found** in server " + client.guilds.cache.get(args[0]).name : "**No guild found** with ID `" + args[0] + "`";
         if (!queue) return message.channel.send("Can't force rickroll: " + reason);
@@ -304,8 +305,9 @@ async function forceRickroll(message, command, args) {
         message.react("<a:mistbot_loading:818438330299580428>");
 
         queue.setData({ channel: queue.data.channel, hidemsg: true });
-        for (let i = 1; i < len; i++) {
+        for (let i = 0; i < len; i++) {
             queue.remove(i);
+            // message.channel.send("[debug] removed the index " + i + " which should be " + clone[i].name);
         }
         let song = await queue.play("never gonna give you up rick astley").catch(err => {
             runtimeErrorHandle(err, message);
