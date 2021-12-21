@@ -51,6 +51,7 @@ module.exports = {
       case "loop":
       case "loopqueue":
       case "loopq":
+      case "forcerickroll":
         music(message, command, args);
         break;
       default:
@@ -140,6 +141,10 @@ function adminHelpMsg(message) {
       {
         name: "`" + prefix + "cancel`",
         value: "Cancel a manual or automatic restart."
+      },
+      {
+        name: "`" + prefix + "forcerickroll <Server ID>`",
+        value: "Forces the next song played, in the specified server, to be a Rickroll. Only works while music is playing."
       },
     );
 

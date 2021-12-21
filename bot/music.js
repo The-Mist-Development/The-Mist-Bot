@@ -4,7 +4,7 @@ let client;
 let rickrollchance = 1;
 
 function log(message) {
-    console.log(message.replaceAll("*", "").replaceAll("```", ""));
+    console.log(message.replaceAll("*", "").replaceAll("`", ""));
     client.channels.cache.get("850844368679862282").send(message);
 }
 
@@ -44,8 +44,10 @@ module.exports = {
                 queue.data.channel.send("👋 **Bye!** See you another time.");
             })
             // Emitted when a song was added to the queue.
-            .on('songAdd', (queue, song) =>
-                queue.data.channel.send(`**${song.name}** was added to the queue!`))
+            .on('songAdd', (queue, song) => {
+                if (queue.data.hidemsg) return;
+                queue.data.channel.send(`**${song.name}** was added to the queue!`)
+            })
             // Emitted when a playlist was added to the queue.
             .on('playlistAdd', (queue, playlist) =>
                 queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist}** to the queue.`))
@@ -59,6 +61,11 @@ module.exports = {
             .on('songChanged', (queue, newSong, oldSong) => {
                 if (oldSong.url == newSong.url) queue.data.channel.send(`🔂 Playing Again: **${newSong.name}** 🎶`);
                 else queue.data.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`);
+                if (queue.data.rickroll) {
+                    queue.data.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>");
+                    queue.data.rickrollmsg.react("<a:mistbot_rickroll:821480726163226645>");
+                    queue.setData({channel: queue.data.channel});
+                }
             })
             // Emitted when a first song in the queue started playing.
             .on('songFirst', (queue, song) =>
@@ -152,11 +159,14 @@ module.exports = {
                             message.channel.send("**Loop Disabled**");
                         }
                         break;
+                    case "forcerickroll":
+                        forceRickroll(message, command, args);
+                        break;
                     default:
                         message.channel.send("😅⁉ w-w-what's happening?");
                         message.channel.send(`${message.member.displayName} has made the advancement \`Congratulations, You Broke It\``);
                         message.author.send("Achievement Get: `Congratulations, You Broke It`");
-                        log(`[BOT] Easter Egg | \`${message.member.displayName}\` has made the advancement \`Congratulations, You Broke It\``);
+                        log(`[BOT] Easter Egg | \`${message.author.username}\` has made the advancement \`Congratulations, You Broke It\``);
                         break;
                 }
             }
@@ -282,4 +292,33 @@ function sendNowPlaying(message, queue) {
         );
 
     message.channel.send({ embeds: [embed] });
+}
+
+async function forceRickroll(message, command, args) {
+    if (message.member.id == process.env.OWNER_ID || process.env.STAFF_IDS.split('&').includes(message.member.id)) {
+        let queue = client.player.getQueue(args[0]);
+        let clone = [...queue.songs];
+        let len = queue.songs.length;
+        message.react("<a:mistbot_loading:818438330299580428>");
+
+        queue.setData({ channel: queue.data.channel, hidemsg: true });
+        for (let i = 1; i < len; i++) {
+            queue.remove(i);
+        }
+        let song = await queue.play("never gonna give you up rick astley").catch(err => {
+            runtimeErrorHandle(err, message);
+        });
+
+        for (let i = 1; i < len; i++) {
+            let song = await queue.play(clone[i].url).catch(err => {
+                runtimeErrorHandle(err, message);
+            });
+        }
+
+        message.react("<a:mistbot_confirmed:870070841268928552>");
+        queue.setData({ channel: queue.data.channel, rickroll: true, rickrollmsg: message });
+    }
+    else {
+        message.channel.send(`\`${command}\` is not a command.`);
+    }
 }
