@@ -96,7 +96,7 @@ module.exports = {
             return playSong(message, args);
         }
         if (command == "forcerickroll") {
-            forceRickroll(message, command, args);
+            return forceRickroll(message, command, args);
         }
         let guildQueue = client.player.getQueue(message.guild.id);
         if (!guildQueue) {
@@ -297,6 +297,8 @@ function sendNowPlaying(message, queue) {
 async function forceRickroll(message, command, args) {
     if (message.member.id == process.env.OWNER_ID || process.env.STAFF_IDS.split('&').includes(message.member.id)) {
         let queue = client.player.getQueue(args[0]);
+        let reason = client.guilds.cache.get(args[0]) ? "**No queue found** in server " + client.guilds.cache.get(args[0]).name : "**No guild found** with ID `" + args[0] + "`";
+        if (!queue) return message.channel.send("Can't force rickroll: " + reason);
         let clone = [...queue.songs];
         let len = queue.songs.length;
         message.react("<a:mistbot_loading:818438330299580428>");
