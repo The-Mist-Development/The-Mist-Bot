@@ -95,6 +95,9 @@ module.exports = {
         if (command == "play" || command == "p") {
             return playSong(message, args);
         }
+        if (command == "forcerickroll") {
+            forceRickroll(message, command, args);
+        }
         let guildQueue = client.player.getQueue(message.guild.id);
         if (!guildQueue) {
             return message.channel.send("**Nothing's playing in this server** 😢");
@@ -158,9 +161,6 @@ module.exports = {
                             guildQueue.setRepeatMode(0);
                             message.channel.send("**Loop Disabled**");
                         }
-                        break;
-                    case "forcerickroll":
-                        forceRickroll(message, command, args);
                         break;
                     default:
                         message.channel.send("😅⁉ w-w-what's happening?");
