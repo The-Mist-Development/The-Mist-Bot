@@ -9,6 +9,7 @@ const { respond, setClient } = require("./bot/commands.js");
 const { react } = require("./bot/reactions.js");
 const { artValidate } = require("./bot/exclusive.js");
 const { setup } = require("./bot/music.js");
+const { getCountingChannels, count } = require("./bot/counting.js");
 
 let ready = false;
 
