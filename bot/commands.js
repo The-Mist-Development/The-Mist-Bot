@@ -161,7 +161,7 @@ function adminHelpMsg(message) {
       },
       {
         name: "`" + prefix + "forcerickroll <Server ID>`",
-        value: "Forces the next song played, in the specified server, to be a Rickroll. Only works while music is playing."
+        value: "Forces the next song played, in the specified server, to be a Rickroll. Only works while music is playing and single song loop **is not enabled**."
       },
     );
 
