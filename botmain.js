@@ -27,6 +27,7 @@ client.on("ready", () => {
 client.on("messageCreate", async function (message) {
   if (message.author.bot) return;
   if (!message.content) return;
+  
   // art channel validation
   if (message.channel.id == "838834082183381092") {
     let result = (await artValidate(message)).valueOf();
