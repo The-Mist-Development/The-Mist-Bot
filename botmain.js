@@ -9,19 +9,22 @@ const { respond, setClient } = require("./bot/commands.js");
 const { react } = require("./bot/reactions.js");
 const { artValidate } = require("./bot/exclusive.js");
 const { setup } = require("./bot/music.js");
-const { getCountingChannels, count } = require("./bot/counting.js");
+const { getCountingChannels, count, dbConnect } = require("./bot/counting.js");
 
 let ready = false;
+let countingChannels = [];
 
 client.login(token).catch(log);
 
-client.on("ready", () => {
+client.on("ready", async () => {
   ready = true;
   client.user.setActivity(`${prefix}help | I am being refactored!`, { type: "LISTENING" });
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);
   clearPlayground.start();
+  await dbConnect();
+  countingChannels = await getCountingChannels();
 });
 
 client.on("messageCreate", async function (message) {
