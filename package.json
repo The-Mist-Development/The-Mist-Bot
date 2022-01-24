@@ -27,8 +27,9 @@
     "cron": "^1.8.2",
     "discord-music-player": "^8.3.1",
     "discord.js": "^13.3.1",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1"
+    "dotenv": "^14.2.0",
+    "express": "^4.17.1",
+    "ytdl-core": "^4.10.0"
   },
   "engines": {
     "node": ">=16.8.0"

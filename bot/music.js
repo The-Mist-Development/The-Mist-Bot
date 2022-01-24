@@ -13,6 +13,7 @@ function runtimeErrorHandle(error, message) {
     if (message.channel) {
 
         if (error.message.includes("no YouTube song found")) return message.channel.send("🔎 **No YouTube video found** for that query!");
+        if (error.message.includes("Cannot set property 'data' of undefined")) return message.channel.send("💨 **Invalid Song** - please try a different query or paste a YouTube URL.");
 
         message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693");
 
@@ -232,7 +233,7 @@ async function playSong(message, args) {
                     loading.delete();
                     deleted = true;
                 }
-                if (loTimeout) clearTimeout(loTimeout)
+                if (loTimeout) clearTimeout(loTimeout);
             });
         }
 
