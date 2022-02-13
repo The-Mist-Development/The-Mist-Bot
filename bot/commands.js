@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { music } = require("./music.js");
+const { music, playing } = require("./music.js");
 
 const prefix = process.env.PREFIX;
 let killTimeout = null;
@@ -75,6 +75,7 @@ function log(message) {
 // not crash on unhandled promise rejection, log then exit (auto restarts on Heroku)
 process.on('unhandledRejection', (reason, promise) => {
   log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
+  if (playing) return;
   log("Restarting in 20 seconds. Run `" + prefix + "cancel` to cancel.");
   killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 20000)
 });
@@ -83,6 +84,7 @@ process.on('uncaughtException', (reason) => {
   console.error('Uncaught Error! \n ' + reason.stack || reason);
   log("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
+    if (playing) return;
     log("Looks like a database disconnect! Restarting in 10 seconds. Run `" + prefix + "cancel` to cancel.");
     killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
   }
