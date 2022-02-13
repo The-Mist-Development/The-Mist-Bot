@@ -54,7 +54,7 @@ module.exports = {
                 queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist}** to the queue.`))
             // Emitted when the queue was destroyed (by stopping).    
             .on('queueDestroyed', (queue) =>
-                queue.data.channel.send(`🎤 **Stopped** - Is that all for now?`))
+                queue.data.channel.send(`⏹ **Stopped** - Is that all for now?`))
             // Emitted when there was no more music to play.
             .on('queueEnd', (queue) =>
                 queue.data.channel.send(`🎤 The queue has **ended**. Add some more songs!`))
@@ -121,7 +121,7 @@ module.exports = {
                         break;
                     case "stop":
                         guildQueue.stop();
-                        message.react("⏹");
+                        // message.react("⏹"); // Not needed.
                         break;
                     case "queue":
                     case "q":
@@ -164,6 +164,12 @@ module.exports = {
                             message.channel.send("**Loop Disabled**");
                         }
                         break;
+                    case "clear":
+                        if (guildQueue.songs.length > 0) {
+                            guildQueue.clearQueue();
+                            message.channel.send("🗑 **Queue Cleared**. Time to add some more songs!");
+                        }
+                        break;
                     default:
                         message.channel.send("😅⁉ w-w-what's happening?");
                         message.channel.send(`${message.member.displayName} has made the advancement \`Congratulations, You Broke It\``);
@@ -172,7 +178,20 @@ module.exports = {
                         break;
                 }
             }
-            else message.channel.send("🔊 **Join a Voice Channel** to use this command!");
+            else {
+                switch (command) {
+                    case "np":
+                        sendNowPlaying(message, guildQueue);
+                        break;
+                    case "queue":
+                    case "q":
+                        sendQueue(message, guildQueue);
+                        break;
+                    default:
+                        message.channel.send("🔊 **Join a Voice Channel** to use this command!");
+                        break;
+                }   
+            }
         }
     }
 }
@@ -217,6 +236,9 @@ async function playSong(message, args) {
         await queue.join(message.member.voice.channel);
 
         if (message.content.toLowerCase().includes("list=")) {
+            if (message.content.toLowerCase().includes("?v=")) {
+                message.channel.send("💿 **Adding Full Playlist** to the queue. If you wanted the single song, paste the URL up to the `&list=` part, or try using the song name.");
+            }
             let song = await queue.playlist(args.join(' ')).catch(err => {
                 runtimeErrorHandle(err, message)
                 if (loading != null && deleted == false) {

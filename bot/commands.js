@@ -52,6 +52,7 @@ module.exports = {
       case "loopqueue":
       case "loopq":
       case "forcerickroll":
+      case "clear":
         music(message, command, args);
         break;
       default:
@@ -128,6 +129,10 @@ function helpMsg(message) {
       {
         name: "`" + prefix + "remove <Song Index>`",
         value: "Remove the specified song from the queue."
+      },
+      {
+        name: "`" + prefix + "clear`",
+        value: "Clear the entire queue."
       },
       {
         name: "`" + prefix + "np`",
