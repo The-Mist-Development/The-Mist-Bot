@@ -14,13 +14,13 @@ module.exports = {
           }
           if (msgcontent.includes("lmao")) {
             message.react("🇱");
-            message.react("🇲");
+            message.react("Ⓜ");
             message.react("🅰️");
             message.react("🇴");
           }
           if (msgcontent.includes("lmfao")) {
             message.react("🇱");
-            message.react("🇲");
+            message.react("Ⓜ");
             message.react("🇫");
             message.react("🅰️");
             message.react("🇴");
