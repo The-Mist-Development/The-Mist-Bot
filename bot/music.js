@@ -314,8 +314,24 @@ async function playSong(message, args) {
 }
 
 function sendQueue(message, queue) {
+    let ms = 0;
+    for (let i = 0; i < queue.songs.length; i++) {
+        ms = ms + queue.songs[i].milliseconds;
+    }
+    let date = new Date(ms);
+
+    let hours = (date.getHours() - 1).toString();
+    let minutes = date.getMinutes().toString();
+    let seconds = date.getSeconds().toString();
+
+    hours = hours == 0 ? "" : hours + ":";
+    minutes = minutes.length == 1 ? "0" + minutes + ":" : minutes + ":";
+    seconds = seconds.length == 1 ? "0" + seconds : seconds;
+
+    let duration = hours + minutes + seconds;
+
     const embed = new Discord.MessageEmbed()
-        .setTitle("Queue for " + message.guild.name)
+        .setTitle("Queue for " + message.guild.name + " | Duration: `" + duration + "`")
         .setFooter("The Mist Bot - made by R2D2Vader")
         .setColor("#066643")
         .addFields({
