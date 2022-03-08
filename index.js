@@ -53,7 +53,7 @@ dbClient.connect(err => {
 
 async function checkCountingChannels(channelid) {
   const res = await dbClient.query("SELECT channelid FROM counting");
-  return res.rows.map(x => x["channelid"]).includes(channelid);
+  return res.rows.map(x => x["channelid"]);
 }
 
 // discord bot login
