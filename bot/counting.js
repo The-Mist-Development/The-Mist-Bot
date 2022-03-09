@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+const { Discord, Permissions } = require("discord.js");
 const { Client } = require("pg");
 const dbClient = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -22,9 +22,10 @@ module.exports = {
         return res.rows.map(x => x["channelid"]);
     },
     count: async function (message) {
-        const res = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`).rows[0]
-        if (message.content == res["count"]+1) {
-            await dbClient.query(`UPDATE counting SET count=${res["count"]+1} WHERE channelid=${message.channel.id}`)
+        const resObj = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`)
+        let res = resObj.rows[0]
+        if (message.content == parseInt(res["count"]) + 1) {
+            await dbClient.query(`UPDATE counting SET count=${parseInt(res["count"]) + 1} WHERE channelid=${message.channel.id}`)
             message.react("<a:mistbot_confirmed:870070841268928552>")
         }
         else {
@@ -32,17 +33,20 @@ module.exports = {
             message.channel.send("**" + message.member.displayName + "** ruined the count at `" + res["count"] + "`! `The count reset.`");
             message.react("❌");
             message.channel.send("Next number is `1`.");
+            return;
         }
-        if (res["count"]+1 > res["maxcount"]) {
-            dbClient.query(`UPDATE counting SET maxcount = ${count} WHERE channelid = '${message.channel.id}`)
+
+        if (parseInt(res["count"]) + 1 > parseInt(res["maxcount"])) {
+            dbClient.query(`UPDATE counting SET maxcount = ${parseInt(res["count"]) + 1} WHERE channelid=${message.channel.id}`)
         }
 
     },
     enableCounting: async function(message) {
-        if (this.getCountingChannels().includes(message.channel.id)) {
+        let channels  = await getCountingChannelsInternal();
+        if (channels.includes(message.channel.id)) {
             message.channel.send("Counting is already enabled in this channel!")
         }
-        else if (message.member.permissions.has(Permissions.FLAG.MANAGE_CHANNELS)) {
+        else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
             await dbClient.query(`INSERT INTO counting (channelid, maxcount, count) VALUES (${message.channel.id},0,0);`);
             message.channel.send("Counting is now enabled! The next number is `1`.")
         }
@@ -52,15 +56,21 @@ module.exports = {
 
     },
     disableCounting: async function(message) {
-        if (this.getCountingChannels().includes(message.channelid)) {
+        let channels  = await getCountingChannelsInternal();
+        if (!channels.includes(message.channel.id)) {
             message.channel.send("Counting isn't enabled in this channel!")
         }
-        else if (message.member.permissions.has(Permissions.FLAG.MANAGE_CHANNELS)) {
+        else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
             await dbClient.query(`DELETE FROM counting WHERE channelid=${message.channel.id};`)
-            message.channel.send("Counting is now disabled! Sorry to see you go :(")
+            message.channel.send("Counting is now disabled! Sorry to see you go 😦")
         }
         else {
             message.channel.send("You don't have permission to do that! Get someone who can Manage Channels to turn counting off for you.")
         }
     },
+}
+
+async function getCountingChannelsInternal() {
+    const res = await dbClient.query("SELECT channelid FROM counting;");
+    return res.rows.map(x => x["channelid"]);
 }

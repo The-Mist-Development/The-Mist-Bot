@@ -29,6 +29,7 @@
     "discord.js": "^13.3.1",
     "dotenv": "^14.2.0",
     "express": "^4.17.1",
+    "pg": "^8.7.3",
     "ytdl-core": "^4.10.1"
   },
   "engines": {
