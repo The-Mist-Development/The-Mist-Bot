@@ -112,6 +112,7 @@ process.on('uncaughtException', (reason) => {
 // Help and Admin commands
 
 function helpMsg(message) {
+  message.react("📨");
   const embed = new Discord.MessageEmbed()
     .setTitle("Commands")
     .setDescription(
@@ -177,8 +178,7 @@ function helpMsg(message) {
         value: "Get the highest counted number in a counting channel. Or specify a Channel ID to see the count from that channel."
       },
     );
-
-  message.channel.send({ embeds: [embed] });
+  message.author.send({ embeds: [embed] });
 }
 
 function adminHelpMsg(message) {
