@@ -21,6 +21,18 @@ module.exports = {
         const res = await dbClient.query("SELECT channelid FROM counting;");
         return res.rows.map(x => x["channelid"]);
     },
+    getMaxCount: async function(message, lookupChannel) {
+        if (lookupChannel) {
+                const res = await dbClient.query(`SELECT * FROM counting WHERE channelid=${lookupChannel.id};`);
+                if (res.rows.length == 0) return message.channel.send("Counting has not been enabled in this channel.");
+                message.channel.send(`The highest ever count in **${lookupChannel.guild.name}** <#${lookupChannel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
+        }
+        else {
+            const res = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`);
+            if (res.rows.length == 0) return message.channel.send("Run this command in a **counting channel** to see the highest ever count in that channel!")
+            message.channel.send(`The highest ever count in **${message.guild.name}** <#${message.channel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
+        }
+    },
     count: async function (message) {
         const resObj = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`)
         let res = resObj.rows[0]
@@ -51,7 +63,7 @@ module.exports = {
             message.channel.send("Counting is now enabled! The next number is `1`.")
         }
         else {
-            message.channel.send("You don't have permission to do that! Get someone who can Manage Channels to set counting up for you.")
+            message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to set counting up for you.")
         }
 
     },
@@ -65,7 +77,7 @@ module.exports = {
             message.channel.send("Counting is now disabled! Sorry to see you go 😦")
         }
         else {
-            message.channel.send("You don't have permission to do that! Get someone who can Manage Channels to turn counting off for you.")
+            message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to turn counting off for you.")
         }
     },
 }

@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const { music, playing } = require("./music.js");
-const { enableCounting, disableCounting } = require("./counting.js")
+const { enableCounting, disableCounting, getMaxCount } = require("./counting.js")
 
 const prefix = process.env.PREFIX;
 let killTimeout = null;
@@ -45,6 +45,18 @@ module.exports = {
       case "disablecounting":
         disableCounting(message);
         break;
+      case "maxcount":
+        if (args[0]) {
+          let lookupChannel = client.channels.cache.get(args[0]);
+          if (lookupChannel) {
+            getMaxCount(message, lookupChannel);
+          }
+          else {
+            message.channel.send("I can't find that channel! Try again with a **valid Channel ID**.")
+          }
+        }
+        else getMaxCount(message);
+        break;
       case "play":
       case "p":
       case "pause":
@@ -64,7 +76,7 @@ module.exports = {
         break;
       default:
         message.channel.send(
-          `\`${command}\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**`
+          `\`${command}\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`
         );
         break;
     }
@@ -151,7 +163,19 @@ function helpMsg(message) {
         name: "`" + prefix + "loop` / `" + prefix + "loopqueue`",
         value: "Toggle either looping the current song or looping the whole queue."
       },
-      
+      { name: "🔢 Counting", value: "===" },
+      {
+        name: "`" + prefix + "enablecounting`",
+        value: "Enable Counting in a channel. Requires the `Manage Channels` permission."
+      },
+      {
+        name: "`" + prefix + "disablecounting`",
+        value: "Disable Counting in a channel. Requires the `Manage Channels` permission."
+      },
+      {
+        name: "`" + prefix + "maxcount <optional Channel ID>`",
+        value: "Get the highest counted number in a counting channel. Or specify a Channel ID to see the count from that channel."
+      },
     );
 
   message.channel.send({ embeds: [embed] });
