@@ -24,7 +24,6 @@ client.on("ready", async () => {
   setup(client);
   clearPlayground.start();
   await dbConnect();
-  countingChannels = await getCountingChannels();
 });
 
 client.on("messageCreate", async function (message) {
@@ -36,6 +35,15 @@ client.on("messageCreate", async function (message) {
     let result = (await artValidate(message)).valueOf();
     if (result != "valid") {
       log(result);
+    }
+  }
+
+  if (getCountingChannels().includes(message.channel.id)) {
+    if (+message.content === +message.content) {
+      count(message)
+    }
+    else {
+      message.react("👌")
     }
   }
 

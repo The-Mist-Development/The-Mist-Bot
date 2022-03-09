@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const { music, playing } = require("./music.js");
+const { enableCounting, disableCounting } = require("./counting.js")
 
 const prefix = process.env.PREFIX;
 let killTimeout = null;
@@ -37,6 +38,12 @@ module.exports = {
             log("[BOT] Restart cancelled by <@" + message.author.id + ">.");
           }
         }
+        break;
+      case "enablecounting":
+        enableCounting(message);
+        break;
+      case "disablecounting":
+        disableCounting(message);
         break;
       case "play":
       case "p":
