@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
-const { music, playing } = require("./music.js");
+const { music, requestRestart } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount } = require("./counting.js")
+const { cancelRestart } = require("./restart.js");
 
 const prefix = process.env.PREFIX;
 let killTimeout = null;
@@ -30,14 +31,7 @@ module.exports = {
         tryRestart(message);
         break;
       case "cancel":
-        if (killTimeout != null) {
-          if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
-            clearTimeout(killTimeout);
-            message.react("👍");
-            killTimeout = null;
-            log("[BOT] Restart cancelled by <@" + message.author.id + ">.");
-          }
-        }
+        cancelRestart(message);
         break;
       case "enablecounting":
         enableCounting(message);
@@ -94,18 +88,14 @@ function log(message) {
 // not crash on unhandled promise rejection, log then exit (auto restarts on Heroku)
 process.on('unhandledRejection', (reason, promise) => {
   log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
-  if (playing) return;
-  log("Restarting in 20 seconds. Run `" + prefix + "cancel` to cancel.");
-  killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 20000)
+  requestRestart();
 });
 
 process.on('uncaughtException', (reason) => {
   console.error('Uncaught Error! \n ' + reason.stack || reason);
   log("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
-    if (playing) return;
-    log("Looks like a database disconnect! Restarting in 10 seconds. Run `" + prefix + "cancel` to cancel.");
-    killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
+    requestRestart();
   }
 });
 
@@ -222,7 +212,6 @@ function adminHelpMsg(message) {
 function tryRestart(message) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
     message.react("<a:mistbot_loading:818438330299580428>");
-    log("[BOT] Killing process in 10 seconds on the authority of <@" + message.author.id + ">. Run `" + prefix + "cancel` to cancel.");
-    killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 10000);
+    requestRestart();
   }
 }

@@ -9,6 +9,7 @@ const { respond, setClient } = require("./bot/commands.js");
 const { react } = require("./bot/reactions.js");
 const { artValidate } = require("./bot/exclusive.js");
 const { setup } = require("./bot/music.js");
+const { setRestartClient } = require("./bot/restart.js");
 const { getCountingChannels, count, dbConnect } = require("./bot/counting.js");
 
 let ready = false;
@@ -22,6 +23,7 @@ client.on("ready", async () => {
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);
+  setRestartClient(client);
   clearPlayground.start();
   await dbConnect();
 });

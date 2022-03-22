@@ -1,8 +1,10 @@
 const Discord = require("discord.js");
 const { Player } = require("discord-music-player");
+const { restart } = require("./restart.js");
 let client;
 let rickrollchance = 1;
 let playingServers = [];
+let needRestart = 0;
 
 function log(message) {
     console.log(message.replaceAll("*", "").replaceAll("`", ""));
@@ -46,9 +48,12 @@ module.exports = {
             // Emitted when channel was empty.
             .on('channelEmpty', (queue) => {
                 queue.data.channel.send("👋 **Bye!** See you another time.");
-                let index = playingServers.indexOf(queue.data.channel.guildId);
+                let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1); 
+                    if (needRestart == 1 && playingServers.length == 0) {
+                        restart();
+                    }
                 }
             })
             // Emitted when a song was added to the queue.
@@ -62,17 +67,23 @@ module.exports = {
             // Emitted when the queue was destroyed (by stopping).    
             .on('queueDestroyed', (queue) => {
                 // queue.data.channel.send(`⏹ **Stopped** - Is that all for now?`);
-                let index = playingServers.indexOf(queue.data.channel.guildId);
+                let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1); 
+                    if (needRestart == 1 && playingServers.length == 0) {
+                        restart();
+                    }
                 }
             })
             // Emitted when there was no more music to play.
             .on('queueEnd', (queue) => {
                 queue.data.channel.send(`🎤 The queue has **ended**. Add some more songs!`);
-                let index = playingServers.indexOf(queue.data.channel.guildId);
+                let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1); 
+                    if (needRestart == 1 && playingServers.length == 0) {
+                        restart();
+                    }
                 }
             })
             // Emitted when a song changed.
@@ -92,9 +103,12 @@ module.exports = {
             // Emitted when someone disconnected the bot from the channel.
             .on('clientDisconnect', (queue) => {
                 queue.data.channel.send("👋 **Bye then!** I see how it is 😔")
-                let index = playingServers.indexOf(queue.data.channel.guildId);
+                let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1); 
+                    if (needRestart == 1 && playingServers.length == 0) {
+                        restart();
+                    }
                 }
             })
             // Emitted when deafenOnJoin is true and the bot was undeafened
@@ -222,9 +236,18 @@ module.exports = {
             }
         }
     },
-    playing: function() {
-       if (playingServers.length > 1) return true;
-       else return false; 
+    requestRestart: function() {
+        console.log(playingServers.length);
+        if (playingServers.length == 0) return restart();
+        else {
+            for (let i = 0; i < playingServers.length; i++) {
+                let guildQueue = client.player.getQueue(playingServers[i].guildId);
+                guildQueue.data.channel.send("😔 Sorry, we have to **restart the bot** to fix critical issues. The bot will automaticaly restart **when this song ends**. Sorry for the inconvenience!");
+                guildQueue.clearQueue();
+            }
+            needRestart = 1;
+        }
+        
     }
 }
 
@@ -304,7 +327,7 @@ async function playSong(message, args) {
         }
         if (rickrolled == true) setTimeout(function () { message.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>"); }, 2000);
 
-        playingServers.push(message.channel.guildId);
+        playingServers.push({"guildId": message.channel.guildId, "channelId": message.channel.id});
 
     } else {
         message.channel.send(
@@ -410,6 +433,8 @@ async function forceRickroll(message, command, args) {
         queue.setData({ channel: queue.data.channel, rickroll: true, rickrollmsg: message });
     }
     else {
-        message.channel.send(`\`${command}\` is not a command.`);
+        message.channel.send(
+            `\`${command}\` is not a command. **Type** \`${process.env.PREFIX}help\` **to see the list of commands**.`
+          );
     }
 }
