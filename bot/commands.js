@@ -211,7 +211,7 @@ function adminHelpMsg(message) {
 
 function tryRestart(message) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
-    message.react("<a:mistbot_loading:818438330299580428>");
-    requestRestart();
+    message.react("👌");
+    requestRestart(message);
   }
 }

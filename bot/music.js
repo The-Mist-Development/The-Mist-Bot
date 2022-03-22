@@ -236,10 +236,10 @@ module.exports = {
             }
         }
     },
-    requestRestart: function() {
-        console.log(playingServers.length);
+    requestRestart: function(message = "") {
         if (playingServers.length == 0) return restart();
         else {
+            if (message !== "") message.channel.send("Servers are still playing music. Restarting the bot when the `" + playingServers.length + "` currently playing songs are over.");
             for (let i = 0; i < playingServers.length; i++) {
                 let guildQueue = client.player.getQueue(playingServers[i].guildId);
                 guildQueue.data.channel.send("😔 Sorry, we have to **restart the bot** to fix critical issues. The bot will automaticaly restart **when this song ends**. Sorry for the inconvenience!");
