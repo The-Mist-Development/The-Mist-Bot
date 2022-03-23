@@ -242,7 +242,7 @@ module.exports = {
             if (message !== "") message.channel.send("Servers are still playing music. Restarting the bot when the `" + playingServers.length + "` currently playing songs are over.");
             for (let i = 0; i < playingServers.length; i++) {
                 let guildQueue = client.player.getQueue(playingServers[i].guildId);
-                guildQueue.data.channel.send("😔 Sorry, we have to **restart the bot** to fix critical issues. The bot will automaticaly restart **when this song ends**. Sorry for the inconvenience!");
+                guildQueue.data.channel.send("😔 We have to **restart the bot** to fix critical issues. The bot will automaticaly restart **after this song ends**. Sorry for the inconvenience!");
                 guildQueue.clearQueue();
             }
             needRestart = 1;
@@ -253,7 +253,8 @@ module.exports = {
 
 async function playSong(message, args) {
     if (args.length == 0) return;
-
+    if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+        
     let guildQueue = client.player.getQueue(message.guild.id);
 
     if (message.member.voice.channel) {
