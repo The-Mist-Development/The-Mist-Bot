@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const { music, requestRestart } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount } = require("./counting.js")
-const { cancelRestart } = require("./restart.js");
+const { restart, cancelRestart } = require("./restart.js");
 
 const prefix = process.env.PREFIX;
 let killTimeout = null;
@@ -30,6 +30,9 @@ module.exports = {
       case "restart":
         tryRestart(message);
         break;
+      case "frestart":
+        log("Forced Restart requested by <@" + message.author.id + ">.");
+        restart();
       case "cancel":
         cancelRestart(message);
         break;
@@ -182,6 +185,10 @@ function adminHelpMsg(message) {
       {
         name: "`" + prefix + "restart`",
         value: "Restarts the bot. Do this mainly to solve weird, bot-breaking issues."
+      },
+      {
+        name: "`" + prefix + "frestart`", 
+        value: "Forces the bot to restart. Run this only if the normal restart command has failed to restart / errored, or you urgently need to restart the bot!"
       },
       {
         name: "`" + prefix + "cancel`",
