@@ -22,7 +22,10 @@ module.exports = {
               message.react("👍");
               killTimeout = null;
               log("[BOT] Restart cancelled by <@" + message.author.id + ">.");
+              return "cancelled";
             }
-          }
+        }
+        else message.channel.send("There is no restart to cancel!");
+        return "";
     },
 }

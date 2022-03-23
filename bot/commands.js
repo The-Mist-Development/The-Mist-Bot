@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { music, requestRestart } = require("./music.js");
+const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount } = require("./counting.js")
 const { restart, cancelRestart } = require("./restart.js");
 
@@ -33,8 +33,9 @@ module.exports = {
       case "frestart":
         log("Forced Restart requested by <@" + message.author.id + ">.");
         restart();
+        break;
       case "cancel":
-        cancelRestart(message);
+        tryCancel(message);
         break;
       case "enablecounting":
         enableCounting(message);
@@ -220,5 +221,12 @@ function tryRestart(message) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
     message.react("👌");
     requestRestart(message);
+  }
+}
+
+function tryCancel(message) {
+  let result = cancelRestart(message);
+  if (result) {
+    if (result == "cancelled") resetVar();
   }
 }

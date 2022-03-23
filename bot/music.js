@@ -77,7 +77,6 @@ module.exports = {
             })
             // Emitted when there was no more music to play.
             .on('queueEnd', (queue) => {
-                queue.data.channel.send(`🎤 The queue has **ended**. Add some more songs!`);
                 let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1); 
@@ -85,6 +84,8 @@ module.exports = {
                         restart();
                     }
                 }
+                if (needRestart == 1) return;
+                queue.data.channel.send(`🎤 The queue has **ended**. Add some more songs!`);
             })
             // Emitted when a song changed.
             .on('songChanged', (queue, newSong, oldSong) => {
@@ -197,6 +198,7 @@ module.exports = {
                         break;
                     case "loopqueue":
                     case "loopq":
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. The queue cannot be looped right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(2);
                             message.channel.send("🔁 **Looping the entire queue**");
@@ -237,17 +239,24 @@ module.exports = {
         }
     },
     requestRestart: function(message = "") {
-        if (playingServers.length == 0) return restart();
+        if (playingServers.length == 0) {
+            needRestart = 1;
+            return restart();
+        }
         else {
             if (message !== "") message.channel.send("Servers are still playing music. Restarting the bot when the `" + playingServers.length + "` currently playing songs are over.");
             for (let i = 0; i < playingServers.length; i++) {
                 let guildQueue = client.player.getQueue(playingServers[i].guildId);
                 guildQueue.data.channel.send("😔 We have to **restart the bot** to fix critical issues. The bot will automaticaly restart **after this song ends**. Sorry for the inconvenience!");
+                guildQueue.setRepeatMode(0);
                 guildQueue.clearQueue();
             }
             needRestart = 1;
         }
         
+    },
+    resetVar: function() {
+        needRestart = 0;
     }
 }
 
