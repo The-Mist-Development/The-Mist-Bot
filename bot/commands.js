@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+const { Discord } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount, setDisconnected } = require("./counting.js")
 const { restart, cancelRestart } = require("./restart.js");
@@ -54,6 +54,9 @@ module.exports = {
           }
         }
         else getMaxCount(message);
+        break;
+      case "sendmsg":
+        sendMessage(message, args);
         break;
       case "play":
       case "p":
@@ -230,4 +233,22 @@ function tryCancel(message) {
   if (result) {
     if (result == "cancelled") resetVar();
   }
+}
+
+function sendMessage(message, args) {
+  if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+    let channel = client.channels.cache.get(args.shift());
+    if (channel) {
+      if (channel.type == "GUILD_TEXT") {
+        if (channel.permissionsFor(client.user.id).has("SEND_MESSAGES")) {
+          channel.send(args.join(" "));
+          message.react("📤");
+        }
+        else return message.channel.send(`I **don't have permission** to send messages in <#${channel.id}>!`);
+      }
+      else return message.channel.send(`The channel <#${channel.id}> is not a **Guild Text channel**! I cannot send messages there.`);
+    }
+    else return message.channel.send(`That isn't a **valid Channel ID**, or is a channel that I don't have access to! Please try again.`);
+  }
+  else message.channel.send(`\`sendmsg\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
 }
