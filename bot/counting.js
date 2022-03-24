@@ -8,6 +8,8 @@ const dbClient = new Client({
 });
 let connected = false;
 
+let countingChannelsCache = [];
+
 module.exports = {
     dbConnect: function(message) {
         dbClient.connect(err => {
@@ -20,8 +22,11 @@ module.exports = {
           });
     },
     getCountingChannels: async function() {
-        const res = await dbClient.query("SELECT channelid FROM counting;");
-        return res.rows.map(x => x["channelid"]);
+        if (countingChannelsCache.length == 0) {
+            const res = await dbClient.query("SELECT channelid FROM counting;");
+            countingChannelsCache = res.rows.map(x => x["channelid"]);
+        }
+        return countingChannelsCache;
     },
     getMaxCount: async function(message, lookupChannel) {
         if (lookupChannel) {
@@ -61,27 +66,28 @@ module.exports = {
 
     },
     enableCounting: async function(message) {
-        let channels  = await getCountingChannelsInternal();
+        let channels = countingChannelsCache;
         if (channels.includes(message.channel.id)) {
             message.channel.send("Counting is already enabled in this channel!")
         }
         else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
             await dbClient.query(`INSERT INTO counting (channelid, maxcount, count) VALUES (${message.channel.id},0,0);`);
-            message.channel.send("Counting is now enabled! The next number is `1`.")
+            message.channel.send("Counting is now enabled! The next number is `1`.");
+            updateCache();
         }
         else {
             message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to set counting up for you.")
         }
-
     },
     disableCounting: async function(message) {
-        let channels  = await getCountingChannelsInternal();
+        let channels = countingChannelsCache;
         if (!channels.includes(message.channel.id)) {
             message.channel.send("Counting isn't enabled in this channel!")
         }
         else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
-            await dbClient.query(`DELETE FROM counting WHERE channelid=${message.channel.id};`)
-            message.channel.send("Counting is now disabled! Sorry to see you go 😦")
+            await dbClient.query(`DELETE FROM counting WHERE channelid=${message.channel.id};`);
+            message.channel.send("Counting is now disabled! Sorry to see you go 😦");
+            updateCache();
         }
         else {
             message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to turn counting off for you.")
@@ -92,7 +98,7 @@ module.exports = {
     }
 }
 
-async function getCountingChannelsInternal() {
+async function updateCache() {
     const res = await dbClient.query("SELECT channelid FROM counting;");
-    return res.rows.map(x => x["channelid"]);
+    countingChannelsCache = res.rows.map(x => x["channelid"]);
 }

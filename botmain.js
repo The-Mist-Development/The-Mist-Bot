@@ -13,7 +13,6 @@ const { setRestartClient } = require("./bot/restart.js");
 const { getCountingChannels, count, dbConnect } = require("./bot/counting.js");
 
 let ready = false;
-let countingChannels = [];
 
 client.login(token).catch(log);
 
@@ -25,7 +24,7 @@ client.on("ready", async () => {
   setup(client);
   setRestartClient(client);
   clearPlayground.start();
-  await dbConnect();
+  dbConnect();
 });
 
 client.on("messageCreate", async function (message) {
@@ -40,10 +39,11 @@ client.on("messageCreate", async function (message) {
     }
   }
 
+  // counting
   let channels = await getCountingChannels();
 
   if (channels.includes(message.channel.id)) {
-    if (+message.content === +message.content) {
+    if (+message.content === +message.content && !message.content.includes(".")) {
       count(message)
     }
     else {
