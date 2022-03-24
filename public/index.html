@@ -11,20 +11,7 @@
   <a href="/admin.html">
     Admin Login
   </a> <br> <br>
-  <p style="display:inline;">Record Highest Count:</p>
-  <p style="display:inline;" id="count"></p>
-  <script>
-    async function getCount() {
-      const response = await fetch("/count");
-      const resdata = await response.json();
-      console.log(resdata);
-
-      document.getElementById("count").innerHTML = resdata.recordCount;
-    }
-
-    getCount();
-
-  </script>
+  
 </body>
 
 </html>
