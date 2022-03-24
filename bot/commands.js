@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
-const { enableCounting, disableCounting, getMaxCount } = require("./counting.js")
+const { enableCounting, disableCounting, getMaxCount, setDisconnected } = require("./counting.js")
 const { restart, cancelRestart } = require("./restart.js");
 
 const prefix = process.env.PREFIX;
@@ -99,8 +99,9 @@ process.on('uncaughtException', (reason) => {
   console.error('Uncaught Error! \n ' + reason.stack || reason);
   log("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
-    requestRestart();
+    setDisconnected();
   }
+  requestRestart();
 });
 
 // Help and Admin commands
@@ -188,7 +189,7 @@ function adminHelpMsg(message) {
         value: "Restarts the bot. Do this mainly to solve weird, bot-breaking issues."
       },
       {
-        name: "`" + prefix + "frestart`", 
+        name: "`" + prefix + "frestart`",
         value: "Forces the bot to restart. Run this only if the normal restart command has failed to restart / errored, or you urgently need to restart the bot!"
       },
       {

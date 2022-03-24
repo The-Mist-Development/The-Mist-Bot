@@ -40,7 +40,7 @@ client.on("messageCreate", async function (message) {
     }
   }
 
-  let channels  = await getCountingChannels();
+  let channels = await getCountingChannels();
 
   if (channels.includes(message.channel.id)) {
     if (+message.content === +message.content) {

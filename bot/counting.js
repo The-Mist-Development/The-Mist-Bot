@@ -6,14 +6,16 @@ const dbClient = new Client({
         rejectUnauthorized: false
     }
 });
+let connected = false;
 
 module.exports = {
     dbConnect: function(message) {
         dbClient.connect(err => {
             if (err) {
-              console.error('Connection error while connecting to database: ' + err.stack)
+                console.error('Connection error while connecting to database: ' + err.stack);
             } else {
-              console.log('Connected to Database');
+                console.log('Connected to Database');
+                connected = true;
             }
           });
     },
@@ -34,6 +36,11 @@ module.exports = {
         }
     },
     count: async function (message) {
+        if (connected == false) {
+            message.react("❎");
+            message.channel.send("We're having issues **connecting to our database**. Please try again later. If this issue persists, contact R2D2Vader#0693");
+            return;
+        }
         const resObj = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`)
         let res = resObj.rows[0]
         if (message.content == parseInt(res["count"]) + 1) {
@@ -80,6 +87,9 @@ module.exports = {
             message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to turn counting off for you.")
         }
     },
+    setDisconnected: function() {
+        connected = false;
+    }
 }
 
 async function getCountingChannelsInternal() {
