@@ -6,7 +6,9 @@ This refactor aims to recode the bot **from the ground up** using updated depend
 - Queue Management commands: `remove`, `clear`, and `loopqueue`
 - Counting for every server: Our previously private Counting feature can now be enabled in any channel. 
 Members with the `Manage Channels` permission can run `enablecounting` or `disablecounting`.
-- Counting improvement: `maxcount` command to see the highest ever count of the current counting channel, or any specified counting channel.
+- Counting improvements: 
+    - `maxcount` command to see the highest ever count of the current counting channel, or any specified counting channel.
+    - The bot no longer accepts strange decimals. It used to read `10.934729` or `10.` as 10 - not anymore.
 - A smart restarting system: if the bot breaks or needs to be restarted manually, it will only restart once all currently playing songs finish playing.
 - Additional secret admin commands.
 ### Removals
