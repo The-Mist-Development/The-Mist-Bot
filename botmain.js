@@ -10,7 +10,7 @@ const { react } = require("./bot/reactions.js");
 const { artValidate } = require("./bot/exclusive.js");
 const { setup } = require("./bot/music.js");
 const { setRestartClient } = require("./bot/restart.js");
-const { getCountingChannels, count, dbConnect } = require("./bot/counting.js");
+const { getCountingChannels, count, dbConnect } = require("./bot/database.js");
 
 let ready = false;
 

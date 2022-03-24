@@ -95,6 +95,40 @@ module.exports = {
     },
     setDisconnected: function() {
         connected = false;
+    },
+    getSubscribedChannels: async function() {
+        const res = await dbClient.query("SELECT channelid FROM subscribed;");
+        return res.rows.map(x => x["channelid"]);
+    },
+    subscribe: async function(message) {
+        const res = await dbClient.query("SELECT channelid FROM subscribed;");
+        let array = res.rows.map(x => x["channelid"]);
+
+        if (array.includes(message.channel.id)) {
+            message.channel.send("This channel is already subscribed to updates!")
+        }
+        else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+            await dbClient.query(`INSERT INTO subscribed (channelid) VALUES (${message.channel.id});`);
+            message.channel.send("This channel is now subscribed to updates!");
+        }
+        else {
+            message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to subscribe to updates for you.")
+        }
+    },
+    unsubscribe: async function(message) {
+        const res = await dbClient.query("SELECT channelid FROM subscribed;");
+        let array = res.rows.map(x => x["channelid"]);
+
+        if (!array.includes(message.channel.id)) {
+            message.channel.send("This channel isn't subscribed to updates!")
+        }
+        else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+            await dbClient.query(`DELETE FROM subscribed WHERE channelid=Cast(${message.channel.id} As varchar);`);
+            message.channel.send("This channel is now unsubscribed from updates!");
+        }
+        else {
+            message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to unsubscribe from updates for you.")
+        }
     }
 }
 
