@@ -290,13 +290,6 @@ async function playSong(message, args) {
                     .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
             }, 10000);
 
-            if (args[0].includes("youtube.com/") || args[0].includes("youtu.be/")) {
-                // console.log(args[0]);
-                if (args[0].startsWith("www.") || args[0].startsWith("youtube.com/") || args[0].startsWith("youtu.be/")) {
-                    args[0] = "https://" + args[0];
-                    // console.log("fixed: " + args[0]);
-                }
-            }
             if (args[args.length - 1] == "-r") {
                 args = ["never", "gonna", "give", "you", "up", "rick", "astley"];
             }
@@ -306,6 +299,12 @@ async function playSong(message, args) {
             }
         }
         await queue.join(message.member.voice.channel);
+
+        if (args[0].includes("youtube.com/") || args[0].includes("youtu.be/")) {
+            if (args[0].startsWith("www.") || args[0].startsWith("youtube.com/") || args[0].startsWith("youtu.be/")) {
+                args[0] = "https://" + args[0];
+            }
+        }
 
         if (message.content.toLowerCase().includes("list=")) {
             if (message.content.toLowerCase().includes("?v=")) {
