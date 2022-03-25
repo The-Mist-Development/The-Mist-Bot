@@ -120,7 +120,7 @@ process.on('uncaughtException', (reason) => {
 
 function helpMsg(message) {
   message.react("📨");
-  const embed = new Discord.MessageEmbed()
+  const embed = new MessageEmbed()
     .setTitle("Commands")
     .setDescription(
       "[Go to our website](https://themistbot.herokuapp.com/) to add the bot to your server."
@@ -133,6 +133,14 @@ function helpMsg(message) {
       {
         name: "`" + prefix + "ahelp`",
         value: "If you are on the bot team, this will DM you the admin commands!"
+      },
+      {
+        name: "`" + prefix + "subscribe`",
+        value: "Subscribe to updates from us in any channel! Requires the `Manage Channels` permission."
+      },
+      {
+        name: "`" + prefix + "unsubscribe`",
+        value: "Unsubscribe from our updates in an already subscribed channel. Requires the `Manage Channels` permission."
       },
       { name: "🎵 Music Commands", value: "===" },
       {
@@ -189,7 +197,7 @@ function helpMsg(message) {
 }
 
 function adminHelpMsg(message) {
-  const embed = new Discord.MessageEmbed()
+  const embed = new MessageEmbed()
     .setTitle("Admin Commands")
     .setColor("#b9ceeb")
     .setFooter("The Mist Bot - made by R2D2Vader")
@@ -215,6 +223,10 @@ function adminHelpMsg(message) {
       {
         name: "`" + prefix + "sendmsg <Text Channel ID> <Message>`",
         value: "Sends a message in the specified text channel."
+      },
+      {
+        name: "`" + prefix + "update <Title>`",
+        value: "Sends an update message out to all subscribed channels. You will be prompted to provide fields for the embed."
       },
     );
 
@@ -266,17 +278,22 @@ function sendMessage(message, args) {
   else message.channel.send(`\`sendmsg\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
 }
 
-async function sendUpdate(message, title) {
-  if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
-    message.channel.send("What should the fields be for update **" + title + "**? (Type `cancel` to cancel)");
-    message.channel.awaitMessages(filter, {
+async function sendUpdate(fmessage, title) {
+  if (title == "") return fmessage.channel.send("You need to provide a title!");
+  if (fmessage.author.id == process.env.OWNER_ID || staffArray.includes(fmessage.author.id)) {
+    fmessage.channel.send("What should the fields be for update **" + title + "**? (Type `cancel` to cancel)\rFormat:\r```Field name=Field value|Field name=Field value|...```");
+    let filter = m => m.author.id == fmessage.author.id
+    fmessage.channel.awaitMessages({
+      filter,
       max: 1,
       time: 30000,
       errors: ['time']
     })
-      .then(message => {
-        message = message.first()
-        if (message.content.toLowerCase == "cancel") return message.channel.send("Cancelled sending the update!");
+      .then(async function (collected) {
+        let message = collected.first()
+
+        if (message.content.toLowerCase() == "cancel") return message.channel.send("Cancelled sending the update.");
+        if (!message.content.includes("=")) return message.channel.send("That doesn't look like a valid field format! Cancelled sending the update.");
 
         const embed = new MessageEmbed()
           .setTitle(title)
@@ -285,23 +302,46 @@ async function sendUpdate(message, title) {
           )
           .setColor(Math.floor(Math.random() * 16777215).toString(16))
           .setFooter("The Mist Bot - made by R2D2Vader");
-
-        const fields = message.split("|");
+        const fields = message.content.split("|");
 
         for (i = 0; i < fields.length; i++) {
           const parts = fields[i].split("=");
           embed.addFields({ name: parts[0], value: parts[1] });
         }
 
-        let channels = await getSubscribedChannels();
-        for (let i = 0; i < channels.length; i++) {
-          client.channels.cache.get(channels[i]).send({ embeds: [embed] });
-        }
+        fmessage.channel.send({ content: "**Preview** update embed. Type `confirm` to send the update, or `cancel` to cancel.", embeds: [embed] });
+        fmessage.channel.awaitMessages({
+          filter,
+          max: 1,
+          time: 30000,
+          errors: ['time']
+        })
+          .then(async function (collected) {
+            let message2 = collected.first()
+
+            if (message2.content.toLowerCase() == "confirm") {
+              message2.react("✅");
+              let channels = await getSubscribedChannels();
+              for (let i = 0; i < channels.length; i++) {
+                client.channels.cache.get(channels[i]).send({ embeds: [embed] });
+              }
+              fmessage.channel.send("Update sent!");
+            }
+
+            else if (message2.content.toLowerCase() == "cancel") fmessage.channel.send("Cancelled sending the update.");
+
+            else fmessage.channel.send("Invalid response! Cancelled sending the update.");
+          })
+          .catch(collected => {
+            if (collected.size == 0) fmessage.channel.send('Cancelled sending the update - Timeout.');
+            else fmessage.channel.send('Cancelled sending the update - An error occurred.');
+          });
       })
       .catch(collected => {
-        message.channel.send('Cancelled sending the update - Timeout.');
+        if (collected.size == 0) fmessage.channel.send('Cancelled sending the update - Timeout.');
+        else fmessage.channel.send('Cancelled sending the update - Double check that your field format is correct.');
       });
 
   }
-  else message.channel.send(`\`update\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
+  else fmessage.channel.send(`\`update\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
 }

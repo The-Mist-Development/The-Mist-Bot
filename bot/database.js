@@ -101,6 +101,7 @@ module.exports = {
         return res.rows.map(x => x["channelid"]);
     },
     subscribe: async function(message) {
+        if (message.channel.type != "GUILD_TEXT") return message.channel.send("Updates can only be subscribed to in a Server Text Channel!");
         const res = await dbClient.query("SELECT channelid FROM subscribed;");
         let array = res.rows.map(x => x["channelid"]);
 
