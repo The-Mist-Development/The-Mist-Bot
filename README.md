@@ -6,7 +6,8 @@ This refactor aimed to recode the bot **from the ground up** using updated depen
 It recoded the bot, all right. Better coding practices? In some places. Don't look to closely at the code. 
 
 ### Additions
-- Queue Management commands: `remove`, `clear`, and `loopqueue`
+- Queue Management commands: `remove`, `clear`, and `loopqueue`. 
+Also, the full queue duration is now shown in the `queue` command embed.
 - Counting for every server: Our previously private Counting feature can now be enabled in any channel. 
 Members with the `Manage Channels` permission can run `enablecounting` or `disablecounting`.
 - Counting improvements: 
@@ -15,6 +16,7 @@ Members with the `Manage Channels` permission can run `enablecounting` or `disab
 - A smart restarting system: if the bot breaks or needs to be restarted manually, it will only restart once all currently playing songs finish playing.
 - Update messages everywhere: Now, any channel can subscribe to update messages from the bot team. 
 Members with the `Manage Channels` permission can run `subscribe` or `unsubscribe`.
+- Only users in the same voice channel as the bot can control the music.
 - Additional secret admin commands.
 ### Removals
 - DJ Music Control: This feature was never used.

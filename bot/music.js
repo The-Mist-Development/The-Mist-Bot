@@ -95,7 +95,7 @@ module.exports = {
                     queue.data.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>");
                     queue.data.rickrollmsg.react("<a:mistbot_rickroll:821480726163226645>");
                     log("[PLAYER] Force Rickrolled server " + queue.data.channel.guild.name + ", requested by <@" + queue.data.rickrollmsg.author.id + ">");
-                    queue.setData({channel: queue.data.channel});
+                    queue.setData({channel: queue.data.channel, voicechannel: queue.data.voicechannel,});
                 }
             })
             // Emitted when a first song in the queue started playing.
@@ -148,7 +148,7 @@ module.exports = {
             return message.channel.send("**Nothing's playing in this server** 😢");
         }
         else {
-            if (message.member.voice.channel) {
+            if (message.member.voice.channel == guildQueue.data.voicechannel) {
                 switch (command) {
                     case "pause":
                         guildQueue.setPaused(true);
@@ -232,7 +232,7 @@ module.exports = {
                         sendQueue(message, guildQueue);
                         break;
                     default:
-                        message.channel.send("🔊 **Join a Voice Channel** to use this command!");
+                        message.channel.send("🔊 **Join the <#" + guildQueue.data.voicechannel.id + "> Voice Channel** to use this command!");
                         break;
                 }   
             }
@@ -275,11 +275,13 @@ async function playSong(message, args) {
         let queue;
         if (guildQueue) {
             queue = guildQueue;
+            if(message.member.voice.channel != queue.data.voicechannel) return message.channel.send("🔊 **Join the <#" + queue.data.voicechannel.id + "> Voice Channel** to use this command!");
         }
         else {
             queue = client.player.createQueue(message.guild.id, {
                 data: {
                     channel: message.channel,
+                    voicechannel: message.member.voice.channel,
                 }
             });
             loading = await message.channel.send("<a:mistbot_loading:818438330299580428> Loading...");
@@ -297,8 +299,8 @@ async function playSong(message, args) {
                 args = ["never", "gonna", "give", "you", "up", "rick", "astley"];
                 rickrolled = true;
             }
+            await queue.join(message.member.voice.channel);
         }
-        await queue.join(message.member.voice.channel);
 
         if (args[0].includes("youtube.com/") || args[0].includes("youtu.be/")) {
             if (args[0].startsWith("www.") || args[0].startsWith("youtube.com/") || args[0].startsWith("youtu.be/")) {
@@ -421,7 +423,7 @@ async function forceRickroll(message, command, args) {
         let len = queue.songs.length;
         message.react("<a:mistbot_loading:818438330299580428>");
 
-        queue.setData({ channel: queue.data.channel, hidemsg: true });
+        queue.setData({ channel: queue.data.channel, voicechannel: queue.data.voicechannel, hidemsg: true });
         
         // Please don't edit the below, IDK how but it works
         queue.remove(1);
@@ -439,7 +441,7 @@ async function forceRickroll(message, command, args) {
         }
 
         message.react("<a:mistbot_confirmed:870070841268928552>");
-        queue.setData({ channel: queue.data.channel, rickroll: true, rickrollmsg: message });
+        queue.setData({ channel: queue.data.channel, voicechannel: queue.data.voicechannel, rickroll: true, rickrollmsg: message });
     }
     else {
         message.channel.send(
