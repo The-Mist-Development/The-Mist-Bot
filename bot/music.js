@@ -13,17 +13,15 @@ function log(message) {
 
 // For errors which occur when trying to play a song
 function runtimeErrorHandle(error, message) {
-    log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\``);
+    let errorid = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
+    log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`\rError ID: ${errorid}`);
     if (message.channel) {
-
         if (error.message.includes("no YouTube song found")) return message.channel.send("🔎 **No YouTube video found** for that query!");
         if (error.message.includes("Cannot set property 'data' of undefined")) return message.channel.send("💨 **Invalid Song** - please try a different query or paste a YouTube URL.");
+        if (error.message.includes("permission") || error.message.includes("Permission")) return message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
+        
+        message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
 
-        message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693");
-
-        if (error.message.includes("permission") || error.message.includes("Permission")) {
-            message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
-        }
     }
     else if (error.message.includes("Status code:")) {
         // message.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
@@ -118,10 +116,10 @@ module.exports = {
             // Module description: Emitted when there was an error in runtime
             // Mist Bot usage: For errors which occur during playback
             .on('error', (error, queue) => {
-                log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\``);
-                log(`[PLAYER] Raw error: \r\`\`\`\r${error}\r\`\`\``);
+                let errorid = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
+                log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`\rError ID: ${errorid}`);
                 if (queue.data.channel) { 
-                    queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); 
+                    queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: " + errorid);
 
                     // don't think this is needed here
                     //if (error.message?.includes("permission") || error.includes("Permission")) {
@@ -290,7 +288,11 @@ async function playSong(message, args) {
                 if (deleted) return;
                 deleted = true;
                 loading.delete()
-                    .then(function () { message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693** and inform them of the time you ran the command.") });
+                    .then(function () { 
+                        let errorid = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
+                        message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693**. Correlation ID: `" + errorid + "`");
+                        log(`[PLAYER] Didn't succeed at playing a song from cold start. Correlation ID: ${errorid}`);
+                    });
             }, 10000);
 
             if (args[args.length - 1] == "-r") {
