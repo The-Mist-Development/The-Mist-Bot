@@ -122,7 +122,7 @@ module.exports = {
                 let errorid = createHash('sha1').update([queue.data.channel.guild.id, queue.data.voicechannel.id, Date.now()].join("")).digest('base64')
                 log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
                 if (queue.data.channel) { 
-                    queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: " + errorid);
+                    queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
 
                     // don't think this is needed here
                     //if (error.message?.includes("permission") || error.includes("Permission")) {
@@ -247,9 +247,11 @@ module.exports = {
         }
         else {
             if (message !== "") message.channel.send("Servers are still playing music. Restarting the bot when the `" + playingServers.length + "` currently playing songs are over.");
+            let errorid = createHash('sha1').update([playingServers[0], Date.now()].join("")).digest('base64');
+            log(`[BOT] Restart requested. Correlation ID: ${errorid}`);
             for (let i = 0; i < playingServers.length; i++) {
                 let guildQueue = client.player.getQueue(playingServers[i].guildId);
-                guildQueue.data.channel.send("😔 We have to **restart the bot** to fix critical issues. The bot will automaticaly restart **after this song ends**. Sorry for the inconvenience!");
+                guildQueue.data.channel.send("😔 We have to **restart the bot** to fix critical issues. The bot will automaticaly restart **after this song ends**. Sorry for the inconvenience! Correlation ID: `" + errorid + "`");
                 guildQueue.setRepeatMode(0);
                 guildQueue.clearQueue();
             }
