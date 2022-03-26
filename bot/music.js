@@ -20,7 +20,7 @@ function runtimeErrorHandle(error, message) {
     log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
     if (message.channel) {
         if (error.message.includes("no YouTube song found")) return message.channel.send("🔎 **No YouTube video found** for that query!");
-        if (error.message.includes("Cannot set property 'data' of undefined" || "Cannot set properties of undefined")) return message.channel.send("💨 **Invalid Song** - please try a different query or paste a YouTube URL.");
+        if (error.message.includes("Cannot set property 'data' of undefined") || error.message.includes("Cannot set properties of undefined")) return message.channel.send("💨 **Invalid Song** - please try a different query or paste a YouTube URL.");
         if (error.message.includes("permission") || error.message.includes("Permission")) return message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
         
         message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
