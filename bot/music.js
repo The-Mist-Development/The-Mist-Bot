@@ -354,6 +354,8 @@ async function playSong(message, args) {
 }
 
 function sendQueue(message, queue) {
+    if (queue.songs.length > 15) message.channel.send("📑 **The queue is too long to display.** Showing the first 15 songs.");
+    searchFor = queue.songs.length < 15 ? queue.songs.length : 15;
     let ms = 0;
     for (let i = 0; i < queue.songs.length; i++) {
         ms = ms + queue.songs[i].milliseconds;
@@ -371,7 +373,7 @@ function sendQueue(message, queue) {
     let duration = hours + minutes + seconds;
 
     const embed = new Discord.MessageEmbed()
-        .setTitle("Queue for " + message.guild.name + " | Duration: `" + duration + "`")
+        .setTitle("Queue for " + message.guild.name + " | Total Duration: `" + duration + "`")
         .setFooter("The Mist Bot - made by R2D2Vader")
         .setColor("#066643")
         .addFields({
@@ -379,7 +381,7 @@ function sendQueue(message, queue) {
             value: "Duration: " + queue.songs[0].duration
         });
 
-    for (let i = 1; i < queue.songs.length; i++) {
+    for (let i = 1; i < searchFor; i++) {
         embed.addFields({
             name: "`" + i + "` **" + queue.songs[i].name + "**",
             value: "Duration: " + queue.songs[i].duration
