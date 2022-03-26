@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const { Player } = require("discord-music-player");
 const { restart } = require("./restart.js");
-import createHash from 'crypto';
+const { createHash } = require('crypto');
 
 let client;
 let rickrollchance = 1;
