@@ -355,7 +355,7 @@ function sendQueue(message, queue) {
     }
     let date = new Date(ms);
 
-    let hours = (date.getHours() - 1).toString();
+    let hours = (date.getHours()).toString();
     let minutes = date.getMinutes().toString();
     let seconds = date.getSeconds().toString();
 
