@@ -15,7 +15,7 @@ function log(message) {
 
 // For errors which occur when trying to play a song
 function runtimeErrorHandle(error, message) {
-    let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()],join("")).digest('base64')
+    let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()].join("")).digest('base64')
 
     log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
     if (message.channel) {
@@ -119,7 +119,7 @@ module.exports = {
             // Module description: Emitted when there was an error in runtime
             // Mist Bot usage: For errors which occur during playback
             .on('error', (error, queue) => {
-                let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()],join("")).digest('base64')
+                let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()].join("")).digest('base64')
                 log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
                 if (queue.data.channel) { 
                     queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: " + errorid);
@@ -292,7 +292,7 @@ async function playSong(message, args) {
                 deleted = true;
                 loading.delete()
                     .then(function () { 
-                        let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()],join("")).digest('base64')
+                        let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()].join("")).digest('base64')
                         message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693**. Correlation ID: `" + errorid + "`");
                         log(`[PLAYER] Failed while playing a song from cold start. Correlation ID: ${errorid}`);
                     });
