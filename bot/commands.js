@@ -298,7 +298,7 @@ async function sendUpdate(fmessage, title) {
         const embed = new MessageEmbed()
           .setTitle(title)
           .setDescription(
-            "R2D2Vader and Kamicavi just patched the bot! Here are the updates."
+            "R2D2Vader and kamicavi just patched the bot! Here are the updates."
           )
           .setColor(Math.floor(Math.random() * 16777215).toString(16))
           .setFooter("The Mist Bot - made by R2D2Vader");
