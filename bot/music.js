@@ -119,6 +119,7 @@ module.exports = {
             // Mist Bot usage: For errors which occur during playback
             .on('error', (error, queue) => {
                 log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\``);
+                log(`[PLAYER] Raw error: \r\`\`\`\r${error}\r\`\`\``);
                 if (queue.data.channel) { 
                     queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693"); 
 
