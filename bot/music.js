@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 const { Player } = require("discord-music-player");
 const { restart } = require("./restart.js");
+import createHash from 'crypto';
+
 let client;
 let rickrollchance = 1;
 let playingServers = [];
@@ -13,11 +15,12 @@ function log(message) {
 
 // For errors which occur when trying to play a song
 function runtimeErrorHandle(error, message) {
-    let errorid = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
-    log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`\rError ID: ${errorid}`);
+    let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()],join("")).digest('base64')
+
+    log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
     if (message.channel) {
         if (error.message.includes("no YouTube song found")) return message.channel.send("🔎 **No YouTube video found** for that query!");
-        if (error.message.includes("Cannot set property 'data' of undefined")) return message.channel.send("💨 **Invalid Song** - please try a different query or paste a YouTube URL.");
+        if (error.message.includes("Cannot set property 'data' of undefined" || "Cannot set properties of undefined")) return message.channel.send("💨 **Invalid Song** - please try a different query or paste a YouTube URL.");
         if (error.message.includes("permission") || error.message.includes("Permission")) return message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
         
         message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
@@ -116,8 +119,8 @@ module.exports = {
             // Module description: Emitted when there was an error in runtime
             // Mist Bot usage: For errors which occur during playback
             .on('error', (error, queue) => {
-                let errorid = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
-                log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`\rError ID: ${errorid}`);
+                let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()],join("")).digest('base64')
+                log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
                 if (queue.data.channel) { 
                     queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: " + errorid);
 
@@ -289,9 +292,9 @@ async function playSong(message, args) {
                 deleted = true;
                 loading.delete()
                     .then(function () { 
-                        let errorid = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
+                        let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()],join("")).digest('base64')
                         message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693**. Correlation ID: `" + errorid + "`");
-                        log(`[PLAYER] Didn't succeed at playing a song from cold start. Correlation ID: ${errorid}`);
+                        log(`[PLAYER] Failed while playing a song from cold start. Correlation ID: ${errorid}`);
                     });
             }, 10000);
 
