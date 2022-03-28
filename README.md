@@ -3,7 +3,7 @@ A Discord bot made for The Mist Discord. It actually uses more recent Node versi
 ## Refactor v2
 This refactor aimed to recode the bot **from the ground up** using updated dependencies and better coding practices. 
 
-It recoded the bot, all right. Better coding practices? In some places. Don't look to closely at the code. 
+It recoded the bot, all right. Better coding practices? In some places. Don't look too closely at the code. 
 
 ### Additions
 - Queue Management commands: `remove`, `clear`, and `loopqueue`. 
