@@ -17,7 +17,7 @@ Members with the `Manage Channels` permission can run `enablecounting` or `disab
 - Update messages everywhere: Now, any channel can subscribe to update messages from the bot team. 
 Members with the `Manage Channels` permission can run `subscribe` or `unsubscribe`.
 - Only users in the same voice channel as the bot can control the music.
-- Better error handling which won't cut off your song mid-playback! 
+- Better error handling which will give you an error code to let admins find exactly what caused an issue!
 - Additional secret admin commands.
 ### Removals
 - DJ Music Control: This feature was never used.
