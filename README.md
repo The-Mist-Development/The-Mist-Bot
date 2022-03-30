@@ -1,5 +1,5 @@
-# The-Mist-Bot-Node-v12
-A Discord bot made for The Mist Discord. It actually uses more recent Node versions but the name has stuck.
+# The-Mist-Bot
+A Discord bot made for The Mist Discord. 
 
 To **invite our instance of the bot** to your server, **[click here](https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot)**.
 ## Refactor v2
