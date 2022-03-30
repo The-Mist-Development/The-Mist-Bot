@@ -18,9 +18,9 @@
   ],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/R2D2VaderBeef/The-Mist-Bot-Node-v12/issues"
+    "url": "https://github.com/The-Mist-Development/The-Mist-Bot/issues"
   },
-  "homepage": "https://github.com/R2D2VaderBeef/The-Mist-Bot-Node-v12#readme",
+  "homepage": "https://github.com/The-Mist-Development/The-Mist-Bot#readme",
   "dependencies": {
     "@discordjs/opus": "^0.7.0",
     "body-parser": "^1.19.1",
