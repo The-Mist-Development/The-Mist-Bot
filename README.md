@@ -1,7 +1,9 @@
 # The-Mist-Bot
-A Discord bot made for The Mist Discord. 
+A Discord bot made for The Mist Discord.
 
 To **invite our instance of the bot** to your server, **[click here](https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot)**.
+
+Feel free to fork the bot and make your own modifications for your own use. See also: [Contributing](#contributing)
 ## Refactor v2
 This refactor aimed to recode the bot **from the ground up** using updated dependencies and better coding practices. 
 
@@ -27,3 +29,8 @@ Members with the `Manage Channels` permission can run `subscribe` or `unsubscrib
 ### Behind-the-scenes changes
 - The website is now enabled only if the environment variable `WEBSITE` equals `TRUE`. This will be disabled by default on the bot which we host.
 - The bot now reads the prefix from `process.env.PREFIX`. 
+
+## Contributing
+If you have any ideas for this bot, we'd love to hear them! 
+
+You can PR useful edits too, if you really want. 
