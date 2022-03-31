@@ -33,4 +33,4 @@ Members with the `Manage Channels` permission can run `subscribe` or `unsubscrib
 ## Contributing
 If you have any ideas for this bot, we'd love to hear them! 
 
-You can PR useful edits too, if you really want. 
+You can PR useful edits too. Make sure all PRs target the `test-chamber` branch.
