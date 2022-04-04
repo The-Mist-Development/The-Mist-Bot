@@ -12,16 +12,16 @@ module.exports = {
           if (msgcontent.includes("100%")) {
             message.react("💯");
           }
-          if (msgcontent.includes("lmao")) {
-            message.react("🇱");
-            message.react("Ⓜ");
-            message.react("🅰️");
-            message.react("🇴");
-          }
           if (msgcontent.includes("lmfao")) {
             message.react("🇱");
             message.react("Ⓜ");
             message.react("🇫");
+            message.react("🅰️");
+            message.react("🇴");
+          }
+          if (msgcontent.includes("lmao")) {
+            message.react("🇱");
+            message.react("Ⓜ");
             message.react("🅰️");
             message.react("🇴");
           }
@@ -33,12 +33,6 @@ module.exports = {
         if (janmode == true && message.guild.id == "780901822734532659") {
             if (msgcontent.includes("jan ") || msgcontent.includes(" jan ") || msgcontent == "jan") {
               message.react("🐸");
-            }
-            if (msgcontent.includes("alkali")) {
-              message.react("🇦");
-              message.react("🇨");
-              message.react("🇮");
-              message.react("🇩");
             }
         }
     }
