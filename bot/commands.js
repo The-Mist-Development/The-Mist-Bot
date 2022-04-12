@@ -1,6 +1,6 @@
 const { Discord, MessageEmbed } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
-const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels } = require("./database.js")
+const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache } = require("./database.js")
 const { restart, cancelRestart } = require("./restart.js");
 
 const prefix = process.env.PREFIX;
@@ -31,11 +31,15 @@ module.exports = {
         tryRestart(message);
         break;
       case "frestart":
-        log("Forced Restart requested by <@" + message.author.id + ">.");
-        restart();
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          log("Forced Restart requested by <@" + message.author.id + ">.");
+          restart();
+        }
         break;
       case "cancel":
-        tryCancel(message);
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          tryCancel(message);
+        }
         break;
       case "enablecounting":
         enableCounting(message);
@@ -54,6 +58,12 @@ module.exports = {
           }
         }
         else getMaxCount(message);
+        break;
+      case "updatecache":
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          message.react("📲")
+          updateCache();
+        }
         break;
       case "sendmsg":
         sendMessage(message, args);
@@ -227,6 +237,10 @@ function adminHelpMsg(message) {
       {
         name: "`" + prefix + "update <Title>`",
         value: "Sends an update message out to all subscribed channels. You will be prompted to provide fields for the embed."
+      },
+      {
+        name: "`" + prefix + "updatecache`",
+        value: "Manually updates the list of counting channels from the database."
       },
     );
 

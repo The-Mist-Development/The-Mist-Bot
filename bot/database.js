@@ -137,3 +137,5 @@ async function updateCache() {
     const res = await dbClient.query("SELECT channelid FROM counting;");
     countingChannelsCache = res.rows.map(x => x["channelid"]);
 }
+
+module.exports.updateCache = updateCache;
