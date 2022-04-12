@@ -62,6 +62,25 @@ client.on("messageCreate", async function (message) {
   }
 });
 
+client.on('messageUpdate', async (oldmessage, newmessage) => {
+  let channels = await getCountingChannels();
+  if (!channels.includes(oldmessage.channel.id)) return;
+
+  if (+oldmessage.content === +oldmessage.content) {
+    oldmessage.channel.send("⚠ **" + oldmessage.author.username + "**, we all saw you edit that message! 🤔 I'm not sure what the count is now... **Try adding one extra when you next count**.")
+  }
+});
+
+client.on('messageDelete', async (message) => {
+  let channels = await getCountingChannels();
+  if (!channels.includes(message.channel.id)) return;
+
+  if (+message.content === +message.content) {
+    message.channel.send("⚠ A message by **" + message.author.username + "** was deleted! 🤔 I'm not sure what the count is now... **Try adding one extra when you next count**.")
+  }
+});
+
+
 // Global logging function used for important things in many places
 function log(message) {
   console.log(message.replaceAll("*", "").replaceAll("`", ""));
