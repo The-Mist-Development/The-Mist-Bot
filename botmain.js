@@ -67,7 +67,7 @@ client.on('messageUpdate', async (oldmessage, newmessage) => {
   if (!channels.includes(oldmessage.channel.id)) return;
 
   if (+oldmessage.content === +oldmessage.content) {
-    oldmessage.channel.send("⚠ **" + oldmessage.author.username + "**, we all saw you edit that message! 🤔 I'm not sure what the count is now... **Try adding one extra when you next count**.")
+    oldmessage.channel.send("⚠ **" + oldmessage.author.username + "**, we all saw you edit that message! 🤔 I'm not sure what the count is now...")
   }
 });
 
