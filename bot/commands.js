@@ -129,7 +129,7 @@ process.on('uncaughtException', (reason) => {
 // Help and Admin commands
 
 function helpMsg(message) {
-  message.react("📨");
+  message.react("📨").catch((err) => {});
   const embed = new MessageEmbed()
     .setTitle("Commands")
     .setDescription(
@@ -203,7 +203,7 @@ function helpMsg(message) {
         value: "Get the highest counted number in a counting channel. Or specify a Channel ID to see the max count from that channel."
       },
     );
-  message.author.send({ embeds: [embed] });
+  message.author.send({ embeds: [embed] }).catch((err) => {message.channel.send("Unable to DM you the help message. 😔")});
 }
 
 function adminHelpMsg(message) {

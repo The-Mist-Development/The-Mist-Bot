@@ -47,7 +47,7 @@ client.on("messageCreate", async function (message) {
       count(message)
     }
     else {
-      message.react("👌")
+      message.react("👌").catch((err) => {});
     }
   }
 
