@@ -133,7 +133,7 @@ function helpMsg(message) {
   const embed = new MessageEmbed()
     .setTitle("Commands")
     .setDescription(
-      "[Click here](https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot) to add the bot to your server."
+      "[Click here](https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot) to add the bot to your server. \r The Mist Bot is open source - [click here](https://github.com/The-Mist-Development/The-Mist-Bot) to view the source code and contribute."
     )
     .setColor("#d5dbe3")
     .setFooter("The Mist Bot - made by R2D2Vader")
