@@ -12,7 +12,7 @@ module.exports = {
         client = variable;
     },
     restart: function() {
-        log("Restarting in 20 seconds. Use `" + process.env.PREFIX + "cancel` to cancel.");
+        log("[APP] Restarting in 20 seconds. Use `" + process.env.PREFIX + "cancel` to cancel.");
         killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 20000)
     },
     cancelRestart: function(message) {

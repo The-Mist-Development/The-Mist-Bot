@@ -123,6 +123,7 @@ process.on('uncaughtException', (reason) => {
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
     setDisconnected();
   }
+  if (reason.stack?.includes("Unexpected token < in JSON at position 0")) return log("[APP] A server responded with HTML or an error instead of JSON. Not restarting.")
   requestRestart();
 });
 
