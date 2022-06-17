@@ -55,7 +55,7 @@ module.exports = {
             }
             else {
                 await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
-                message.channel.send("**" + message.member.displayName + "** ruined the count at `" + res["count"] + "`! You cannot count **twice in a row**. `The count reset.`");
+                message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! You cannot count **twice in a row**. `The count reset.`");
                 message.react("❌").catch((err) => {return;});
                 message.channel.send("Next number is `1`.");
                 return;
@@ -63,7 +63,7 @@ module.exports = {
         }
         else {
             await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
-            message.channel.send("**" + message.member.displayName + "** ruined the count at `" + res["count"] + "`! `The count reset.`");
+            message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! `The count reset.`");
             message.react("❌").catch((err) => {return;});
             message.channel.send("Next number is `1`.");
             return;
