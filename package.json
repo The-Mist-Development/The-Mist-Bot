@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/The-Mist-Development/The-Mist-Bot#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.7.0",
+    "@discordjs/opus": "^0.8.0",
     "body-parser": "^1.19.1",
     "cron": "^1.8.2",
     "discord-music-player": "^8.3.1",
