@@ -82,6 +82,7 @@ module.exports = {
       case "loopq":
       case "forcerickroll":
       case "clear":
+      case "leave":
         music(message, command, args);
         break;
       default:
@@ -113,7 +114,6 @@ process.on('uncaughtException', (reason) => {
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
     setDisconnected();
   }
-  if (reason.stack?.startsWith("QueueDestroyed: The Queue was destroyed.")) return;
   requestRestart();
 });
 
@@ -157,7 +157,7 @@ function helpMsg(message) {
         value: "Skip the currently playing song."
       },
       {
-        name: "`" + prefix + "stop`",
+        name: "`" + prefix + "stop` / `" + prefix + "leave`",
         value: "Clear the queue and stop the music."
       },
       {
