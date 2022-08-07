@@ -105,6 +105,7 @@ module.exports = {
             // Emitted when someone disconnected the bot from the channel.
             .on('clientDisconnect', (queue) => {
                 queue.data.channel.send("👋 **Bye then!** I see how it is 😔")
+                queue.stop()
                 let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1); 
