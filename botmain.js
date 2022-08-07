@@ -62,6 +62,17 @@ client.on("messageCreate", async function (message) {
   }
 });
 
+// Do a collective freakout if we get dragged channels.
+client.on('voiceStateUpdate', (oldState, newState) => {
+  if (oldState.id == client.user.id && oldState.channel && newState.channel && oldState.channel != newState.channel && client.player) {
+    // log("I think I was just dragged!")
+    let queue = client.player.getQueue(newState.channel.guildId)
+    if (queue) {
+      queue.setData({ channel: queue.data.channel, voicechannel: newState.channel})
+    }
+  }
+});
+
 // Global logging function used for important things in many places
 function log(message) {
   console.log(message.replaceAll("*", "").replaceAll("`", ""));
