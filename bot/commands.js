@@ -113,6 +113,7 @@ process.on('uncaughtException', (reason) => {
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
     setDisconnected();
   }
+  if (reason.stack?.startsWith("QueueDestroyed: The Queue was destroyed.")) return;
   requestRestart();
 });
 

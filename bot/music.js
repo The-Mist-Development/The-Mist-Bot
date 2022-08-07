@@ -41,7 +41,7 @@ module.exports = {
             leaveOnEnd: true,
             leaveOnStop: true,
             leaveOnEmpty: true,
-            timeout: 30000
+            timeout: 5000
         });
         client.player = newPlayer;
 
