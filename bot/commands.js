@@ -114,6 +114,9 @@ function log(message) {
 // not crash on unhandled promise rejection, log then exit (auto restarts on Heroku)
 process.on('unhandledRejection', (reason, promise) => {
   log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
+  if (reason.stack?.startsWith("DiscordAPIError: Missing Permissions")) {
+    return log("Missing Permissions for something basic. No big deal.");
+  }
   requestRestart();
 });
 
