@@ -41,7 +41,7 @@ module.exports = {
             leaveOnEnd: true,
             leaveOnStop: true,
             leaveOnEmpty: true,
-            timeout: 30000
+            timeout: 10000
         });
         client.player = newPlayer;
 
@@ -67,7 +67,7 @@ module.exports = {
                 queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist}** to the queue.`))
             // Emitted when the queue was destroyed (by stopping).    
             .on('queueDestroyed', (queue) => {
-                // queue.data.channel.send(`⏹ **Stopped** - Is that all for now?`);
+                //queue.data.channel.send(`⏹ **Stopped** - Is that all for now?`);
                 let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1); 
@@ -165,8 +165,9 @@ module.exports = {
                         message.channel.send("⏭ **Skipped!**");
                         break;
                     case "stop":
-                        guildQueue.stop();
-                        message.channel.send(`⏹ **Stopped** - Is that all for now?`);
+                    case "leave":
+                        guildQueue.leave();
+                        message.channel.send(`⏹ **Stopping** - Is that all for now?`);
                         break;
                     case "queue":
                     case "q":

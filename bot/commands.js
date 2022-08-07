@@ -92,6 +92,7 @@ module.exports = {
       case "loopq":
       case "forcerickroll":
       case "clear":
+      case "leave":
         music(message, command, args);
         break;
       default:
@@ -170,7 +171,7 @@ function helpMsg(message) {
         value: "Skip the currently playing song."
       },
       {
-        name: "`" + prefix + "stop`",
+        name: "`" + prefix + "stop` / `" + prefix + "leave`",
         value: "Clear the queue and stop the music."
       },
       {

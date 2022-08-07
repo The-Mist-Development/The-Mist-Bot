@@ -63,6 +63,19 @@ client.on("messageCreate", async function (message) {
   }
 });
 
+
+// Do a collective freakout if we get dragged channels.
+client.on('voiceStateUpdate', (oldState, newState) => {
+  if (oldState.id == client.user.id && oldState.channel && newState.channel && oldState.channel != newState.channel && client.player) {
+    // log("I think I was just dragged!")
+    let queue = client.player.getQueue(newState.channel.guildId)
+    if (queue) {
+      queue.setData({ channel: queue.data.channel, voicechannel: newState.channel})
+    }
+  }
+});
+
+
 client.on('messageUpdate', async (oldmessage, newmessage) => {
   let channels = await getCountingChannels();
   if (!channels.includes(oldmessage.channel.id)) return;
@@ -80,6 +93,7 @@ client.on('messageDelete', async (message) => {
     message.channel.send("⚠ A message by **" + message.author.username + "** was deleted! 🤔 I'm not sure what the count is now... **Try adding one extra when you next count**.")
   }
 });
+
 
 
 // Global logging function used for important things in many places
