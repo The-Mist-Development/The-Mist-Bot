@@ -6,6 +6,8 @@ const janmode = true;
 
 module.exports = {
     react: function(message) {
+        if (message.guild.id == "311623758395998219") return;
+        
         const msgcontent = message.content.toLowerCase();
 
         if (lmaomode == true) {
