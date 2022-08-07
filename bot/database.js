@@ -42,20 +42,29 @@ module.exports = {
     },
     count: async function (message) {
         if (connected == false) {
-            message.react("❎");
+            message.react("❎").catch((err) => {return;});
             message.channel.send("We're having issues **connecting to our database**. Please try again later. If this issue persists, contact R2D2Vader#0693");
             return;
         }
         const resObj = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`)
         let res = resObj.rows[0]
         if (message.content == parseInt(res["count"]) + 1) {
-            await dbClient.query(`UPDATE counting SET count=${parseInt(res["count"]) + 1} WHERE channelid=${message.channel.id}`)
-            message.react("<a:mistbot_confirmed:870070841268928552>")
+            if (res["lastusertocount"] != message.member.id) {
+                await dbClient.query(`UPDATE counting SET count=${parseInt(res["count"]) + 1}, lastusertocount=${message.member.id} WHERE channelid=${message.channel.id}`)
+                message.react("<a:mistbot_confirmed:870070841268928552>").catch((err) => {message.channel.send("<a:mistbot_confirmed:870070841268928552>")});
+            }
+            else {
+                await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
+                message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! You cannot count **twice in a row**. `The count reset.`");
+                message.react("❌").catch((err) => {return;});
+                message.channel.send("Next number is `1`.");
+                return;
+            }
         }
         else {
-            await dbClient.query(`UPDATE counting SET count=0 WHERE channelid=${message.channel.id}`)
-            message.channel.send("**" + message.member.displayName + "** ruined the count at `" + res["count"] + "`! `The count reset.`");
-            message.react("❌");
+            await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
+            message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! `The count reset.`");
+            message.react("❌").catch((err) => {return;});
             message.channel.send("Next number is `1`.");
             return;
         }
@@ -71,7 +80,7 @@ module.exports = {
             message.channel.send("Counting is already enabled in this channel!")
         }
         else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
-            await dbClient.query(`INSERT INTO counting (channelid, maxcount, count) VALUES (${message.channel.id},0,0);`);
+            await dbClient.query(`INSERT INTO counting (channelid, maxcount, count, lastusertocount) VALUES (${message.channel.id},0,0,-1);`);
             message.channel.send("Counting is now enabled! The next number is `1`.");
             updateCache();
         }
@@ -137,3 +146,5 @@ async function updateCache() {
     const res = await dbClient.query("SELECT channelid FROM counting;");
     countingChannelsCache = res.rows.map(x => x["channelid"]);
 }
+
+module.exports.updateCache = updateCache;

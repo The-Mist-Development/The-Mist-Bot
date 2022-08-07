@@ -1,6 +1,6 @@
 const { Discord, MessageEmbed } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
-const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels } = require("./database.js")
+const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache } = require("./database.js")
 const { restart, cancelRestart } = require("./restart.js");
 
 const prefix = process.env.PREFIX;
@@ -31,11 +31,15 @@ module.exports = {
         tryRestart(message);
         break;
       case "frestart":
-        log("Forced Restart requested by <@" + message.author.id + ">.");
-        restart();
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          log("Forced Restart requested by <@" + message.author.id + ">.");
+          restart();
+        }
         break;
       case "cancel":
-        tryCancel(message);
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          tryCancel(message);
+        }
         break;
       case "enablecounting":
         enableCounting(message);
@@ -54,6 +58,12 @@ module.exports = {
           }
         }
         else getMaxCount(message);
+        break;
+      case "updatecache":
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          message.react("📲")
+          updateCache();
+        }
         break;
       case "sendmsg":
         sendMessage(message, args);
@@ -105,6 +115,9 @@ function log(message) {
 // not crash on unhandled promise rejection, log then exit (auto restarts on Heroku)
 process.on('unhandledRejection', (reason, promise) => {
   log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
+  if (reason.stack?.startsWith("DiscordAPIError: Missing Permissions")) {
+    return log("Missing Permissions for something basic. No big deal.");
+  }
   requestRestart();
 });
 
@@ -114,17 +127,18 @@ process.on('uncaughtException', (reason) => {
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
     setDisconnected();
   }
+  if (reason.stack?.includes("Unexpected token < in JSON at position 0")) return log("[APP] A server responded with HTML or an error instead of JSON. Not restarting.")
   requestRestart();
 });
 
 // Help and Admin commands
 
 function helpMsg(message) {
-  message.react("📨");
+  message.react("📨").catch((err) => {});
   const embed = new MessageEmbed()
     .setTitle("Commands")
     .setDescription(
-      "[Click here](https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot) to add the bot to your server."
+      "[Click here](https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot) to add the bot to your server. \r The Mist Bot is open source - [click here](https://github.com/The-Mist-Development/The-Mist-Bot) to view the source code and contribute."
     )
     .setColor("#d5dbe3")
     .setFooter("The Mist Bot - made by R2D2Vader")
@@ -194,7 +208,7 @@ function helpMsg(message) {
         value: "Get the highest counted number in a counting channel. Or specify a Channel ID to see the max count from that channel."
       },
     );
-  message.author.send({ embeds: [embed] });
+  message.author.send({ embeds: [embed] }).catch((err) => {message.channel.send("Unable to DM you the help message. 😔")});
 }
 
 function adminHelpMsg(message) {
@@ -228,6 +242,10 @@ function adminHelpMsg(message) {
       {
         name: "`" + prefix + "update <Title>`",
         value: "Sends an update message out to all subscribed channels. You will be prompted to provide fields for the embed."
+      },
+      {
+        name: "`" + prefix + "updatecache`",
+        value: "Manually updates the list of counting channels from the database."
       },
     );
 

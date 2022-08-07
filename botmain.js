@@ -43,11 +43,12 @@ client.on("messageCreate", async function (message) {
   let channels = await getCountingChannels();
 
   if (channels.includes(message.channel.id)) {
+    if (message.member.displayName.includes("@everyone") || message.member.displayName.includes("@here")) return message.react("💢");
     if (+message.content === +message.content && !message.content.includes(".")) {
       count(message)
     }
     else {
-      message.react("👌")
+      message.react("👌").catch((err) => {});
     }
   }
 
@@ -62,6 +63,7 @@ client.on("messageCreate", async function (message) {
   }
 });
 
+
 // Do a collective freakout if we get dragged channels.
 client.on('voiceStateUpdate', (oldState, newState) => {
   if (oldState.id == client.user.id && oldState.channel && newState.channel && oldState.channel != newState.channel && client.player) {
@@ -72,6 +74,27 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
   }
 });
+
+
+client.on('messageUpdate', async (oldmessage, newmessage) => {
+  let channels = await getCountingChannels();
+  if (!channels.includes(oldmessage.channel.id)) return;
+
+  if (+oldmessage.content === +oldmessage.content) {
+    oldmessage.channel.send("⚠ **" + oldmessage.author.username + "**, we all saw you edit that message! 🤔 I'm not sure what the count is now...")
+  }
+});
+
+client.on('messageDelete', async (message) => {
+  let channels = await getCountingChannels();
+  if (!channels.includes(message.channel.id)) return;
+
+  if (+message.content === +message.content) {
+    message.channel.send("⚠ A message by **" + message.author.username + "** was deleted! 🤔 I'm not sure what the count is now... **Try adding one extra when you next count**.")
+  }
+});
+
+
 
 // Global logging function used for important things in many places
 function log(message) {
