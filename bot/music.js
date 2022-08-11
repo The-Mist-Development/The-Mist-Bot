@@ -90,7 +90,7 @@ module.exports = {
             })
             // Emitted when a song changed.
             .on('songChanged', (queue, newSong, oldSong) => {
-                if (oldSong.url == newSong.url) queue.data.channel.send(`🔂 Playing Again: **${newSong.name}** 🎶`);
+                if (oldSong.url == newSong.url) return; //queue.data.channel.send(`🔂 Playing Again: **${newSong.name}** 🎶`);
                 else queue.data.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`);
                 if (queue.data.rickroll) {
                     queue.data.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>");
@@ -161,6 +161,10 @@ module.exports = {
                         message.channel.send("▶ **Resumed!**");
                         break;
                     case "skip":
+                        if (guildQueue.repeatMode == 1) {
+                            guildQueue.setRepeatMode(0)
+                            message.channel.send("Single song **loop disabled**.")
+                        }
                         guildQueue.skip();
                         message.channel.send("⏭ **Skipped!**");
                         break;
@@ -190,6 +194,7 @@ module.exports = {
                         sendNowPlaying(message, guildQueue);
                         break;
                     case "loop":
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(1);
                             message.channel.send("🔂 **Looping the current song**");
@@ -266,7 +271,7 @@ module.exports = {
 }
 
 async function playSong(message, args) {
-    if (args.length == 0) return;
+    if (args.length == 0) return message.channel.send("🤔 *Play what?* \rI take song names, and YouTube URLs for videos and playlists.");
     if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
         
     let guildQueue = client.player.getQueue(message.guild.id);
@@ -365,9 +370,9 @@ function sendQueue(message, queue) {
     }
     let date = new Date(ms);
 
-    let hours = (date.getHours()).toString();
-    let minutes = date.getMinutes().toString();
-    let seconds = date.getSeconds().toString();
+    let hours = (date.getUTCHours()).toString();
+    let minutes = date.getUTCMinutes().toString();
+    let seconds = date.getUTCSeconds().toString();
 
     hours = hours == 0 ? "" : hours + ":";
     minutes = minutes.length == 1 ? "0" + minutes + ":" : minutes + ":";
@@ -376,11 +381,12 @@ function sendQueue(message, queue) {
     let duration = hours + minutes + seconds;
 
     const embed = new Discord.MessageEmbed()
-        .setTitle("Queue for " + message.guild.name + " | Total Duration: `" + duration + "`")
+        .setTitle((queue.repeatMode == 2 ? "🔁 " : "") + "Queue for " + message.guild.name)
+        .setDescription("Total Duration: `" + duration + "`")
         .setFooter("The Mist Bot - made by R2D2Vader")
         .setColor("#066643")
         .addFields({
-            name: "`Now Playing` **" + queue.songs[0].name + "**",
+            name: (queue.repeatMode == 1 ? "🔂 " : "") + "`Now Playing` **" + queue.songs[0].name + "**",
             value: "Duration: " + queue.songs[0].duration
         });
 
@@ -402,8 +408,9 @@ function sendNowPlaying(message, queue) {
     });
 
     const embed = new Discord.MessageEmbed()
-        .setTitle("Now Playing: " + queue.songs[0].name)
+        .setTitle(queue.songs[0].name)
         .setURL(queue.songs[0].url)
+        .setAuthor((queue.repeatMode == 1 ? "🔂 " : "") + "Now Playing")
         .setFooter("The Mist Bot - made by R2D2Vader")
         .setThumbnail(queue.songs[0].thumbnail)
         .addFields(
