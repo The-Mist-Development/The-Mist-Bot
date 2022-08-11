@@ -314,6 +314,7 @@ async function playSong(message, args) {
                 rickrolled = true;
             }
             await queue.join(message.member.voice.channel);
+            playingServers.push({"guildId": message.channel.guildId, "channelId": message.channel.id});
         }
 
         if (args[0].includes("youtube.com/") || args[0].includes("youtu.be/")) {
@@ -352,7 +353,6 @@ async function playSong(message, args) {
         }
         if (rickrolled == true) setTimeout(function () { message.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>"); }, 2000);
 
-        playingServers.push({"guildId": message.channel.guildId, "channelId": message.channel.id});
 
     } else {
         message.channel.send(
