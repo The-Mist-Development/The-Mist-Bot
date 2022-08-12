@@ -120,7 +120,7 @@ module.exports = {
             // Mist Bot usage: For errors which occur during playback
             .on('error', (error, queue) => {
                 let errorid = createHash('sha1').update([queue.data.channel.guild.id, queue.data.voicechannel.id, Date.now()].join("")).digest('base64')
-                log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
+                log(`[PLAYER] Error during playback in ${queue.guild.name}: ${error} \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
                 if (queue.data.channel) { 
                     queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
 
