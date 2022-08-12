@@ -18,7 +18,7 @@ client.login(token).catch(log);
 
 client.on("ready", async () => {
   ready = true;
-  client.user.setActivity(`${prefix}help | I'm v2!`, { type: "LISTENING" });
+  client.user.setActivity(`${prefix}help | The refactor was so long ago...`, { type: "LISTENING" });
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);
