@@ -155,8 +155,14 @@ module.exports = {
             if (message.member.voice.channel == guildQueue.data.voicechannel) {
                 switch (command) {
                     case "pause":
-                        guildQueue.setPaused(true);
-                        message.channel.send("⏸ **Paused!**");
+                        if (needRestart == 1) {
+                            guildQueue.leave();
+                            message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. Your song has been stopped and no more songs may be played at this time.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+                        }
+                        else {
+                            guildQueue.setPaused(true);
+                            message.channel.send("⏸ **Paused!**");
+                        }
                         break;
                     case "resume":
                         guildQueue.setPaused(false);
