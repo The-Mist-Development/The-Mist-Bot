@@ -213,7 +213,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             dbClient.query("SELECT * FROM wishlist_games WHERE gameid = $1", [gameId], function (error, results) {
                 if (error) reject(error);
-                if (results.length < 1) {
+                if (results.rowCount < 1) {
                     insertIntoGames(gameId, price, resolve, reject);
                 }
                 else {
