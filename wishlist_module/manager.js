@@ -170,26 +170,25 @@ let gamePriceSync = new CronJob(
                         db.updateGame(games[i], response.price_overview.final).then(function (oldPrice) {
                             if (oldPrice == -1) {
                                 log(`[WISHLIST][DEBUG] Game ${response.name} not previously in database.`);
-                                if (response.price_overview.discount_percent > 0) {
-                                    log(`[WISHLIST][DEBUG] Game ${response.name} has a discount of ${response.price_overview.discount_percent}%.`);
-                                    let embed = new MessageEmbed()
-                                                .setTitle(response.name)
-                                                .setDescription(response.short_description)
-                                                .setImage(response.header_image)
-                                                .setColor("#a83e32")
-                                                .addFields(
-                                                    {
-                                                        name: `Price: ${response.price_overview.final_formatted}`,
-                                                        value: response.price_overview.discount_percent > 0 ? `Discount: **${response.price_overview.discount_percent}%**` : "Currently no discount."
-                                                    },
-
-                                                )
-                                    for (let g = 0; g < gamesObj[games[i]].length; g++) {
-                                            client.users.fetch(gamesObj[games[i]][g]).then(user => { 
-                                                user.send({ content: `A previously untracked game, **${response.name}**, is on sale on Steam!`, embeds: [embed] });
-                                            });
-                                    }
-                                }
+                                //if (response.price_overview.discount_percent > 0) {
+                                //    log(`[WISHLIST][DEBUG] Game ${response.name} has a discount of ${response.price_overview.discount_percent}%.`);
+                                //    let embed = new MessageEmbed()
+                                //                .setTitle(response.name)
+                                //                .setDescription(response.short_description)
+                                //                .setImage(response.header_image)
+                                //                .setColor("#a83e32")
+                                //                .addFields(
+                                //                    {
+                                //                        name: `Price: ${response.price_overview.final_formatted}`,
+                                //                        value: response.price_overview.discount_percent > 0 ? `Discount: **${response.price_overview.discount_percent}%**` : "Currently no discount."
+                                //                    },
+                                //                )
+                                //    for (let g = 0; g < gamesObj[games[i]].length; g++) {
+                                //            client.users.fetch(gamesObj[games[i]][g]).then(user => { 
+                                //                user.send({ content: `A previously untracked game, **${response.name}**, is on sale on Steam!`, embeds: [embed] });
+                                //            });
+                                //    }
+                                //}
                             }
                             else if (oldPrice == response.price_overview.final) {
                                 log(`[WISHLIST][DEBUG] Game ${response.name} has not changed in price.`);
