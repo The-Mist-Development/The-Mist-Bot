@@ -20,9 +20,11 @@ function runtimeErrorHandle(error, message) {
     log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
     if (message.channel) {
         if (error.message.includes("no YouTube song found")) return message.channel.send("🔎 **No YouTube video found** for that query!");
+        if (error.message.includes("no Playlist found")) return message.channel.send("🔗 **No YouTube Playlist found** at that link.");
         if (error.message.includes("Cannot set property 'data' of undefined") || error.message.includes("Cannot set properties of undefined")) return message.channel.send("💨 **Invalid Song** - please try a different query or paste a YouTube URL.");
         if (error.message.includes("permission") || error.message.includes("Permission")) return message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
-        
+        if (error.message.includes("Status code:")) return message.channel.send("YouTube returned an error code. Try again in about 5 minutes.");
+
         message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
 
     }
@@ -41,7 +43,7 @@ module.exports = {
             leaveOnEnd: true,
             leaveOnStop: true,
             leaveOnEmpty: true,
-            timeout: 10000
+            timeout: 30000
         });
         client.player = newPlayer;
 
@@ -90,7 +92,7 @@ module.exports = {
             })
             // Emitted when a song changed.
             .on('songChanged', (queue, newSong, oldSong) => {
-                if (oldSong.url == newSong.url) queue.data.channel.send(`🔂 Playing Again: **${newSong.name}** 🎶`);
+                if (oldSong.url == newSong.url) return; //queue.data.channel.send(`🔂 Playing Again: **${newSong.name}** 🎶`);
                 else queue.data.channel.send(`🎵 Playing Now: **${newSong.name}** 🎶`);
                 if (queue.data.rickroll) {
                     queue.data.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>");
@@ -120,7 +122,7 @@ module.exports = {
             // Mist Bot usage: For errors which occur during playback
             .on('error', (error, queue) => {
                 let errorid = createHash('sha1').update([queue.data.channel.guild.id, queue.data.voicechannel.id, Date.now()].join("")).digest('base64')
-                log(`[PLAYER] Error during playback in ${queue.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
+                log(`[PLAYER] Error during playback in ${queue.guild.name}: ${error} \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
                 if (queue.data.channel) { 
                     queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
 
@@ -153,14 +155,24 @@ module.exports = {
             if (message.member.voice.channel == guildQueue.data.voicechannel) {
                 switch (command) {
                     case "pause":
-                        guildQueue.setPaused(true);
-                        message.channel.send("⏸ **Paused!**");
+                        if (needRestart == 1) {
+                            guildQueue.leave();
+                            message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. Your song has been stopped and no more songs may be played at this time.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+                        }
+                        else {
+                            guildQueue.setPaused(true);
+                            message.channel.send("⏸ **Paused!**");
+                        }
                         break;
                     case "resume":
                         guildQueue.setPaused(false);
                         message.channel.send("▶ **Resumed!**");
                         break;
                     case "skip":
+                        if (guildQueue.repeatMode == 1) {
+                            guildQueue.setRepeatMode(0)
+                            message.channel.send("Single song **loop disabled**.")
+                        }
                         guildQueue.skip();
                         message.channel.send("⏭ **Skipped!**");
                         break;
@@ -190,6 +202,7 @@ module.exports = {
                         sendNowPlaying(message, guildQueue);
                         break;
                     case "loop":
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(1);
                             message.channel.send("🔂 **Looping the current song**");
@@ -266,7 +279,7 @@ module.exports = {
 }
 
 async function playSong(message, args) {
-    if (args.length == 0) return;
+    if (args.length == 0) return message.channel.send("🤔 *Play what?* \rI take song names, and YouTube URLs for videos and playlists.");
     if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
         
     let guildQueue = client.player.getQueue(message.guild.id);
@@ -309,6 +322,7 @@ async function playSong(message, args) {
                 rickrolled = true;
             }
             await queue.join(message.member.voice.channel);
+            playingServers.push({"guildId": message.channel.guildId, "channelId": message.channel.id});
         }
 
         if (args[0].includes("youtube.com/") || args[0].includes("youtu.be/")) {
@@ -347,7 +361,6 @@ async function playSong(message, args) {
         }
         if (rickrolled == true) setTimeout(function () { message.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>"); }, 2000);
 
-        playingServers.push({"guildId": message.channel.guildId, "channelId": message.channel.id});
 
     } else {
         message.channel.send(
@@ -365,9 +378,9 @@ function sendQueue(message, queue) {
     }
     let date = new Date(ms);
 
-    let hours = (date.getHours()).toString();
-    let minutes = date.getMinutes().toString();
-    let seconds = date.getSeconds().toString();
+    let hours = (date.getUTCHours()).toString();
+    let minutes = date.getUTCMinutes().toString();
+    let seconds = date.getUTCSeconds().toString();
 
     hours = hours == 0 ? "" : hours + ":";
     minutes = minutes.length == 1 ? "0" + minutes + ":" : minutes + ":";
@@ -376,11 +389,12 @@ function sendQueue(message, queue) {
     let duration = hours + minutes + seconds;
 
     const embed = new Discord.MessageEmbed()
-        .setTitle("Queue for " + message.guild.name + " | Total Duration: `" + duration + "`")
+        .setTitle((queue.repeatMode == 2 ? "🔁 " : "") + "Queue for " + message.guild.name)
+        .setDescription("Total Duration: `" + duration + "`")
         .setFooter("The Mist Bot - made by R2D2Vader")
         .setColor("#066643")
         .addFields({
-            name: "`Now Playing` **" + queue.songs[0].name + "**",
+            name: (queue.repeatMode == 1 ? "🔂 " : "") + "`Now Playing` **" + queue.songs[0].name + "**",
             value: "Duration: " + queue.songs[0].duration
         });
 
@@ -402,8 +416,9 @@ function sendNowPlaying(message, queue) {
     });
 
     const embed = new Discord.MessageEmbed()
-        .setTitle("Now Playing: " + queue.songs[0].name)
+        .setTitle(queue.songs[0].name)
         .setURL(queue.songs[0].url)
+        .setAuthor((queue.repeatMode == 1 ? "🔂 " : "") + "Now Playing")
         .setFooter("The Mist Bot - made by R2D2Vader")
         .setThumbnail(queue.songs[0].thumbnail)
         .addFields(

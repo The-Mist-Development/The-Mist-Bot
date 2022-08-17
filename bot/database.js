@@ -40,6 +40,13 @@ module.exports = {
             message.channel.send(`The highest ever count in **${message.guild.name}** <#${message.channel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
         }
     },
+    getCurrentCount: async function(message, api) {
+        if (api == true) {
+            const res = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`);
+            if (res.rows.length == 0) return null;
+            return res.rows[0]["count"]
+        }
+    },
     count: async function (message) {
         if (connected == false) {
             message.react("❎").catch((err) => {return;});
