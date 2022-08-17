@@ -18,10 +18,10 @@ module.exports = {
             } else {
                 console.log('Connected to Database');
                 connected = true;
-                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordId VARCHAR(255) PRIMARY KEY, steamSnippet VARCHAR(255), gameList TEXT);", function (error, results) {
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamsnippet VARCHAR(255), gamelist TEXT);", function (error, results) {
                     if (error) console.log("[WISHLIST] Error creating wishlist_users table: " + error);
                 });
-                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameId VARCHAR(255) PRIMARY KEY, lastPrice VARCHAR(255));", function (error, results) {
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameid VARCHAR(255) PRIMARY KEY, lastprice VARCHAR(255));", function (error, results) {
                     if (error) console.log("[WISHLIST] Error creating wishlist_games table: " + error);
                 });
             }
@@ -156,7 +156,7 @@ module.exports = {
     // wishlist mysql database file
     w_addUser(discordId, steamSnippet) {
         return new Promise((resolve, reject) => {
-            dbClient.query("INSERT INTO wishlist_users (discordId, steamSnippet) VALUES ($1, $2)", [discordId, steamSnippet], function (error, results) {
+            dbClient.query("INSERT INTO wishlist_users (discordid, steamsnippet) VALUES ($1, $2)", [discordId, steamSnippet], function (error, results) {
                 if (error) reject(error);
                 resolve(results);
             });
@@ -164,7 +164,7 @@ module.exports = {
     },
     w_getUser(discordId) {
         return new Promise((resolve, reject) => {
-            dbClient.query("SELECT * FROM wishlist_users WHERE discordId = $1", [discordId], function (error, results) {
+            dbClient.query("SELECT * FROM wishlist_users WHERE discordid = $1", [discordId], function (error, results) {
                 if (error) reject(error);
                 resolve(results);
             });
@@ -172,7 +172,7 @@ module.exports = {
     },
     w_deleteUser(discordId) {
         return new Promise((resolve, reject) => {
-            dbClient.query("DELETE FROM wishlist_users WHERE discordId = $1", [discordId], function (error, results) {
+            dbClient.query("DELETE FROM wishlist_users WHERE discordid = $1", [discordId], function (error, results) {
                 if (error) reject(error);
                 resolve(results);
             });
@@ -180,7 +180,7 @@ module.exports = {
     },
     w_writeWishlist(discordId, wishlistString) {
         return new Promise((resolve, reject) => {
-            dbClient.query("UPDATE wishlist_users SET gameList = $1 WHERE discordId = $2", [wishlistString, discordId], function (error, results) {
+            dbClient.query("UPDATE wishlist_users SET gamelist = $1 WHERE discordid = $2", [wishlistString, discordId], function (error, results) {
                 if (error) reject(error);
                 resolve(results);
             });
@@ -198,26 +198,26 @@ module.exports = {
 
         // Internal function declaration
         const insertIntoGames = (gameId, price, resolve, reject) => {
-            dbClient.query("INSERT INTO wishlist_games (gameId, lastPrice) VALUES ($1, $2)", [gameId, price], function (error, results) {
+            dbClient.query("INSERT INTO wishlist_games (gameid, lastprice) VALUES ($1, $2)", [gameId, price], function (error, results) {
                 if (error) reject(error);
                 resolve(-1);
             });
         }
         const updateGames = (gameId, price, oldPrice, resolve, reject) => {
-            dbClient.query("UPDATE wishlist_games SET lastPrice = $1 WHERE gameId = $2", [price, gameId], function (error, results) {
+            dbClient.query("UPDATE wishlist_games SET lastprice = $1 WHERE gameid = $2", [price, gameId], function (error, results) {
                 if (error) reject(error);
                 resolve(oldPrice);
             });
         }
 
         return new Promise((resolve, reject) => {
-            dbClient.query("SELECT * FROM wishlist_games WHERE gameId = $1", [gameId], function (error, results) {
+            dbClient.query("SELECT * FROM wishlist_games WHERE gameid = $1", [gameId], function (error, results) {
                 if (error) reject(error);
                 if (results.length < 1) {
                     insertIntoGames(gameId, price, resolve, reject);
                 }
                 else {
-                    updateGames(gameId, price, results[0].lastPrice, resolve, reject);
+                    updateGames(gameId, price, results[0]["lastprice"], resolve, reject);
                 }
             });
         });

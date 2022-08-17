@@ -153,10 +153,10 @@ let gamePriceSync = new CronJob(
                 let games = response.rows[0]["gamelist"].split("|");
                 for (let j = 0; j < games.length; j++) {
                     if (gamesObj[games[j]] == undefined) {
-                        gamesObj[games[j]] = [response.rows[i]["discordId"]];
+                        gamesObj[games[j]] = [response.rows[i]["discordid"]];
                     }
                     else {
-                        gamesObj[games[j]].push(response.rows[i]["discordId"]);
+                        gamesObj[games[j]].push(response.rows[i]["discordid"]);
                     }
                 }
             }
