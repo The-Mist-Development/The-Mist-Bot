@@ -3,6 +3,7 @@ const wishlist = require("../wishlist_module/manager.js");
 
 module.exports = {
     wishlistCommand(message, args) {
+        if (!args[0]) return message.channel.send({ embeds: [helpembed()] });
         let command = args.shift().toLowerCase();
 
         switch (command) {
@@ -118,7 +119,7 @@ async function startRegister(message) {
         wishlist.addUser(message.author.id, url).then(function (wishlist) {
             let embed2 = new MessageEmbed()
                 .setTitle("Success")
-                .setDescription("Your Wishlist has successfully been added to our database to alert you when one of your games goes on sale. We will automatically keep your wishlist updated, but you can manually update our copy of it by running `$resync`. To disable notifications, run `$delete`.")
+                .setDescription("Your Wishlist has successfully been added to our database to alert you when one of your games goes on sale. We will automatically keep your wishlist updated, but you can manually update our copy of it by running `" + process.env.PREFIX + "wishlist resync`. To disable notifications, run `" + process.env.PREFIX + "wishlist delete`.")
                 .setColor("#382bc4")
             embed2.addField("Games currently on your wishlist", "---");
             let keys = Object.keys(wishlist);
@@ -139,7 +140,7 @@ async function startRegister(message) {
                 dm.channel.send("Couldn't find your wishlist! Make sure that your profile URL is correct and that your Game Details are set to public.");
             }
             else if (error == "USER_ALREADY_EXISTS") {
-                dm.channel.send("Wait a minute - you are already registered! To update your wishlist, run `$resync`.");
+                dm.channel.send("Wait a minute - you are already registered! To update your wishlist, run `" + process.env.PREFIX + "wishlist resync`.");
             }
             else {
                 console.log(error);
@@ -172,7 +173,7 @@ function sendList(message) {
     wishlist.getWishlistFromDB(message.author.id).then(function (response) {
         let embed = new MessageEmbed()
             .setTitle("Your Wishlist")
-            .setDescription("This is the list of games we will notify you about. To update our copy of your wishlist, run `$resync` - though this automatically happens once every 24 hours.")
+            .setDescription("This is the list of games we will notify you about. To update our copy of your wishlist, run `" + process.env.PREFIX + "wishlist resync` - though this automatically happens once every 24 hours.")
             .setColor("#0d8222")
         for (let i = 0; i < response.length; i++) {
             if (response[i].price_overview) {
@@ -191,7 +192,7 @@ function sendList(message) {
             message.channel.send("You don't have your wishlist registered!");
         }
         else if (error == "GAME_NOT_FOUND") {
-            message.channel.send("Couldn't find one or more of the games on your wishlist! Run `$resync` to update our copy.");
+            message.channel.send("Couldn't find one or more of the games on your wishlist! Run `" + process.env.PREFIX + "wishlist resync` to update our copy.");
         }
         else {
             console.log(error);

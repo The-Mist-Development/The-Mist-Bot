@@ -18,6 +18,12 @@ module.exports = {
             } else {
                 console.log('Connected to Database');
                 connected = true;
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordId VARCHAR(255) PRIMARY KEY, steamSnippet VARCHAR(255), gameList TEXT);", function (error, results) {
+                    if (error) console.log("[WISHLIST] Error creating wishlist_users table: " + error);
+                });
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameId VARCHAR(255) PRIMARY KEY, lastPrice VARCHAR(255));", function (error, results) {
+                    if (error) console.log("[WISHLIST] Error creating wishlist_games table: " + error);
+                });
             }
           });
     },

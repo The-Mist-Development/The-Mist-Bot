@@ -4,6 +4,12 @@ const CronJob = require('cron').CronJob;
 const { MessageEmbed } = require('discord.js');
 let client;
 
+// This file's log function
+function log(message) {
+    console.log(message.replaceAll("*", "").replaceAll("`", ""));
+    client.channels.cache.get("850844368679862282").send(message);
+}
+
 // Exports
 module.exports = {
     wishlistSetup: function(discordClient) {
@@ -24,7 +30,7 @@ module.exports = {
     addUser: function (discordId, steamUrl) {
         return new Promise(function (resolve, reject) {
             db.getUser(discordId).then(function (response) {
-                if (JSON.stringify(response) != "[]") reject("USER_ALREADY_EXISTS");
+                if (response.rows.length > 0) reject("USER_ALREADY_EXISTS");
                 if (!steamUrl.includes("steamcommunity.com")) reject("INVALID_URL");
                 let steamSnippet = steamUrl.split("steamcommunity.com")[1];
                 if (steamSnippet.startsWith("/id/") || steamSnippet.startsWith("/profiles/")) {
@@ -66,7 +72,7 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             db.getUser(discordId).then(function (response) {
                 if (JSON.stringify(response) == "[]") reject("USER_NOT_FOUND");
-                let games = response[0].gameList.split("&");
+                let games = response.rows[0]["gamelist"].split("|");
                 let finalArr = [];
                 for (let i = 0; i < games.length; i++) {
                     steam.getGameInfo(games[i]).then(function (response) {
@@ -90,7 +96,7 @@ function resyncSingle(discordId, steamWishlist = null) {
         return new Promise(function (resolve, reject) {
             db.getUser(discordId).then(function (response) {
                 if (JSON.stringify(response) == "[]") reject("USER_NOT_FOUND");
-                steam.getUserWishlist(response[0].steamSnippet).then(function (response) {
+                steam.getUserWishlist(response.rows[0].steamSnippet).then(function (response) {
                     let keys = Object.keys(response);
                     db.writeWishlist(discordId, keys).then(function (response) {
                         resolve(response);
@@ -108,7 +114,7 @@ function resyncSingle(discordId, steamWishlist = null) {
         db.writeWishlist(discordId, keys).then(function (response) {
             return;
         }).catch(function (error) {
-            console.log("[WISHLIST] Error setting wishlist with provided data: " + error);
+            log("[WISHLIST] Error setting wishlist with provided data: " + error);
         })
     }
 }
@@ -119,14 +125,14 @@ module.exports.resyncSingle = resyncSingle;
 let wishlistSync = new CronJob(
     '0 0 12 * * *',
     function () {
-        console.log("[WISHLIST] Starting daily wishlist sync.");
+        log("[WISHLIST] Starting daily wishlist sync.");
         db.getAllUsers().then(function (response) {
             for (let i = 0; i < response.length; i++) {
-                resyncSingle(response[i].discordId);
+                resyncSingle(response.rows[i]["discordId"]);
             }
-            console.log("[WISHLIST] Command issued for all wishlists to be synced with Steam.");
+            log("[WISHLIST] Command issued for all wishlists to be synced with Steam.");
         }).catch(function (error) {
-            console.log("[WISHLIST] Error automatically syncing wishlists in daily Cron job: " + error);
+            log("[WISHLIST] Error automatically syncing wishlists in daily Cron job: " + error);
         })
     },
     null,
@@ -137,17 +143,17 @@ let wishlistSync = new CronJob(
 let gamePriceSync = new CronJob(
     '0 30 * * * *',
     function () {
-        console.log("[WISHLIST] Starting hourly game price sync.");
+        log("[WISHLIST] Starting hourly game price sync.");
         db.getAllUsers().then(function (response) {
             let gamesObj = {};
             for (let i = 0; i < response.length; i++) {
-                let games = response[i].gameList.split("&");
+                let games = response.rows[0]["gamelist"].split("|");
                 for (let j = 0; j < games.length; j++) {
                     if (gamesObj[games[j]] == undefined) {
-                        gamesObj[games[j]] = [response[i].discordId];
+                        gamesObj[games[j]] = [response.rows[i]["discordId"]];
                     }
                     else {
-                        gamesObj[games[j]].push(response[i].discordId);
+                        gamesObj[games[j]].push(response.rows[i]["discordId"]);
                     }
                 }
             }
@@ -155,19 +161,19 @@ let gamePriceSync = new CronJob(
             for (let i = 0; i < games.length; i++) {
                 steam.getGameInfo(games[i]).then(function (response) {
                     if (response.is_free) {
-                        console.log(`[WISHLIST][DEBUG] Game ${response.name} is free, skipping.`);
+                        log(`[WISHLIST][DEBUG] Game ${response.name} is free, skipping.`);
                     }
                     else if (response.price_overview) {
                         db.updateGame(games[i], response.price_overview.final).then(function (oldPrice) {
                             if (oldPrice == -1) {
-                                console.log(`[WISHLIST][DEBUG] Game ${response.name} not previously in database.`);
+                                log(`[WISHLIST][DEBUG] Game ${response.name} not previously in database.`);
                             }
                             else if (oldPrice == response.price_overview.final) {
-                                console.log(`[WISHLIST][DEBUG] Game ${response.name} has not changed in price.`);
+                                log(`[WISHLIST][DEBUG] Game ${response.name} has not changed in price.`);
                             }
                             else if (response.price_overview.final < oldPrice) {
                                 if (response.price_overview.discount_percent > 0) {
-                                    console.log(`[WISHLIST][DEBUG] Game ${response.name} has a discount of ${response.price_overview.discount_percent}%.`);
+                                    log(`[WISHLIST][DEBUG] Game ${response.name} has a discount of ${response.price_overview.discount_percent}%.`);
                                     let embed = new MessageEmbed()
                                                 .setTitle(response.name)
                                                 .setDescription(response.short_description)
@@ -187,25 +193,25 @@ let gamePriceSync = new CronJob(
                                     }
                                 }
                                 else {
-                                    console.log(`[WISHLIST][DEBUG] Game ${response.name} has lowered in price off sale.`);
+                                    log(`[WISHLIST][DEBUG] Game ${response.name} has lowered in price off sale.`);
                                 }
                             }
                             else if (response.price_overview.final > oldPrice) {
-                                console.log(`[WISHLIST][DEBUG] Game ${response.name} has risen in price.`);
+                                log(`[WISHLIST][DEBUG] Game ${response.name} has risen in price.`);
                             }
                         }).catch(function (error) {
-                            console.log("[WISHLIST] Error updating game price in hourly Cron job: " + error);
+                            log("[WISHLIST] Error updating game price in hourly Cron job: " + error);
                         });
                     }
                     else {
-                        console.log(`[WISHLIST][DEBUG] Game ${response.name} has no price overview, skipping.`);
+                        log(`[WISHLIST][DEBUG] Game ${response.name} has no price overview, skipping.`);
                     }
                 }).catch(function (error) {
-                    console.log("[WISHLIST] Error updating game price in hourly Cron job: " + error);
+                    log("[WISHLIST] Error updating game price in hourly Cron job: " + error);
                 })
             }
         }).catch(function (error) {
-            console.log("[WISHLIST] Error automatically syncing game prices in hourly Cron job: " + error);
+            log("[WISHLIST] Error automatically syncing game prices in hourly Cron job: " + error);
         })
     },
     null,

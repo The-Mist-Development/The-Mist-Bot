@@ -30,7 +30,7 @@ module.exports = {
     },
     writeWishlist(discordId, gameList) {
         return new Promise((resolve, reject) => {
-            let wishlistString = gameList.join("&");
+            let wishlistString = gameList.join("|");
             db.w_writeWishlist(discordId, wishlistString).then(function (response) {
                 resolve(response);
             }).catch(function (error) {
