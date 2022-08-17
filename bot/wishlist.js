@@ -27,6 +27,7 @@ module.exports = {
                 wishlist.resyncSingle(message.author.id).then(function () {
                     message.channel.send("✅ Successfully synced our copy of your wishlist with Steam.");
                 }).catch(function (err) {
+                    if (err == "USER_NOT_FOUND") return message.channel.send("You don't have your wishlist registered!");
                     message.channel.send("❌ Failed to sync your wishlist with Steam. Please try again later.");
                     console.log("Error syncing wishlist: " + err);
                 });

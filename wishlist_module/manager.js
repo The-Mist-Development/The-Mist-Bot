@@ -19,19 +19,19 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             let int = parseInt(gameid);
             let check = BigInt("9223372036854775807")
-            if (!int || int > check) reject("INVALID_GAME_ID");
+            if (!int || int > check) return reject("INVALID_GAME_ID");
             steam.getGameInfo(int.toString()).then(function (response) {
                 resolve(response);
             }).catch(function (error) {
-                reject(error);
+                return reject(error);
             });
         });
     },
     addUser: function (discordId, steamUrl) {
         return new Promise(function (resolve, reject) {
             db.getUser(discordId).then(function (response) {
-                if (response.rows.length > 0) reject("USER_ALREADY_EXISTS");
-                if (!steamUrl.includes("steamcommunity.com")) reject("INVALID_URL");
+                if (response.rows.length > 0) return reject("USER_ALREADY_EXISTS");
+                if (!steamUrl.includes("steamcommunity.com")) return reject("INVALID_URL");
                 let steamSnippet = steamUrl.split("steamcommunity.com")[1];
                 if (steamSnippet.startsWith("/id/") || steamSnippet.startsWith("/profiles/")) {
                     let array = steamSnippet.split("");
@@ -41,37 +41,37 @@ module.exports = {
                             resyncSingle(discordId, response);
                             resolve(response);
                         }).catch(function (error2) {
-                            reject(error2);
+                            return reject(error2);
                         })
                     }).catch(function (error) {
-                        reject(error);
+                        return reject(error);
                     })
                 }
-                else reject("INVALID_URL");
+                else return reject("INVALID_URL");
             }).catch(function (error) {
-                reject(error);
+                return reject(error);
             });
         })
     },
     deleteUser: function (discordId) {
         return new Promise(function (resolve, reject) {
-            if (discordId.length != 18) reject("INVALID_DISCORD_ID");
+            if (discordId.length != 18) return reject("INVALID_DISCORD_ID");
             db.getUser(discordId).then(function (response) {
-                if (JSON.stringify(response) == "[]") reject("USER_NOT_FOUND");
+                if (response.rowCount == 0) return reject("USER_NOT_FOUND");
                 db.deleteUser(discordId).then(function (response) {
                     resolve(response);
                 }).catch(function (error) {
-                    reject(error);
+                    return reject(error);
                 })
             }).catch(function (error) {
-                reject(error);
+                return reject(error);
             });
         })
     },
     getWishlistFromDB(discordId) {
         return new Promise(function (resolve, reject) {
             db.getUser(discordId).then(function (response) {
-                if (JSON.stringify(response) == "[]") reject("USER_NOT_FOUND");
+                if (response.rowCount == 0) return reject("USER_NOT_FOUND");
                 let games = response.rows[0]["gamelist"].split("|");
                 let finalArr = [];
                 for (let i = 0; i < games.length; i++) {
@@ -81,11 +81,11 @@ module.exports = {
                             resolve(finalArr);
                         }
                     }).catch(function (error) {
-                        reject(error);
+                        return reject(error);
                     })
                 }
             }).catch(function (error) {
-                reject(error);
+                return reject(error);
             });
         })
     }
@@ -95,16 +95,16 @@ function resyncSingle(discordId, steamWishlist = null) {
     if (steamWishlist == null) {
         return new Promise(function (resolve, reject) {
             db.getUser(discordId).then(function (response) {
-                if (JSON.stringify(response) == "[]") reject("USER_NOT_FOUND");
-                steam.getUserWishlist(response.rows[0].steamSnippet).then(function (response) {
+                if (response.rowCount == 0) return reject("USER_NOT_FOUND");
+                steam.getUserWishlist(response.rows[0]["steamSnippet"]).then(function (response) {
                     let keys = Object.keys(response);
                     db.writeWishlist(discordId, keys).then(function (response) {
-                        resolve(response);
+                        return resolve("success")
                     }).catch(function (error) {
-                        reject(error);
+                        return reject(error);
                     })
                 }).catch(function (error) {
-                    reject(error);
+                    return reject(error);
                 })
             })
         });
