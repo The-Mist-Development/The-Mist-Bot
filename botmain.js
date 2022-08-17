@@ -10,7 +10,7 @@ const { react } = require("./bot/reactions.js");
 const { artValidate } = require("./bot/exclusive.js");
 const { setup } = require("./bot/music.js");
 const { setRestartClient } = require("./bot/restart.js");
-const { getCountingChannels, count, dbConnect } = require("./bot/database.js");
+const { getCountingChannels, count, dbConnect, getCurrentCount } = require("./bot/database.js");
 
 let ready = false;
 
@@ -18,7 +18,7 @@ client.login(token).catch(log);
 
 client.on("ready", async () => {
   ready = true;
-  client.user.setActivity(`${prefix}help | I'm v2!`, { type: "LISTENING" });
+  client.user.setActivity(`music for you. | ${prefix}help`, { type: "PLAYING" });
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);
@@ -81,7 +81,8 @@ client.on('messageUpdate', async (oldmessage, newmessage) => {
   if (!channels.includes(oldmessage.channel.id)) return;
 
   if (+oldmessage.content === +oldmessage.content) {
-    oldmessage.channel.send("⚠ **" + oldmessage.author.username + "**, we all saw you edit that message! 🤔 I'm not sure what the count is now...")
+    let truecount = await getCurrentCount(oldmessage, true);
+    oldmessage.channel.send("⚠ **" + oldmessage.author.username + "**, we all saw you edit that message! The count is now **" + truecount + "**.")
   }
 });
 
@@ -90,7 +91,8 @@ client.on('messageDelete', async (message) => {
   if (!channels.includes(message.channel.id)) return;
 
   if (+message.content === +message.content) {
-    message.channel.send("⚠ A message by **" + message.author.username + "** was deleted! 🤔 I'm not sure what the count is now... **Try adding one extra when you next count**.")
+    let truecount = await getCurrentCount(message, true);
+    message.channel.send("⚠ A message by **" + message.author.username + "** was deleted! The count is now **" + truecount + "**.")
   }
 });
 
