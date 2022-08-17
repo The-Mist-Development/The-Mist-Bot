@@ -96,18 +96,21 @@ function resyncSingle(discordId, steamWishlist = null) {
         return new Promise(function (resolve, reject) {
             db.getUser(discordId).then(function (response) {
                 if (response.rowCount == 0) return reject("USER_NOT_FOUND");
-                steam.getUserWishlist(response.rows[0]["steamSnippet"]).then(function (response) {
-                    let keys = Object.keys(response);
-                    db.writeWishlist(discordId, keys).then(function (response) {
-                        return resolve("success")
+                    steam.getUserWishlist(response.rows[0]["steamsnippet"]).then(function (response) {
+                            let keys = Object.keys(response);
+                            db.writeWishlist(discordId, keys).then(function (response) {
+                                return resolve("success");
+                            }).catch(function (error) {
+                                reject (error);
+                            })
                     }).catch(function (error) {
                         return reject(error);
                     })
-                }).catch(function (error) {
-                    return reject(error);
-                })
-            })
-        });
+
+            }).catch(function (error) {
+                return reject(error);
+            });
+        })
     }
     else {
         let keys = Object.keys(steamWishlist);
