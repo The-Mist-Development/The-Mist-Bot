@@ -11,6 +11,7 @@ const { artValidate } = require("./bot/exclusive.js");
 const { setup } = require("./bot/music.js");
 const { setRestartClient } = require("./bot/restart.js");
 const { getCountingChannels, count, dbConnect, getCurrentCount } = require("./bot/database.js");
+const { wishlistSetup } = require("./wishlist_module/manager.js");
 
 let ready = false;
 
@@ -25,6 +26,7 @@ client.on("ready", async () => {
   setRestartClient(client);
   clearPlayground.start();
   dbConnect();
+  wishlistSetup(client);
 });
 
 client.on("messageCreate", async function (message) {

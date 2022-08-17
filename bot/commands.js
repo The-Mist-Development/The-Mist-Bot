@@ -2,6 +2,7 @@ const { Discord, MessageEmbed } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache } = require("./database.js")
 const { restart, cancelRestart } = require("./restart.js");
+const { wishlistCommand } = require("./wishlist.js")
 
 const prefix = process.env.PREFIX;
 let killTimeout = null;
@@ -76,6 +77,9 @@ module.exports = {
         break;
       case "update":
         sendUpdate(message, args.join(" "));
+        break;
+      case "wishlist":
+        wishlistCommand(message, args);
         break;
       case "play":
       case "p":

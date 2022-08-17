@@ -23,11 +23,12 @@
   "homepage": "https://github.com/The-Mist-Development/The-Mist-Bot#readme",
   "dependencies": {
     "@discordjs/opus": "^0.8.0",
+    "axios": "^0.27.2",
     "body-parser": "^1.19.1",
     "cron": "^1.8.2",
     "discord-music-player": "^9.0.2",
-    "discord.js": "^13.3.1",
-    "dotenv": "^14.2.0",
+    "discord.js": "^13.7.0",
+    "dotenv": "^16.0.1",
     "express": "^4.17.1",
     "pg": "^8.7.3",
     "ytdl-core": "^4.11.0"

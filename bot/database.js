@@ -18,6 +18,12 @@ module.exports = {
             } else {
                 console.log('Connected to Database');
                 connected = true;
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamsnippet VARCHAR(255), gamelist TEXT);", function (error, results) {
+                    if (error) console.log("[WISHLIST] Error creating wishlist_users table: " + error);
+                });
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameid VARCHAR(255) PRIMARY KEY, lastprice VARCHAR(255));", function (error, results) {
+                    if (error) console.log("[WISHLIST] Error creating wishlist_games table: " + error);
+                });
             }
           });
     },
@@ -146,6 +152,75 @@ module.exports = {
         else {
             message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to unsubscribe from updates for you.")
         }
+    },
+    // wishlist mysql database file
+    w_addUser(discordId, steamSnippet) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("INSERT INTO wishlist_users (discordid, steamsnippet) VALUES ($1, $2)", [discordId, steamSnippet], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
+    },
+    w_getUser(discordId) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("SELECT * FROM wishlist_users WHERE discordid = $1", [discordId], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
+    },
+    w_deleteUser(discordId) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("DELETE FROM wishlist_users WHERE discordid = $1", [discordId], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
+    },
+    w_writeWishlist(discordId, wishlistString) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("UPDATE wishlist_users SET gamelist = $1 WHERE discordid = $2", [wishlistString, discordId], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        })
+    },
+    w_getAllUsers() {
+        return new Promise((resolve, reject) => {
+            dbClient.query("SELECT * FROM wishlist_users", function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
+    },
+    w_updateGame(gameId, price) {
+
+        // Internal function declaration
+        const insertIntoGames = (gameId, price, resolve, reject) => {
+            dbClient.query("INSERT INTO wishlist_games (gameid, lastprice) VALUES ($1, $2)", [gameId, price], function (error, results) {
+                if (error) reject(error);
+                resolve(-1);
+            });
+        }
+        const updateGames = (gameId, price, oldPrice, resolve, reject) => {
+            dbClient.query("UPDATE wishlist_games SET lastprice = $1 WHERE gameid = $2", [price, gameId], function (error, results) {
+                if (error) reject(error);
+                resolve(oldPrice);
+            });
+        }
+
+        return new Promise((resolve, reject) => {
+            dbClient.query("SELECT * FROM wishlist_games WHERE gameid = $1", [gameId], function (error, results) {
+                if (error) reject(error);
+                if (results.rowCount < 1) {
+                    insertIntoGames(gameId, price, resolve, reject);
+                }
+                else {
+                    updateGames(gameId, price, results[0]["lastprice"], resolve, reject);
+                }
+            });
+        });
     }
 }
 
