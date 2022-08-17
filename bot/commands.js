@@ -95,6 +95,8 @@ module.exports = {
       case "leave":
         music(message, command, args);
         break;
+      case "wishlist":
+        break;
       default:
         message.channel.send(
           `\`${command}\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`

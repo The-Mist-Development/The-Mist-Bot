@@ -139,6 +139,75 @@ module.exports = {
         else {
             message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to unsubscribe from updates for you.")
         }
+    },
+    // wishlist mysql database file
+    w_addUser(discordId, steamSnippet) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("INSERT INTO wishlist_users (discordId, steamSnippet) VALUES ($1, $2)", [discordId, steamSnippet], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
+    },
+    w_getUser(discordId) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("SELECT * FROM wishlist_users WHERE discordId = $1", [discordId], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
+    },
+    w_deleteUser(discordId) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("DELETE FROM wishlist_users WHERE discordId = $1", [discordId], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
+    },
+    w_writeWishlist(discordId, wishlistString) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("UPDATE wishlist_users SET gameList = $1 WHERE discordId = $2", [wishlistString, discordId], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        })
+    },
+    w_getAllUsers() {
+        return new Promise((resolve, reject) => {
+            dbClient.query("SELECT * FROM wishlist_users", function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
+    },
+    w_updateGame(gameId, price) {
+
+        // Internal function declaration
+        const insertIntoGames = (gameId, price, resolve, reject) => {
+            dbClient.query("INSERT INTO wishlist_games (gameId, lastPrice) VALUES ($1, $2)", [gameId, price], function (error, results) {
+                if (error) reject(error);
+                resolve(-1);
+            });
+        }
+        const updateGames = (gameId, price, oldPrice, resolve, reject) => {
+            dbClient.query("UPDATE wishlist_games SET lastPrice = $1 WHERE gameId = $2", [price, gameId], function (error, results) {
+                if (error) reject(error);
+                resolve(oldPrice);
+            });
+        }
+
+        return new Promise((resolve, reject) => {
+            dbClient.query("SELECT * FROM wishlist_games WHERE gameId = $1", [gameId], function (error, results) {
+                if (error) reject(error);
+                if (results.length < 1) {
+                    insertIntoGames(gameId, price, resolve, reject);
+                }
+                else {
+                    updateGames(gameId, price, results[0].lastPrice, resolve, reject);
+                }
+            });
+        });
     }
 }
 
