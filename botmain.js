@@ -19,7 +19,7 @@ client.login(token).catch(log);
 
 client.on("ready", async () => {
   ready = true;
-  client.user.setActivity(`nothing cause I'm broken. | ${prefix}help`, { type: ActivityType.Playing });
+  client.user.setActivity(`music again! | ${prefix}help`, { type: ActivityType.Playing });
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);
