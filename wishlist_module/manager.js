@@ -1,7 +1,7 @@
 const steam = require("./steamlib");
 const db = require("./dbwrapper");
 const CronJob = require('cron').CronJob;
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 let client;
 
 // This file's log function
@@ -196,7 +196,7 @@ let gamePriceSync = new CronJob(
                             else if (response.price_overview.final < oldPrice) {
                                 if (response.price_overview.discount_percent > 0) {
                                     log(`[WISHLIST][DEBUG] Game ${response.name} has a discount of ${response.price_overview.discount_percent}%.`);
-                                    let embed = new MessageEmbed()
+                                    let embed = new EmbedBuilder()
                                                 .setTitle(response.name)
                                                 .setDescription(response.short_description)
                                                 .setImage(response.header_image)

@@ -388,7 +388,7 @@ function sendQueue(message, queue) {
 
     let duration = hours + minutes + seconds;
 
-    const embed = new Discord.MessageEmbed()
+    const embed = new Discord.EmbedBuilder()
         .setTitle((queue.repeatMode == 2 ? "🔁 " : "") + "Queue for " + message.guild.name)
         .setDescription("Total Duration: `" + duration + "`")
         .setFooter("The Mist Bot - made by R2D2Vader")
@@ -415,7 +415,7 @@ function sendNowPlaying(message, queue) {
         arrow: '🔴'
     });
 
-    const embed = new Discord.MessageEmbed()
+    const embed = new Discord.EmbedBuilder()
         .setTitle(queue.songs[0].name)
         .setURL(queue.songs[0].url)
         .setAuthor((queue.repeatMode == 1 ? "🔂 " : "") + "Now Playing")

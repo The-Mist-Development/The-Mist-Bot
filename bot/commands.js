@@ -1,4 +1,4 @@
-const { Discord, MessageEmbed } = require("discord.js");
+const { Discord, EmbedBuilder, Embed } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache } = require("./database.js")
 const { restart, cancelRestart } = require("./restart.js");
@@ -139,13 +139,13 @@ process.on('uncaughtException', (reason) => {
 
 function helpMsg(message) {
   message.react("📨").catch((err) => {});
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setTitle("Commands")
     .setDescription(
       "[Click here](https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot) to add the bot to your server. \r The Mist Bot is open source - [click here](https://github.com/The-Mist-Development/The-Mist-Bot) to view the source code and contribute."
     )
     .setColor("#d5dbe3")
-    .setFooter("The Mist Bot - made by R2D2Vader")
+    .setFooter({text: "The Mist Bot - made by R2D2Vader"})
     .addFields(
       { name: `My global prefix is \`${prefix}\``, value: "===" },
       { name: "General Commands", value: "===" },
@@ -220,10 +220,10 @@ function helpMsg(message) {
 }
 
 function adminHelpMsg(message) {
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setTitle("Admin Commands")
     .setColor("#b9ceeb")
-    .setFooter("The Mist Bot - made by R2D2Vader")
+    .setFooter({text: "The Mist Bot - made by R2D2Vader"})
     .addFields(
       { name: `My global prefix is \`${prefix}\``, value: "===" },
       { name: "Admin Page", value: "Click [here](https://themistbot.herokuapp.com/admin.html) to visit the Admin page and send messages or changelogs." },
@@ -322,13 +322,13 @@ async function sendUpdate(fmessage, title) {
         if (message.content.toLowerCase() == "cancel") return message.channel.send("Cancelled sending the update.");
         if (!message.content.includes("=")) return message.channel.send("That doesn't look like a valid field format! Cancelled sending the update.");
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
           .setTitle(title)
           .setDescription(
             "R2D2Vader and kamicavi just patched the bot! Here are the updates."
           )
           .setColor(Math.floor(Math.random() * 16777215).toString(16))
-          .setFooter("The Mist Bot - made by R2D2Vader");
+          .setFooter({text: "The Mist Bot - made by R2D2Vader"})
         const fields = message.content.split("|");
 
         for (i = 0; i < fields.length; i++) {

@@ -1,5 +1,5 @@
-const { Client, Intents, MessageEmbed } = require("discord.js");
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES], partials: ["CHANNEL"] });
+const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require("discord.js");
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.MessageContent], partials: [Partials.Channel] });
 
 const token = process.env.TOKEN;
 const prefix = process.env.PREFIX;
@@ -111,7 +111,7 @@ function log(message) {
 // Set up the module exports
 module.exports = {
   updateFromWeb: async function (title, body) {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(
         "R2D2Vader just patched the bot! Here are the updates."

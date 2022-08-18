@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js")
+const { EmbedBuilder } = require("discord.js")
 const wishlist = require("../wishlist_module/manager.js");
 
 module.exports = {
@@ -44,7 +44,7 @@ module.exports = {
 
 function sendGameInfo(message, id) {
     wishlist.getSteamGame(id).then(function (response) {
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
             .setTitle(response.name)
             .setDescription(response.short_description)
             .setImage(response.header_image)
@@ -91,7 +91,7 @@ function sendGameInfo(message, id) {
 
 async function startRegister(message) {
     message.react("📩")
-    let embed = new MessageEmbed()
+    let embed = new EmbedBuilder()
         .setTitle("Send your Steam Profile URL")
         .setColor("#ebc610")
         .addFields(
@@ -118,19 +118,19 @@ async function startRegister(message) {
     }).then(collected => {
         let url = collected.first().content;
         wishlist.addUser(message.author.id, url).then(function (wishlist) {
-            let embed2 = new MessageEmbed()
+            let embed2 = new EmbedBuilder()
                 .setTitle("Success")
                 .setDescription("Your Wishlist has successfully been added to our database to alert you when one of your games goes on sale. We will automatically keep your wishlist updated, but you can manually update our copy of it by running `" + process.env.PREFIX + "wishlist resync`. To disable notifications, run `" + process.env.PREFIX + "wishlist delete`.")
                 .setColor("#382bc4")
-            embed2.addField("Games currently on your wishlist", "---");
+            embed2.addFields({name: "Games currently on your wishlist", value: "---"});
             let keys = Object.keys(wishlist);
             let length = keys.length <= 8 ? keys.length : 8;
             for (let i = 0; i < length; i++) {
                 let cprice = wishlist[keys[i]].subs[0] ? wishlist[keys[i]].subs[0].discount_block.split("<div class=\"discount_final_price\">")[1].split("</div>")[0] : "Not available";
-                embed2.addField(`\`${keys[i]}\` ${wishlist[keys[i]].name}`, `Estimated price: **${cprice}**`);
+                embed2.addFields({name: `\`${keys[i]}\` ${wishlist[keys[i]].name}`, value: `Estimated price: **${cprice}**`});
             }
             if (keys.length - length > 0) {
-                embed2.addField(`Plus ${keys.length - length} more game${keys.length - length > 1 ? "s" : ""}.`, "---");
+                embed2.addFields({name: `Plus ${keys.length - length} more game${keys.length - length > 1 ? "s" : ""}.`, value: "---"});
             }
             dm.channel.send({ embeds: [embed2] });
         }).catch(error => {
@@ -172,19 +172,19 @@ function unregister(message) {
 
 function sendList(message) {
     wishlist.getWishlistFromDB(message.author.id).then(function (response) {
-        let embed = new MessageEmbed()
+        let embed = new EmbedBuilder()
             .setTitle("Your Wishlist")
             .setDescription("This is the list of games we will notify you about. To update our copy of your wishlist, run `" + process.env.PREFIX + "wishlist resync` - though this automatically happens once every 24 hours.")
             .setColor("#0d8222")
         for (let i = 0; i < response.length; i++) {
             if (response[i].price_overview) {
-                embed.addField(`\`${response[i].steam_appid}\` ${response[i].name}`, `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`})`, false);
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`})`});
             }
             else if (response[i].is_free) {
-                embed.addField(`\`${response[i].steam_appid}\` ${response[i].name}`, "Price: **Free**", false);
+                embed.addField({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Free**"});
             }
             else {
-                embed.addField(`\`${response[i].steam_appid}\` ${response[i].name}`, "Price: **Unknown** / not available", false);
+                embed.addField({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Unknown** / not available"});
             }
         }
         message.channel.send({ embeds: [embed] });
@@ -204,7 +204,7 @@ function sendList(message) {
 
 function helpembed () {
     let prefix = process.env.PREFIX + "wishlist ";
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle("Wishlist - Commands")
         .setColor("#2058b3")
         .setDescription("This is a custom implementation of another bot we designed to notify Discord users when games on their Steam wishlist go on sale. \r The original source code can be found [here](https://github.com/The-Mist-Development/Steam-Wishlist-Bot) and the modified version along with the rest of The Mist Bot source [here](https://github.com/The-Mist-Development/The-Mist-Bot). \r The Mist Bot is not affiliated with Valve or Steam.")
@@ -241,7 +241,7 @@ function helpembed () {
 }
 
 function privacyembed() {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle("Privacy")
         .setColor("#10b555")
         .addFields(
