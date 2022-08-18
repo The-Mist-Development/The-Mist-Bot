@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require("discord.js");
+const { Client, GatewayIntentBits, Partials, EmbedBuilder, ActivityType } = require("discord.js");
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.MessageContent], partials: [Partials.Channel] });
 
 const token = process.env.TOKEN;
@@ -19,7 +19,7 @@ client.login(token).catch(log);
 
 client.on("ready", async () => {
   ready = true;
-  client.user.setActivity(`music for you. | ${prefix}help`, { type: "PLAYING" });
+  client.user.setActivity(`nothing cause I'm broken. | ${prefix}help`, { type: ActivityType.Playing });
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);
@@ -32,7 +32,7 @@ client.on("ready", async () => {
 client.on("messageCreate", async function (message) {
   if (message.author.bot) return;
   if (!message.content) return;
-  
+
   // art channel validation
   if (message.channel.id == "838834082183381092") {
     let result = (await artValidate(message)).valueOf();
