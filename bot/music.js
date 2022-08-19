@@ -392,9 +392,9 @@ function sendQueue(message, queue) {
     let duration = hours + minutes + seconds;
 
     const embed = new Discord.EmbedBuilder()
-        .setTitle((queue.repeatMode == 2 ? "🔁 " : "") + "Queue for " + message.guild.name)
+        .setTitle({name: (queue.repeatMode == 2 ? "🔁 " : "") + "Queue for " + message.guild.name})
         .setDescription("Total Duration: `" + duration + "`")
-        .setFooter("The Mist Bot - made by R2D2Vader")
+        .setFooter({text: "The Mist Bot - made by R2D2Vader"})
         .setColor("#066643")
         .addFields({
             name: (queue.repeatMode == 1 ? "🔂 " : "") + "`Now Playing` **" + queue.songs[0].name + "**",
