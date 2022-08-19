@@ -124,6 +124,14 @@ module.exports = {
                 let errorid = createHash('sha1').update([queue.data.channel.guild.id, queue.data.voicechannel.id, Date.now()].join("")).digest('base64')
                 log(`[PLAYER] Error during playback in ${queue.guild.name}: ${error} \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
                 if (queue.data.channel) { 
+
+                    if (error.includes("Status code:") || error.includes("403")) {
+                        // queue.data.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
+                        // log("[PLAYER] Killing process to try and fix error status code. This restart is **uncancellable!**");
+                        // setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000);
+                        return queue.data.channel.send("YouTube returned an error code. Try again in about 5 minutes.");
+                    }
+
                     queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
 
                     // don't think this is needed here
@@ -131,12 +139,7 @@ module.exports = {
                     //    queue.data.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
                     //}
 
-                    if (error.message?.includes("Status code:")) {
-                        // queue.data.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
-                        // log("[PLAYER] Killing process to try and fix error status code. This restart is **uncancellable!**");
-                        // setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000);
-                        queue.data.channel.send("YouTube returned an error code. Try again in about 5 minutes.");
-                    }
+                    
                 }
             });
     },
