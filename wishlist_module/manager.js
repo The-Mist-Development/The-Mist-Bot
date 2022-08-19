@@ -91,25 +91,39 @@ module.exports = {
     }
 }
 
-function resyncSingle(discordId, steamWishlist = null) {
+function resyncSingle(discordId, steamWishlist = null, steamSnippet = null) {
     if (steamWishlist == null) {
         return new Promise(function (resolve, reject) {
-            db.getUser(discordId).then(function (response) {
-                if (response.rowCount == 0) return reject("USER_NOT_FOUND");
-                    steam.getUserWishlist(response.rows[0]["steamsnippet"]).then(function (response) {
-                            let keys = Object.keys(response);
-                            db.writeWishlist(discordId, keys).then(function (response) {
-                                return resolve("success");
-                            }).catch(function (error) {
-                                reject (error);
-                            })
-                    }).catch(function (error) {
-                        return reject(error);
-                    })
+            if (steamSnippet == null) {
+                db.getUser(discordId).then(function (response) {
+                    if (response.rowCount == 0) return reject("USER_NOT_FOUND");
+                        steam.getUserWishlist(response.rows[0]["steamsnippet"]).then(function (response) {
+                                let keys = Object.keys(response);
+                                db.writeWishlist(discordId, keys).then(function (response) {
+                                    return resolve("success");
+                                }).catch(function (error) {
+                                    reject (error);
+                                })
+                        }).catch(function (error) {
+                            return reject(error);
+                        })
 
-            }).catch(function (error) {
-                return reject(error);
-            });
+                }).catch(function (error) {
+                    return reject(error);
+                });
+            }
+            else {
+                steam.getUserWishlist(steamSnippet).then(function (response) {
+                    let keys = Object.keys(response);
+                    db.writeWishlist(discordId, keys).then(function (response) {
+                        return resolve("success");
+                    }).catch(function (error) {
+                        reject (error);
+                    })
+                }).catch(function (error) {
+                    return reject(error);
+                })
+            }   
         })
     }
     else {
@@ -131,16 +145,19 @@ let wishlistSync = new CronJob(
         log("[WISHLIST] Starting daily wishlist sync.");
         db.getAllUsers().then(function (response) {
             for (let i = 0; i < response.rowCount; i++) {
-                resyncSingle(response.rows[i]["discordId"]);
+                resyncSingle(response.rows[i]["discordid"], null, response.rows[i]["steamsnippet"])
+                .catch((err) => {
+                    log("[WISHLIST] Error syncing a single wishlist in daily Cron job:: " + err)
+                });
             }
-            log("[WISHLIST] Command issued for all wishlists to be synced with Steam.");
+            log(`[WISHLIST] Command issued for ${response.rowCount} wishlists to be synced with Steam.`);
         }).catch(function (error) {
-            log("[WISHLIST] Error automatically syncing wishlists in daily Cron job: " + error);
+            log("[WISHLIST] Error getting all users in daily Cron job: " + error);
         })
     },
     null,
     //SET TO TRUE BELOW TO RUN
-    false,
+    true,
     'Europe/London'
 );
 
@@ -196,7 +213,7 @@ let gamePriceSync = new CronJob(
                             }
                             else if (response.price_overview.final < oldPrice) {
                                 if (response.price_overview.discount_percent > 0) {
-                                    log(`[WISHLIST][DEBUG] Game ${response.name} has a discount of ${response.price_overview.discount_percent}%.`);
+                                    log(`[WISHLIST][DEBUG] Game ${response.name} has a new discount of ${response.price_overview.discount_percent}%.`);
                                     let embed = new EmbedBuilder()
                                                 .setTitle(response.name)
                                                 .setDescription(response.short_description)
@@ -239,6 +256,6 @@ let gamePriceSync = new CronJob(
     },
     null,
     //SET TO TRUE BELOW TO RUN
-    false,
+    true,
     'Europe/London'
 );

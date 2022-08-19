@@ -217,7 +217,7 @@ module.exports = {
                     insertIntoGames(gameId, price, resolve, reject);
                 }
                 else {
-                    updateGames(gameId, price, results[0]["lastprice"], resolve, reject);
+                    updateGames(gameId, price, results.rows[0]["lastprice"], resolve, reject);
                 }
             });
         });
