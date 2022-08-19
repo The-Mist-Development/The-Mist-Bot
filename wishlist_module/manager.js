@@ -139,7 +139,8 @@ let wishlistSync = new CronJob(
         })
     },
     null,
-    true,
+    //SET TO TRUE BELOW TO RUN
+    false,
     'Europe/London'
 );
 
