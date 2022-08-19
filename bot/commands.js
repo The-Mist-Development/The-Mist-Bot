@@ -79,7 +79,7 @@ module.exports = {
         sendUpdate(message, args.join(" "));
         break;
       case "wishlist":
-        //wishlistCommand(message, args);
+        wishlistCommand(message, args);
         break;
       case "play":
       case "p":

@@ -181,10 +181,10 @@ function sendList(message) {
                 embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`})`});
             }
             else if (response[i].is_free) {
-                embed.addField({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Free**"});
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Free**"});
             }
             else {
-                embed.addField({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Unknown** / not available"});
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Unknown** / not available"});
             }
         }
         message.channel.send({ embeds: [embed] });
