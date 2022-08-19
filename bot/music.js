@@ -418,8 +418,8 @@ function sendNowPlaying(message, queue) {
     const embed = new Discord.EmbedBuilder()
         .setTitle(queue.songs[0].name)
         .setURL(queue.songs[0].url)
-        .setAuthor({"name": (queue.repeatMode == 1 ? "🔂 " : "") + "Now Playing"})
-        .setFooter("The Mist Bot - made by R2D2Vader")
+        .setAuthor({name: (queue.repeatMode == 1 ? "🔂 " : "") + "Now Playing"})
+        .setFooter({text: "The Mist Bot - made by R2D2Vader"})
         .setThumbnail(queue.songs[0].thumbnail)
         .addFields(
             {
