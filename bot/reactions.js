@@ -11,6 +11,13 @@ module.exports = {
         const msgcontent = message.content.toLowerCase();
 
         if (lmaomode == true) {
+          if (msgcontent.includes("lmaof")) {
+            message.react("🇱").catch((err) => {return;});
+            message.react("Ⓜ").catch((err) => {return;});
+            message.react("🅰️").catch((err) => {return;});
+            message.react("🇴").catch((err) => {return;});
+            message.react("🇫").catch((err) => {return;});
+          }
           if (msgcontent.includes("100%")) {
             message.react("💯").catch((err) => {return;});
           }
