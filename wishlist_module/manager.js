@@ -247,7 +247,7 @@ let gamePriceSync = new CronJob(
                         //log(`[WISHLIST][DEBUG] Game ${response.name} has no price overview, skipping.`);
                     }
                 }).catch(function (error) {
-                    log("[WISHLIST] Error updating game price in hourly Cron job: " + error);
+                    log("[WISHLIST] Error updating game price in hourly Cron job: " + error + `\r Game ID: ${games[i]}`);
                 })
             }
             log("[WISHLIST] Sent the command to update the prices of " + games.length.toString() + " games.")
