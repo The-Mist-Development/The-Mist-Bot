@@ -125,15 +125,18 @@ module.exports = {
                 log(`[PLAYER] Error during playback in ${queue.guild.name}: ${error} \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
                 if (queue.data.channel) { 
 
-                    if (error.includes("Status code:") || error.includes("403")) {
+                    if (error.toString().includes("Status code:") || error.toString().includes("403")) {
                         // queue.data.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
                         // log("[PLAYER] Killing process to try and fix error status code. This restart is **uncancellable!**");
                         // setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000);
-                        return queue.data.channel.send("YouTube returned an error code. Try again in about 5 minutes.");
+                        queue.data.channel.send("YouTube returned an error code. **Try again** in about 5 minutes. 🌧");
                     }
-
-                    queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
-
+                    else if (error.toString() == "aborted") {
+                        queue.data.channel.send("😓 You've just encountered our only major bug! **Try playing something again**. Sorry for the inconvenience!")
+                    }
+                    else {
+                        queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
+                    }
                     // don't think this is needed here
                     //if (error.message?.includes("permission") || error.includes("Permission")) {
                     //    queue.data.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error + "`");
@@ -390,9 +393,10 @@ function sendQueue(message, queue) {
     seconds = seconds.length == 1 ? "0" + seconds : seconds;
 
     let duration = hours + minutes + seconds;
+    let ename = (queue.repeatMode == 2 ? "🔁 " : "") + "Queue for " + message.guild.name
 
     const embed = new Discord.EmbedBuilder()
-        .setTitle({name: (queue.repeatMode == 2 ? "🔁 " : "") + "Queue for " + message.guild.name})
+        .setTitle(ename)
         .setDescription("Total Duration: `" + duration + "`")
         .setFooter({text: "The Mist Bot - made by R2D2Vader"})
         .setColor("#066643")
