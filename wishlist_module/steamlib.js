@@ -3,7 +3,7 @@ const axios = require('axios').default;
 module.exports = {
     getGameInfo: function (gameid) {
         return new Promise(function (resolve, reject) {
-            axios.get(`https://store.steampowered.com/api/appdetails?appids=${gameid}`)
+            axios.get(`https://store.steampowered.com/api/appdetails?appids=${gameid}&cc=us`)
                 .then(function (response) {
                     if (response.data[gameid].success) {
                         resolve(response.data[gameid].data);
