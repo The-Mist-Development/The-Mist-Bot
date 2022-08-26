@@ -186,9 +186,9 @@ let gamePriceSync = new CronJob(
                     }
                     else if (response.price_overview) {
                         db.updateGame(games[i], response.price_overview.final).then(function (oldPrice) {
-                            log(`[WISHLIST][DEBUG] Game ${response.name}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
+                            //log(`[WISHLIST][DEBUG] Game ${response.name}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
                             if (oldPrice == -1) {
-                                log(`[WISHLIST][DEBUG] Game ${response.name} not previously in database.`);
+                                //log(`[WISHLIST][DEBUG] Game ${response.name} not previously in database.`);
                                 //if (response.price_overview.discount_percent > 0) {
                                 //    log(`[WISHLIST][DEBUG] Game ${response.name} has a discount of ${response.price_overview.discount_percent}%.`);
                                 //    let embed = new MessageEmbed()
@@ -210,11 +210,11 @@ let gamePriceSync = new CronJob(
                                 //}
                             }
                             else if (oldPrice == response.price_overview.final) {
-                                log(`[WISHLIST][DEBUG] Game ${response.name} has not changed in price.`);
+                                //log(`[WISHLIST][DEBUG] Game ${response.name} has not changed in price.`);
                             }
                             else if (response.price_overview.final < oldPrice) {
                                 if (response.price_overview.discount_percent > 0) {
-                                    log(`[WISHLIST][DEBUG] Game ${response.name} has a new discount of ${response.price_overview.discount_percent}%.`);
+                                    log(`[WISHLIST][DEBUG] Game ${response.name} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                                     let embed = new EmbedBuilder()
                                                 .setTitle(response.name)
                                                 .setDescription(response.short_description)
@@ -234,11 +234,11 @@ let gamePriceSync = new CronJob(
                                     }
                                 }
                                 else {
-                                    log(`[WISHLIST][DEBUG] Game ${response.name} has lowered in price off sale.`);
+                                    log(`[WISHLIST][DEBUG] Game ${response.name} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                                 }
                             }
                             else if (response.price_overview.final > oldPrice) {
-                                //log(`[WISHLIST][DEBUG] Game ${response.name} has risen in price.`);
+                                log(`[WISHLIST][DEBUG] Game ${response.name} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                             }
                         }).catch(function (error) {
                             log("[WISHLIST] Error updating game price in hourly Cron job: " + error);
