@@ -6,7 +6,7 @@ To **invite our instance of the bot** to your server, **[click here](https://dis
 Feel free to fork the bot and make your own modifications for your own use. See also: [Contributing](#contributing)
 
 ## Latest Addition: Steam Wishlist Notifications
-We coded [Steam-Wishlist-Bot](https://github.com/The-Mist-Development/Steam-Wishlist-Bot) as a standalone bot to notify users when items on their Steam Wishlist went on sale. It's relatively simple - for players with public steam profiles, they simply need to link their profile, and after that we check their wishlisted games to see if they're on sale or not, comparing the price against the previous one recorded in our database. 
+We coded [Steam-Wishlist-Bot](https://github.com/The-Mist-Development/Steam-Wishlist-Bot) as a standalone bot to notify users when items on their Steam Wishlist went on sale. It's relatively simple - for players with public steam profiles, they simply need to link their profile by sending a link to the bot, and after that we check their wishlisted games to see if they're on sale or not, comparing the price against the previous one recorded in our database. 
 
 Adding it to our active bot was the next logical step, and although only I use it, I love it! It notifies you of Steam sales on your favourite games several hours before Steam gets around to emailing you.
 
