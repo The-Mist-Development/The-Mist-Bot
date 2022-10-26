@@ -175,6 +175,7 @@ module.exports = {
                         message.channel.send("▶ **Resumed!**");
                         break;
                     case "skip":
+                    case "s":
                         if (guildQueue.repeatMode == 1) {
                             guildQueue.setRepeatMode(0)
                             message.channel.send("Single song **loop disabled**.")
@@ -208,6 +209,7 @@ module.exports = {
                         sendNowPlaying(message, guildQueue);
                         break;
                     case "loop":
+                    case "l":
                         if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for critical maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(1);

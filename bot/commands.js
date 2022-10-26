@@ -86,12 +86,14 @@ module.exports = {
       case "pause":
       case "resume":
       case "skip":
+      case "s":
       case "stop":
       case "queue":
       case "q":
       case "remove":
       case "np":
       case "loop":
+      case "l":
       case "loopqueue":
       case "loopq":
       case "forcerickroll":
