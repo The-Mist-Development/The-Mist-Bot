@@ -147,6 +147,7 @@ module.exports = {
             });
     },
     music: function (message, command, args) {
+        if (message.channel.type == 2) return message.channel.send("Music commands do not work in Voice Channel Chat. ¯\\\_(ツ)\_/¯ Use a regular channel!");
         if (command == "play" || command == "p") {
             return playSong(message, args);
         }
