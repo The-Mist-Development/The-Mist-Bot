@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const fs = require("fs");
 let killTimeout = null; 
 let client;
 
@@ -13,7 +14,8 @@ module.exports = {
     },
     restart: function() {
         log("[APP] Restarting in 20 seconds. Use `" + process.env.PREFIX + "cancel` to cancel.");
-        killTimeout = setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 20000)
+        let string = "Last restart: " + new Date().toLocaleString() 
+        killTimeout = setTimeout(function () { fs.writeFile("restart.mistbot", string, function() {return;}) }, 20000)
     },
     cancelRestart: function(message) {
         if (killTimeout != null) {
