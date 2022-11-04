@@ -331,7 +331,10 @@ async function playSong(message, args) {
                 rickrolled = true;
             }
             await queue.join(message.member.voice.channel);
-            playingServers.push({"guildId": message.channel.guildId, "channelId": message.channel.id});
+            let index = playingServers.indexOf(playingServers.find(o => o.guildId == message.channel.guildId));
+            if (index < 0) {
+                playingServers.push({"guildId": message.channel.guildId, "channelId": message.channel.id});
+            }
         }
 
         if (args[0].includes("youtube.com/") || args[0].includes("youtu.be/")) {
