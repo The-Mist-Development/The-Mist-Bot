@@ -66,6 +66,12 @@ module.exports = {
           updateCache();
         }
         break;
+        case "gitpull":
+          if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+            message.react("🔄");
+            gitPull();
+          }
+          break;
       case "sendmsg":
         sendMessage(message, args);
         break;
@@ -373,4 +379,9 @@ async function sendUpdate(fmessage, title) {
 
   }
   else fmessage.channel.send(`\`update\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
+}
+
+async function gitPull() {
+  // update the files here
+  requestRestart("", true);
 }
