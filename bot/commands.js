@@ -236,7 +236,6 @@ function adminHelpMsg(message) {
     .setFooter({text: "The Mist Bot - made by R2D2Vader"})
     .addFields(
       { name: `My global prefix is \`${prefix}\``, value: "===" },
-      { name: "Admin Page", value: "Click [here](https://themistbot.herokuapp.com/admin.html) to visit the Admin page and send messages or changelogs." },
       {
         name: "`" + prefix + "restart`",
         value: "Restarts the bot. Do this mainly to solve weird, bot-breaking issues."
