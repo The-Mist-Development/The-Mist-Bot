@@ -265,6 +265,10 @@ function adminHelpMsg(message) {
         name: "`" + prefix + "updatecache`",
         value: "Manually updates the list of counting channels from the database."
       },
+      {
+        name: "`" + prefix + "gitpull`",
+        value: "Make the bot run `git pull` to update itself to the latest version."
+      },
     );
 
   if (message.author.id == process.env.OWNER_ID) {
