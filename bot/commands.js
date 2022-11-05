@@ -3,6 +3,8 @@ const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache } = require("./database.js")
 const { restart, cancelRestart } = require("./restart.js");
 const { wishlistCommand } = require("./wishlist.js")
+const simpleGit = require("simple-git");
+const git = simpleGit.default();
 
 const prefix = process.env.PREFIX;
 let killTimeout = null;
@@ -382,6 +384,9 @@ async function sendUpdate(fmessage, title) {
 }
 
 async function gitPull() {
-  // update the files here
+  log("[GIT] Running `git pull` now.");
+  await git.pull(["origin", "master"]);
+  let hash = await git.revparse(["HEAD"]);
+  log("[GIT] Now up-to-date with `" + hash.slice(0, 6) + "`");
   requestRestart("", true);
 }
