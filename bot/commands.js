@@ -387,6 +387,6 @@ async function gitPull() {
   log("[GIT] Running `git pull` now.");
   await git.pull(["origin", "master"]);
   let hash = await git.revparse(["HEAD"]);
-  log("[GIT] Now up-to-date with `" + hash.slice(0, 6) + "`");
+  log("[GIT] Now up-to-date with `" + hash.slice(0, 7) + "`");
   requestRestart("", true);
 }
