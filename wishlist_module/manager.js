@@ -142,7 +142,7 @@ module.exports.resyncSingle = resyncSingle;
 let wishlistSync = new CronJob(
     '0 0 12 * * *',
     function () {
-        log("[WISHLIST] Starting daily wishlist sync.");
+        //log("[WISHLIST] Starting daily wishlist sync.");
         db.getAllUsers().then(function (response) {
             for (let i = 0; i < response.rowCount; i++) {
                 resyncSingle(response.rows[i]["discordid"], null, response.rows[i]["steamsnippet"])
@@ -150,7 +150,7 @@ let wishlistSync = new CronJob(
                     log("[WISHLIST] Error syncing a single wishlist in daily Cron job:: " + err)
                 });
             }
-            log(`[WISHLIST] Command issued for ${response.rowCount} wishlists to be synced with Steam.`);
+            //log(`[WISHLIST] Command issued for ${response.rowCount} wishlists to be synced with Steam.`);
         }).catch(function (error) {
             log("[WISHLIST] Error getting all users in daily Cron job: " + error);
         })
@@ -164,7 +164,7 @@ let wishlistSync = new CronJob(
 let gamePriceSync = new CronJob(
     '0 30 * * * *',
     function () {
-        log("[WISHLIST] Starting hourly game price sync.");
+        //log("[WISHLIST] Starting hourly game price sync.");
         db.getAllUsers().then(function (response) {
             let gamesObj = {};
             for (let i = 0; i < response.rowCount; i++) {
@@ -251,7 +251,7 @@ let gamePriceSync = new CronJob(
                     log("[WISHLIST] Error updating game price in hourly Cron job: " + error + `\r Game ID: ${games[i]}`);
                 })
             }
-            log("[WISHLIST] Sent the command to update the prices of " + games.length.toString() + " games.")
+            //log("[WISHLIST] Sent the command to update the prices of " + games.length.toString() + " games.")
         }).catch(function (error) {
             log("[WISHLIST] Error automatically syncing game prices in hourly Cron job: " + error);
         })
