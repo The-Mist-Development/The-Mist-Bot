@@ -6,6 +6,7 @@ const { createHash } = require('crypto');
 let client;
 let rickrollchance = 1;
 let playingServers = [];
+let errorCodeChannels = [];
 let needRestart = 0;
 
 function log(message) {
@@ -129,7 +130,18 @@ module.exports = {
                         // queue.data.channel.send("YouTube returned an error code. Restarting the bot to potentially fix this issue.");
                         // log("[PLAYER] Killing process to try and fix error status code. This restart is **uncancellable!**");
                         // setTimeout(function () { process.kill(process.pid, 'SIGTERM'); }, 1000);
-                        queue.data.channel.send("YouTube returned an error code. **Try again** in about 5 minutes. 🌧");
+                        let foundChannel = errorCodeChannels.filter(o => o.id == queue.data.channel.id)[0];
+                        if (foundChannel) {
+                            let now = Date.now();
+                            if (now - foundChannel.time > 5000) {
+                                queue.data.channel.send("YouTube returned an error code. **Try again** in about 5 minutes. 🌧");
+                                errorCodeChannels.splice(errorCodeChannels.indexOf(foundChannel), 1);
+                            }
+                        }
+                        else {
+                            queue.data.channel.send("YouTube returned an error code. **Try again** in about 5 minutes. 🌧");
+                            errorCodeChannels.push({"id": queue.data.channel.id, "time": Date.now()});
+                        }
                     }
                     else if (error.toString() == "aborted") {
                         queue.data.channel.send("😓 You've just encountered our only major bug! **Try playing something again**. Sorry for the inconvenience!")
