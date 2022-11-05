@@ -1,10 +1,7 @@
 const { Discord, Permissions } = require("discord.js");
 const { Client } = require("pg");
 const dbClient = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    connectionString: process.env.DATABASE_URL
 });
 let connected = false;
 
