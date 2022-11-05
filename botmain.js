@@ -66,7 +66,7 @@ client.on("messageCreate", async function (message) {
 });
 
 
-// Do a collective freakout if we get dragged channels.
+// Update queue channel if we get dragged channels
 client.on('voiceStateUpdate', (oldState, newState) => {
   if (oldState.id == client.user.id && oldState.channel && newState.channel && oldState.channel != newState.channel && client.player) {
     // log("I think I was just dragged!")
@@ -77,6 +77,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   }
 });
 
+// Counting message watchers
 
 client.on('messageUpdate', async (oldmessage, newmessage) => {
   let channels = await getCountingChannels();
@@ -100,7 +101,7 @@ client.on('messageDelete', async (message) => {
 
 
 
-// Global logging function used for important things in many places
+// Logging function used in a couple of files.
 function log(message) {
   console.log(message.replaceAll("*", "").replaceAll("`", ""));
   if (ready == true) {
@@ -108,7 +109,7 @@ function log(message) {
   }
 }
 
-// Set up the module exports
+// Set up the module exports for the webserver.
 module.exports = {
   updateFromWeb: async function (title, body) {
     const embed = new EmbedBuilder()
@@ -142,7 +143,7 @@ module.exports = {
 }
 module.exports.log = log;
 
-// cron job for clearing dark playground every week
+// cron job for clearing dark playground every week (Mist server exclusive functionality)
 const CronJob = require('cron').CronJob;
 
 const clearPlayground = new CronJob('0 35 19 * * 0', async function () {
