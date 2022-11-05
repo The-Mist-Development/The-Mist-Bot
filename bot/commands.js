@@ -68,12 +68,12 @@ module.exports = {
           updateCache();
         }
         break;
-        case "gitpull":
-          if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
-            message.react("🔄");
-            gitPull();
-          }
-          break;
+      case "gitpull":
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          message.react("🔄");
+          gitPull();
+        }
+        break;
       case "sendmsg":
         sendMessage(message, args);
         break;
