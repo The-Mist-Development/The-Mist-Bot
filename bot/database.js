@@ -18,6 +18,9 @@ module.exports = {
                 dbClient.query("CREATE TABLE IF NOT EXISTS counting (channelid BIGINT PRIMARY KEY, maxcount BIGINT, count BIGINT, lastusertocount VARCHAR(255));", function (error, results) {
                     if (error) console.log("[DB] Error creating counting table: " + error);
                 });
+                dbClient.query("CREATE TABLE IF NOT EXISTS subscribed (channelid VARCHAR(255) PRIMARY KEY);", function (error, results) {
+                    if (error) console.log("[DB] Error creating subscribed table: " + error);
+                });
                 dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamsnippet VARCHAR(255), gamelist TEXT);", function (error, results) {
                     if (error) console.log("[WISHLIST] Error creating wishlist_users table: " + error);
                 });
