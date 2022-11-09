@@ -140,7 +140,7 @@ module.exports = {
                         }
                         else {
                             queue.data.channel.send("YouTube returned an error code. **Try again** in about 5 minutes. 🌧");
-                            errorCodeChannels.push({"id": queue.data.channel.id, "time": Date.now()});
+                            errorCodeChannels.push({ "id": queue.data.channel.id, "time": Date.now() });
                         }
                     }
                     else if (error.toString() == "aborted") {
@@ -280,17 +280,28 @@ module.exports = {
             needRestart = 1;
             return restart();
         }
-        else if (update == false) {
+        else {
             if (message !== "") message.channel.send("Servers are still playing music. Restarting the bot when the `" + playingServers.length + "` currently playing songs are over.");
-            let errorid = createHash('sha1').update([playingServers[0], Date.now()].join("")).digest('base64');
-            log(`[BOT] Restart requested. Correlation ID: ${errorid}`);
+            let errorid;
+            if (update == false) {
+                errorid = createHash('sha1').update([playingServers[0], Date.now()].join("")).digest('base64');
+                log(`[BOT] Restart requested. Correlation ID: ${errorid}`);
+            }
+            else {
+                log(`[BOT] Restart requested to patch a new update.`);
+            }
             for (let i = 0; i < playingServers.length; i++) {
                 let guildQueue = client.player.getQueue(playingServers[i].guildId);
                 if (!guildQueue) {
                     playingServers.splice(i, 1);
                 }
                 else {
-                    guildQueue.data.channel.send("😔 We have to **restart the bot** to fix critical issues. The bot will automaticaly restart **after this song ends**. Sorry for the inconvenience! Correlation ID: `" + errorid + "`");
+                    if (update == false) {
+                        guildQueue.data.channel.send("😔 We have to **restart the bot** to fix critical issues. The bot will automaticaly restart **after this song ends**. Sorry for the inconvenience! Correlation ID: `" + errorid + "`");
+                    }
+                    else {
+                        guildQueue.data.channel.send("🔧 We have to **restart the bot** to apply the latest exciting update! The bot will automaticaly restart **after this song ends**. Sorry for the inconvenience! \r*If you want to know what's changed, run `" + process.env.PREFIX + "subscribe` to subscribe a channel to our updates!*");
+                    }
                     guildQueue.setRepeatMode(0);
                     guildQueue.clearQueue();
                     if (!guildQueue.isPlaying) {
@@ -298,28 +309,13 @@ module.exports = {
                         guildQueue.stop();
                     }
                 }
-            }
-            needRestart = 1;
-        }
-        else {
-            if (message !== "") message.channel.send("Servers are still playing music. Restarting the bot when the `" + playingServers.length + "` currently playing songs are over.");
-            log(`[BOT] Restart requested to patch a new update.`);
-            for (let i = 0; i < playingServers.length; i++) {
-                let guildQueue = client.player.getQueue(playingServers[i].guildId);
-                if (!guildQueue) {
-                    playingServers.splice(i, 1);
+
+                if (playingServers.length == 0) {
+                    return restart();
                 }
-                else {
-                    guildQueue.data.channel.send("🔧 We have to **restart the bot** to apply the latest exciting update! The bot will automaticaly restart **after this song ends**. Sorry for the inconvenience! \r*If you want to know what's changed, run `" + process.env.PREFIX + "subscribe` to subscribe a channel to our updates!*");
-                    guildQueue.setRepeatMode(0); 
-                    guildQueue.clearQueue();
-                    if (!guildQueue.isPlaying) {
-                        playingServers.splice(i, 1);
-                        guildQueue.stop();
-                    }
-                }
+                needRestart = 1;
             }
-            needRestart = 1;
+            setTimeout(restart(), 600000);
         }
 
     },
