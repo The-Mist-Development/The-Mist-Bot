@@ -309,12 +309,13 @@ module.exports = {
                         guildQueue.stop();
                     }
                 }
-
-                if (playingServers.length == 0) {
-                    return restart();
-                }
-                needRestart = 1;
             }
+
+            if (playingServers.length == 0) {
+                return restart();
+            }
+            
+            needRestart = 1;
             setTimeout(restart(), 600000);
         }
 
