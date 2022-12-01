@@ -88,6 +88,7 @@ module.exports = {
         break;
       case "statusupdate":
         sendStatusUpdate(message, args.shift(), args.join(" "))
+        break;
       case "wishlist":
         wishlistCommand(message, args);
         break;
