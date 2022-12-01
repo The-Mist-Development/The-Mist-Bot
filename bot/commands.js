@@ -86,6 +86,8 @@ module.exports = {
       case "update":
         sendUpdate(message, args.join(" "));
         break;
+      case "statusupdate":
+        sendStatusUpdate(message, args.shift(), args.join(" "))
       case "wishlist":
         wishlistCommand(message, args);
         break;
@@ -262,6 +264,10 @@ function adminHelpMsg(message) {
         value: "Sends an update message out to all subscribed channels. You will be prompted to provide fields for the embed."
       },
       {
+        name: "`" + prefix + "statusupdate <red/green/yellow> <Title>`",
+        value: "Sends a status update message out to all subscribed channels. You will be prompted to provide fields for the embed."
+      },
+      {
         name: "`" + prefix + "updatecache`",
         value: "Manually updates the list of counting channels from the database."
       },
@@ -386,6 +392,82 @@ async function sendUpdate(fmessage, title) {
   }
   else fmessage.channel.send(`\`update\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
 }
+
+async function sendStatusUpdate(fmessage, color, title) {
+  if (title == "") return fmessage.channel.send("You need to provide a title!");
+  if (fmessage.author.id == process.env.OWNER_ID || staffArray.includes(fmessage.author.id)) {
+    fmessage.channel.send("What should the fields be for status update **" + title + "**? (Type `cancel` to cancel)\rFormat:\r```Field name=Field value|Field name=Field value|...```");
+    let filter = m => m.author.id == fmessage.author.id
+    fmessage.channel.awaitMessages({
+      filter,
+      max: 1,
+      time: 30000,
+      errors: ['time']
+    })
+      .then(async function (collected) {
+        let message = collected.first()
+
+        if (message.content.toLowerCase() == "cancel") return message.channel.send("Cancelled sending the status update.");
+        if (!message.content.includes("=")) return message.channel.send("That doesn't look like a valid field format! Cancelled sending the status update.");
+
+        const embed = new EmbedBuilder()
+          .setTitle(title)
+          .setFooter({text: "The Mist Bot - made by R2D2Vader"})
+
+        if (color == "red") {
+          embed.setColor(0xb80404);
+        }
+        else if (color == "green") {
+          embed.setColor(0x04b86d);
+        }
+        else if (color == "yellow") {
+          embed.setColor(0xfaf20a)
+        }
+
+        const fields = message.content.split("|");
+
+        for (i = 0; i < fields.length; i++) {
+          const parts = fields[i].split("=");
+          embed.addFields({ name: parts[0], value: parts[1] });
+        }
+
+        fmessage.channel.send({ content: "**Preview** update embed. Type `confirm` to send the update, or `cancel` to cancel.", embeds: [embed] });
+        fmessage.channel.awaitMessages({
+          filter,
+          max: 1,
+          time: 30000,
+          errors: ['time']
+        })
+          .then(async function (collected) {
+            let message2 = collected.first()
+
+            if (message2.content.toLowerCase() == "confirm") {
+              message2.react("✅");
+              let channels = await getSubscribedChannels();
+              for (let i = 0; i < channels.length; i++) {
+                client.channels.cache.get(channels[i]).send({ embeds: [embed] });
+              }
+              fmessage.channel.send("Status Update sent!");
+            }
+
+            else if (message2.content.toLowerCase() == "cancel") fmessage.channel.send("Cancelled sending the update.");
+
+            else fmessage.channel.send("Invalid response! Cancelled sending the update.");
+          })
+          .catch(collected => {
+            if (collected.size == 0) fmessage.channel.send('Cancelled sending the update - Timeout.');
+            else fmessage.channel.send('Cancelled sending the update - An error occurred.');
+          });
+      })
+      .catch(collected => {
+        if (collected.size == 0) fmessage.channel.send('Cancelled sending the update - Timeout.');
+        else fmessage.channel.send('Cancelled sending the update - Double check that your field format is correct.');
+      });
+
+  }
+  else fmessage.channel.send(`\`statusupdate\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
+}
+
 
 async function gitPull() {
   log("[GIT] Running `git pull` now.");
