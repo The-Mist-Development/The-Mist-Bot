@@ -1,4 +1,4 @@
-const { Discord, Permissions } = require("discord.js");
+const { PermissionsBitField } = require("discord.js");
 const { Client } = require("pg");
 const dbClient = new Client({
     connectionString: process.env.DATABASE_URL
@@ -95,7 +95,7 @@ module.exports = {
         if (channels.includes(message.channel.id)) {
             message.channel.send("Counting is already enabled in this channel!")
         }
-        else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+        else if (message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) {
             await dbClient.query(`INSERT INTO counting (channelid, maxcount, count, lastusertocount) VALUES (${message.channel.id},0,0,-1);`);
             message.channel.send("Counting is now enabled! The next number is `1`.");
             updateCache();
@@ -109,7 +109,7 @@ module.exports = {
         if (!channels.includes(message.channel.id)) {
             message.channel.send("Counting isn't enabled in this channel!")
         }
-        else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+        else if (message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) {
             await dbClient.query(`DELETE FROM counting WHERE channelid=${message.channel.id};`);
             message.channel.send("Counting is now disabled! Sorry to see you go 😦");
             updateCache();
@@ -126,14 +126,14 @@ module.exports = {
         return res.rows.map(x => x["channelid"]);
     },
     subscribe: async function(message) {
-        if (message.channel.type != "GUILD_TEXT") return message.channel.send("Updates can only be subscribed to in a Server Text Channel!");
+        if (message.channel.type != 0) return message.channel.send("Updates can only be subscribed to in a Server Text Channel!");
         const res = await dbClient.query("SELECT channelid FROM subscribed;");
         let array = res.rows.map(x => x["channelid"]);
 
         if (array.includes(message.channel.id)) {
             message.channel.send("This channel is already subscribed to updates!")
         }
-        else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+        else if (message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) {
             await dbClient.query(`INSERT INTO subscribed (channelid) VALUES (${message.channel.id});`);
             message.channel.send("This channel is now subscribed to updates!");
         }
@@ -148,7 +148,7 @@ module.exports = {
         if (!array.includes(message.channel.id)) {
             message.channel.send("This channel isn't subscribed to updates!")
         }
-        else if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+        else if (message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) {
             await dbClient.query(`DELETE FROM subscribed WHERE channelid=Cast(${message.channel.id} As varchar);`);
             message.channel.send("This channel is now unsubscribed from updates!");
         }
