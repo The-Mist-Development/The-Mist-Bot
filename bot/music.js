@@ -63,11 +63,11 @@ module.exports = {
             // Emitted when a song was added to the queue.
             .on('songAdd', (queue, song) => {
                 if (queue.data.hidemsg) return;
-                queue.data.channel.send(`**${song.name.replaceAll(/@/g, '@ ')}** was added to the queue!`) // replace any @'s to include zero width joiner to counter pings
+                queue.data.channel.send(`**${song.name.replaceAll(/@/g, '@ ')}** was added to the queue!`) // replace any @'s to include space to counter pings
             })
             // Emitted when a playlist was added to the queue.
             .on('playlistAdd', (queue, playlist) =>
-            // replace any @'s to include zero width joiner to counter pings
+            // replace any @'s to include space to counter pings
                 queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist.replaceAll(/@/g, '@ ')}** to the queue.`))
             // Emitted when the queue was destroyed (by stopping).    
             .on('queueDestroyed', (queue) => {
@@ -95,7 +95,7 @@ module.exports = {
             // Emitted when a song changed.
             .on('songChanged', (queue, newSong, oldSong) => {
                 if (oldSong.url == newSong.url) return; //queue.data.channel.send(`🔂 Playing Again: **${newSong.name}** 🎶`);
-                else queue.data.channel.send(`🎵 Playing Now: **${newSong.name.replaceAll(/@/g, '@ ')}** 🎶`); // replace any @'s to include zero width joiner to counter pings
+                else queue.data.channel.send(`🎵 Playing Now: **${newSong.name.replaceAll(/@/g, '@ ')}** 🎶`); // replace any @'s to include space to counter pings
                 if (queue.data.rickroll) {
                     queue.data.channel.send("<a:mistbot_rickroll:821480726163226645> **Rickroll'd!** Sorry I just couldn't resist haha <a:mistbot_rickroll:821480726163226645>");
                     queue.data.rickrollmsg.react("<a:mistbot_rickroll:821480726163226645>");
@@ -105,7 +105,7 @@ module.exports = {
             })
             // Emitted when a first song in the queue started playing.
             .on('songFirst', (queue, song) =>
-                queue.data.channel.send(`🎵 Playing Now: **${song.name}** 🎶`))
+                queue.data.channel.send(`🎵 Playing Now: **${song.name.replaceAll(/@/g, '@ ')}}** 🎶`)) // replace any @'s to include space to counter pings
             // Emitted when someone disconnected the bot from the channel.
             .on('clientDisconnect', (queue) => {
                 queue.data.channel.send("👋 **Bye then!** I see how it is 😔")
@@ -212,7 +212,7 @@ module.exports = {
                         if (index < guildQueue.songs.length && index > 0) {
                             let name = guildQueue.songs[index].name;
                             guildQueue.remove(index);
-                            message.channel.send(`📤 Removed **${name.replaceAll(/@/g, '@ ')}** from the queue.`); // replace any @'s to include zero width joiner to counter pings
+                            message.channel.send(`📤 Removed **${name.replaceAll(/@/g, '@ ')}** from the queue.`); // replace any @'s to include space to counter pings
                         }
                         else {
                             let explanation = index == 0 ? "You cannot remove the currently playing song" : "There are not that many songs in the queue."
