@@ -19,7 +19,7 @@ module.exports = {
                     if (error) console.log("[DB] Error creating counting table: " + error);
                 });
                 dbClient.query("CREATE TABLE IF NOT EXISTS counting_messups (number BIGINT PRIMARY KEY, count BIGINT);", function (error, results) {
-                    if (error) console.log("[DB] Error creating counting messups table: " + error);
+                    if (error) console.log("[DB] Error creating counting_messups table: " + error);
                 });
                 dbClient.query("CREATE TABLE IF NOT EXISTS subscribed (channelid VARCHAR(255) PRIMARY KEY);", function (error, results) {
                     if (error) console.log("[DB] Error creating subscribed table: " + error);
