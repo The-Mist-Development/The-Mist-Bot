@@ -240,7 +240,7 @@ async function updateCache() {
 async function recordMessup(number) {
     const res = await dbClient.query(`SELECT * FROM counting_messups WHERE number=${number};`);
     if (res.rows.length == 0) {
-        dbClient.query(`INSERT INTO counting_messups (number, count) VALUES (${count},1);`);
+        dbClient.query(`INSERT INTO counting_messups (number, count) VALUES (${number},1);`);
     }
     else {
         let newcount = parseInt(res.rows[0]["count"]) + 1;
