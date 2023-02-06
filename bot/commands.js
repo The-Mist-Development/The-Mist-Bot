@@ -52,6 +52,7 @@ module.exports = {
         break;
       case "maxcount":
         if (args[0]) {
+          args[0] = args[0].replace(/[<#>]/gm, "");
           let lookupChannel = client.channels.cache.get(args[0]);
           if (lookupChannel) {
             getMaxCount(message, lookupChannel);
@@ -226,8 +227,8 @@ function helpMsg(message) {
         value: "Disable Counting in a channel. Requires the `Manage Channels` permission."
       },
       {
-        name: "`" + prefix + "maxcount <optional Channel ID>`",
-        value: "Get the highest counted number in a counting channel. Or specify a Channel ID to see the max count from that channel."
+        name: "`" + prefix + "maxcount <optional Channel Tag or ID>`",
+        value: "Get the highest counted number in a counting channel. Or specify a Channel Tag or ID to see the max count from that channel."
       },
     );
   message.author.send({ embeds: [embed] }).catch((err) => {message.channel.send("Unable to DM you the help message. 😔")});
