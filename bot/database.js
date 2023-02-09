@@ -252,11 +252,9 @@ async function recordMessup(number) {
 async function updateMessupCache() {
     const res = await dbClient.query(`SELECT * FROM counting_messups;`);
     let obj = {}
-    console.log(res.rows);
     for (let i = 0; i < res.rows.length; i++) {
-        obj[res.rows[i]["number"]] == parseInt(res.rows[i]["count"]);
+        obj[res.rows[i]["number"]] = parseInt(res.rows[i]["count"]);
     }
-    console.log("obj", obj)
     fs.writeFileSync("messupcache.json", JSON.stringify(obj));
 }
 setInterval(updateMessupCache, 300000);
