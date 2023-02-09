@@ -245,17 +245,19 @@ async function recordMessup(number) {
     }
     else {
         let newcount = parseInt(res.rows[0]["count"]) + 1;
-        dbClient.query(`UPDATE counting_messups SET count = ${newcount} WHERE number = ${number}`);
+        dbClient.query(`UPDATE counting_messups SET count = ${newcount} WHERE number = ${number};`);
     }  
 }
 
 async function updateMessupCache() {
-    const res = await dbClient.query(`SELECT * FROM counting_messups`);
+    const res = await dbClient.query(`SELECT * FROM counting_messups;`);
     let obj = {}
+    console.log(res.rows);
     for (let i = 0; i < res.rows.length; i++) {
         obj[res.rows[i]["number"]] == parseInt(res.rows[i]["count"]);
     }
-    fs.writeFileSync("../messupcache.json", JSON.stringify(obj));
+    console.log("obj", obj)
+    fs.writeFileSync("messupcache.json", JSON.stringify(obj));
 }
 setInterval(updateMessupCache, 300000);
 
