@@ -1,7 +1,7 @@
 const { Discord, EmbedBuilder, Embed } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache } = require("./database.js")
-const { restart, cancelRestart } = require("./restart.js");
+const { restart, cancelRestart, npmInstall } = require("./restart.js");
 const { wishlistCommand } = require("./wishlist.js")
 const simpleGit = require("simple-git");
 const git = simpleGit.default();
@@ -42,6 +42,11 @@ module.exports = {
       case "cancel":
         if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
           tryCancel(message);
+        }
+        break;
+      case "npmi":
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          npmInstall();
         }
         break;
       case "enablecounting":
@@ -276,6 +281,10 @@ function adminHelpMsg(message) {
       {
         name: "`" + prefix + "gitpull`",
         value: "Make the bot run `git pull` to update itself to the latest version."
+      },
+      {
+        name: "`" + prefix + "npmi`",
+        value: "Run the `npm install` command on the system. Not sure if it works or serves a purpose."
       },
     );
 

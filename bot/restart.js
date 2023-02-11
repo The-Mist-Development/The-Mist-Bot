@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const fs = require("fs");
+const cp = require('child_process');
 let killTimeout = null; 
 let client;
 
@@ -30,4 +31,16 @@ module.exports = {
         else message.channel.send("There is no restart to cancel!");
         return "";
     },
+    npmInstall: function() {
+        console.log("haha")
+        cp.exec('npm install', function(err, stdout, stderr) {
+            if (err) {
+                log("[APP] Error executing `npm install`: ", err)
+                return;
+              }
+              log("[APP] Ran `npm install`.");
+              if (stdout) log("`stdout` ```" + stdout + "```");
+              if (stderr) log("`stderr` ```" + stderr + "```");
+        });
+    }
 }
