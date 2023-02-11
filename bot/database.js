@@ -35,6 +35,7 @@ module.exports = {
           });
     },
     getCountingChannels: async function() {
+        if (connected == false) return [];
         if (countingChannelsCache.length == 0) {
             const res = await dbClient.query("SELECT channelid FROM counting;");
             countingChannelsCache = res.rows.map(x => x["channelid"]);
