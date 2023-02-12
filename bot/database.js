@@ -31,6 +31,7 @@ module.exports = {
                 dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameid VARCHAR(255) PRIMARY KEY, lastprice VARCHAR(255));", function (error, results) {
                     if (error) console.log("[WISHLIST] Error creating wishlist_games table: " + error);
                 });
+                updateMessupCache();
             }
           });
     },

@@ -2,13 +2,70 @@
 
 <head>
   <title>The Mist Bot</title>
+
+  <style>
+    a {
+      font-size: 1.2rem;
+    }
+  </style>
 </head>
 
 <body>
+  <h1>The Mist Bot</h1>
   <a href="https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot">
     Add the bot
-  </a><br>
-  
+  </a><br />
+  <a href="https://github.com/The-Mist-Development/The-Mist-Bot">
+    GitHub
+  </a><br />
+
+  <h2> Counting messups at each number</h2>
+  <div style="width: 500px">
+    <canvas id="myChart"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    (async () => {
+      const response = await fetch('/messups');
+      const input = await response.json();
+      console.log(input);
+      let chartdata = [0]
+      let chartlabels = ["Other Numbers"]
+      let colours = []
+      let colourseed = Math.floor(Math.random() * 255)
+      colours.push("hsl(" + colourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
+      for (let p in input) {
+        if (parseInt(input[p]) >= 2) {
+          chartdata.push(parseInt(input[p]));
+          chartlabels.push(p);
+          colourseed = Math.floor(((((colourseed / 255) * 360) + 137.5) / 360) * 255);
+          if (colourseed > 255) colourseed -= 255
+          colours.push("hsl(" + colourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+        }
+        else {
+          chartdata[0] += parseInt(input[p]);
+        }
+      }
+
+      const ctx = document.getElementById('myChart');
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: chartlabels,
+            datasets: [{
+                label: 'Counting Messups',
+                data: chartdata,
+                backgroundColor: colours
+            }]
+        },
+      });
+    })();
+  </script>
+
+
 </body>
 
 </html>
