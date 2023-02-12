@@ -1,4 +1,4 @@
-const { Discord, EmbedBuilder, Embed } = require("discord.js");
+const { EmbedBuilder, PermissionsBitField } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache } = require("./database.js")
 const { restart, cancelRestart, npmInstall } = require("./restart.js");
@@ -140,6 +140,9 @@ process.on('unhandledRejection', (reason, promise) => {
   log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
   if (reason.stack?.startsWith("DiscordAPIError[50013]:") || reason.stack?.includes("Missing Permissions")) {
     return log("Missing Permissions for something basic. No big deal.");
+  }
+  else if (reason.stack?.startsWith("DiscordAPIError[50001]:")) {
+    return log("Missing Access to something. No big deal.");
   }
   requestRestart();
 });
@@ -322,14 +325,14 @@ function sendMessage(message, args) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
     let channel = client.channels.cache.get(args.shift());
     if (channel) {
-      if (channel.type == "GUILD_TEXT") {
-        if (channel.permissionsFor(client.user.id).has("SEND_MESSAGES")) {
-          channel.send(args.join(" "));
+      if (channel.type == 0 || channel.type ==  2 || channel.type == 10 || channel.type == 11) {
+        if (channel.permissionsFor(client.user).has(PermissionsBitField.Flags.ViewChannel) && channel.permissionsFor(client.user).has(PermissionsBitField.Flags.SendMessages)) {
           message.react("📤");
+            channel.send(args.join(" "));
         }
         else return message.channel.send(`I **don't have permission** to send messages in <#${channel.id}>!`);
       }
-      else return message.channel.send(`The channel <#${channel.id}> is not a **Guild Text channel**! I cannot send messages there.`);
+      else return message.channel.send(`The channel <#${channel.id}> is of type \`${channel.type}\` and I am **not configured** to send messages there.`);
     }
     else return message.channel.send(`That isn't a **valid Channel ID**, or is a channel that I don't have access to! Please try again.`);
   }
