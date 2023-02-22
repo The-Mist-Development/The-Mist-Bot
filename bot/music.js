@@ -68,7 +68,7 @@ module.exports = {
             // Emitted when a playlist was added to the queue.
             .on('playlistAdd', (queue, playlist) =>
             // replace any @'s to include space to counter pings
-                queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist.replaceAll(/@/g, '@ ')}** to the queue.`))
+                queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist.name.replaceAll(/@/g, '@ ')}** to the queue.`))
             // Emitted when the queue was destroyed (by stopping).    
             .on('queueDestroyed', (queue) => {
                 //queue.data.channel.send(`⏹ **Stopped** - Is that all for now?`);
