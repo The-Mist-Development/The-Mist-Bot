@@ -105,7 +105,7 @@ module.exports = {
             })
             // Emitted when a first song in the queue started playing.
             .on('songFirst', (queue, song) =>
-                queue.data.channel.send(`🎵 Playing Now: **${song.name.replaceAll(/@/g, '@ ')}}** 🎶`)) // replace any @'s to include space to counter pings
+                queue.data.channel.send(`🎵 Playing Now: **${song.name.replaceAll(/@/g, '@ ')}** 🎶`)) // replace any @'s to include space to counter pings
             // Emitted when someone disconnected the bot from the channel.
             .on('clientDisconnect', (queue) => {
                 queue.data.channel.send("👋 **Bye then!** I see how it is 😔")
