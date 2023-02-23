@@ -6,7 +6,7 @@ const fetch = require('isomorphic-unfetch')
 const { getDetails: getSpotifyDetails } = require('spotify-url-info')(fetch)
 
 let client;
-let rickrollchance = 1;
+let rickrollchance = 0.5;
 let playingServers = [];
 let errorCodeChannels = [];
 let needRestart = 0;
@@ -403,7 +403,14 @@ async function playSong(message, args) {
                 args = [details.preview.artist, details.preview.title];
             }
         }
-
+        else if (args[0].includes("music.apple.com/")) {
+            if (loading != null && deleted == false) {
+                loading.delete();
+                deleted = true;
+            }
+            if (loTimeout) clearTimeout(loTimeout);
+            return message.channel.send("We currently don't support Apple Music links. If this wasn't one, please contact `R2D2Vader#0693`. 🍎🤨");
+        }
         if (message.content.toLowerCase().includes("list=")) {
             if (message.content.toLowerCase().includes("?v=")) {
                 message.channel.send("💿 **Adding Full Playlist** to the queue. If you wanted the single song, paste the URL up to the `&list=` part, or try using the song name.");
