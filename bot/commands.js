@@ -191,7 +191,7 @@ function helpMsg(message) {
       { name: "🎵 Music Commands", value: "===" },
       {
         name: "`" + prefix + "play <Song Name / URL / Playlist URL>`",
-        value: "Play the first result on YouTube for the Song Name, or the YouTube video / playlist at the link you provide."
+        value: "Play the first result on YouTube for the Song Name, or the YouTube video / playlist at the link you provide. We also support Spotify links (though it does the same as writing the song's title and artist)."
       },
       {
         name: "`" + prefix + "pause` / `" + prefix + "resume`",

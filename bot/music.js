@@ -2,6 +2,8 @@ const Discord = require("discord.js");
 const { Player } = require("discord-music-player");
 const { restart } = require("./restart.js");
 const { createHash } = require('crypto');
+const fetch = require('isomorphic-unfetch')
+const { getDetails: getSpotifyDetails } = require('spotify-url-info')(fetch)
 
 let client;
 let rickrollchance = 1;
@@ -379,6 +381,26 @@ async function playSong(message, args) {
         if (args[0].includes("youtube.com/") || args[0].includes("youtu.be/")) {
             if (args[0].startsWith("www.") || args[0].startsWith("youtube.com/") || args[0].startsWith("youtu.be/")) {
                 args[0] = "https://" + args[0];
+            }
+        }
+        else if (args[0].includes("open.spotify.com/")) {
+            if (args[0].startsWith("www.") || args[0].startsWith("open.spotify.com")) {
+                args[0] = "https://" + args[0];
+            }
+            if (args[0].includes("/track/")) {
+                let details;
+                try {
+                    details = await getSpotifyDetails(args[0]);   
+                }
+                catch (err) {
+                    if (loading != null && deleted == false) {
+                        loading.delete();
+                        deleted = true;
+                    }
+                    if (loTimeout) clearTimeout(loTimeout);
+                    return message.channel.send("🔎 **No Spotify Song found** for that query!");
+                }
+                args = [details.preview.artist, details.preview.title];
             }
         }
 
