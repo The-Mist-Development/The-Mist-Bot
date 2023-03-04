@@ -80,6 +80,11 @@ module.exports = {
           gitPull();
         }
         break;
+      case "eval":
+        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+          log(message)
+        }
+        break;
       case "sendmsg":
         sendMessage(message, args);
         break;
@@ -306,12 +311,6 @@ function adminHelpMsg(message) {
     message.react("📩");
   }
 }
-
-function eval(message) {
-  if (message.author.id == process.env.OWNER_ID or staffArray.includes(message.author.id)) {
-    log(message)
-  }
-}h
 
 function tryRestart(message) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
