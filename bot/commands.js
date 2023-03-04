@@ -307,6 +307,12 @@ function adminHelpMsg(message) {
   }
 }
 
+function eval(message) {
+  if (message.author.id == process.env.OWNER_ID or staffArray.includes(message.author.id)) {
+    log(message)
+  }
+}h
+
 function tryRestart(message) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
     message.react("👌");
