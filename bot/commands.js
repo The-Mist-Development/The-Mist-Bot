@@ -82,7 +82,7 @@ module.exports = {
         break;
       case "eval":
         if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
-          log(message)
+          log(message.content)
         }
         break;
       case "sendmsg":
