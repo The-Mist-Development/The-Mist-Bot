@@ -162,7 +162,7 @@ let wishlistSync = new CronJob(
 );
 
 let gamePriceSync = new CronJob(
-    '0 40 * * * *',
+    '0 30 * * * *',
     function () {
         //log("[WISHLIST] Starting hourly game price sync.");
         db.getAllUsers().then(function (response) {
@@ -194,7 +194,7 @@ let gamePriceSync = new CronJob(
                                 //log(`[WISHLIST][DEBUG] Game ${gameid} not previously in database.`);
                             }
                             else if (oldPrice == response.price_overview.final) {
-                                log(`[WISHLIST][DEBUG] Game ${gameid} has not changed in price.`);
+                                //log(`[WISHLIST][DEBUG] Game ${gameid} has not changed in price.`);
                             }
                             else if (response.price_overview.final < oldPrice) {
                                 if (response.price_overview.discount_percent > 0) {
