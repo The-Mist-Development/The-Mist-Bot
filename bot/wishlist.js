@@ -172,6 +172,7 @@ function unregister(message) {
 
 function sendList(message) {
     wishlist.getWishlistFromDB(message.author.id).then(function (response) {
+        console.log(response)
         let embed = new EmbedBuilder()
             .setTitle("Your Wishlist")
             .setDescription("This is the list of games we will notify you about. To update our copy of your wishlist, run `" + process.env.PREFIX + "wishlist resync` - though this automatically happens once every 24 hours.")
