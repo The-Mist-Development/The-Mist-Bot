@@ -10,6 +10,8 @@ function log(message) {
     client.channels.cache.get("850844368679862282").send(message);
 }
 
+module.exports.log = log
+
 // Exports
 module.exports = {
     wishlistSetup: function (discordClient) {

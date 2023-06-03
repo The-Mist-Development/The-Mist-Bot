@@ -29,7 +29,7 @@ module.exports = {
                 }).catch(function (err) {
                     if (err == "USER_NOT_FOUND") return message.channel.send("You don't have your wishlist registered!");
                     message.channel.send("❌ Failed to sync your wishlist with Steam. Please try again later.");
-                    console.log("Error syncing wishlist: " + err);
+                    wishlist.log("[WISHLIST] Error syncing wishlist: " + err);
                 });
                 break;
             case "list": 
@@ -83,7 +83,7 @@ function sendGameInfo(message, id) {
             message.channel.send("Please provide a valid Steam Game ID.")
         }
         else {
-            console.log("Error getting game from Steam: " + error);
+            wishlist.log("[WISHLIST] Error getting game from Steam: " + error);
             message.channel.send("An error occured! Try again later.");
         }
     });
@@ -144,7 +144,7 @@ async function startRegister(message) {
                 dm.channel.send("Wait a minute - you are already registered! To update your wishlist, run `" + process.env.PREFIX + "wishlist resync`.");
             }
             else {
-                console.log(error);
+                wishlist.log("[WISHLIST] Error while registering: " + error);
                 dm.channel.send("An error occured! Please try again.");
             }
         })
@@ -164,7 +164,7 @@ function unregister(message) {
             message.channel.send("You don't have your wishlist registered!");
         }
         else {
-            console.log(error);
+            wishlist.log("[WISHLIST] Error while unregistering: " + error);
             message.channel.send("An error occured. Please try again.");
         }
     })
@@ -172,13 +172,13 @@ function unregister(message) {
 
 function sendList(message) {
     wishlist.getWishlistFromDB(message.author.id).then(function (response) {
-        console.log(response)
         let embed = new EmbedBuilder()
             .setTitle("Your Wishlist")
             .setDescription("This is the list of games we will notify you about. To update our copy of your wishlist, run `" + process.env.PREFIX + "wishlist resync` - though this automatically happens once every 24 hours.")
             .setColor("#0d8222")
         if (response.length > 24) embed.addFields({name: "Your wishlist is too long!", value: "The first 24 items will be displayed below."})
         for (let i = 0; i < 24; i++) {
+            wishlist.log(response[i])
             if (response[i].price_overview) {
                 embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`})`});
             }
@@ -198,7 +198,7 @@ function sendList(message) {
             message.channel.send("Couldn't find one or more of the games on your wishlist! Run `" + process.env.PREFIX + "wishlist resync` to update our copy.");
         }
         else {
-            console.log(error);
+            wishlist.log("[WISHLIST] List command error: " + error);
             message.channel.send("An error occured. Please try again.");
         }
     })
