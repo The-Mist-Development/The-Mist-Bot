@@ -178,7 +178,7 @@ function sendList(message) {
             .setColor("#0d8222")
         if (response.length > 24) embed.addFields({name: "Your wishlist is too long!", value: "The first 24 items will be displayed below."})
         for (let i = 0; i < 24; i++) {
-            wishlist.log(response[i])
+            wishlist.log(JSON.stringify(response[i]))
             if (response[i].price_overview) {
                 embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`})`});
             }
