@@ -1,11 +1,4 @@
-!node_modules/
 node_modules/*
-!node_modules/ytsr/
-node_modules/ytsr/*
-!node_modules/ytsr/lib
-node_modules/ytsr/lib/*
-!node_modules/ytsr/lib/utils.js
-local_env.json
 .env
 *.mistbot
 messupcache.json
