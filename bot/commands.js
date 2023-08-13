@@ -68,6 +68,9 @@ module.exports = {
         }
         else getMaxCount(message);
         break;
+      case "messups":
+        message.channel.send("You can view counting messups by number [on our website](https://mist.invaderj.rocks).")
+        break;
       case "updatecache":
         if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
           message.react("📲")
@@ -243,6 +246,10 @@ function helpMsg(message) {
         name: "`" + prefix + "maxcount <optional Channel Tag or ID>`",
         value: "Get the highest counted number in a counting channel. Or specify a Channel Tag or ID to see the max count from that channel."
       },
+      {
+        name: "`" + prefix + "messups`",
+        value: "See counting messup stats."
+      }
     );
   message.author.send({ embeds: [embed] }).catch((err) => {message.channel.send("Unable to DM you the help message. 😔")});
 }
