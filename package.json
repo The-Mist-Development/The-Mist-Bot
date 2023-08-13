@@ -33,7 +33,7 @@
     "isomorphic-unfetch": "^4.0.2",
     "pg": "^8.7.3",
     "simple-git": "^3.16.0",
-    "spotify-url-info": "^3.2.3",
+    "spotify-url-info": "^3.2.6",
     "ytdl-core": "^4.11.5",
     "ytsr": "^3.8.4"
   },
