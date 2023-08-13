@@ -198,8 +198,8 @@ function helpMsg(message) {
       },
       { name: "🎵 Music Commands", value: "===" },
       {
-        name: "`" + prefix + "play <Song Name / URL / Playlist URL>`",
-        value: "Play the first result on YouTube for the Song Name, or the YouTube video / playlist at the link you provide. We also support Spotify links."
+        name: "`" + prefix + "play <Song Name / YouTube Video or Playlist URL / Spotify Track or Album or Playlist URL>`",
+        value: "Play the first result on YouTube for the Song Name, or the content at the link you provide. We convert each Spotify song into its title and artist and search for it."
       },
       {
         name: "`" + prefix + "pause` / `" + prefix + "resume`",

@@ -425,6 +425,24 @@ async function playSong(message, args) {
                     return message.channel.send("🔎 **No Spotify Playlist found** for that query! Make sure the playlist is public.");
                 }
             }
+            else if (args[0].includes("album")) {
+                try {
+                    details = await getSpotifyDetails(args[0]);
+                    for (let i = 0; i < details.tracks.length; i++) {
+                        songs.push({artist: details.tracks[i].artist, title: details.tracks[i].name});
+                    }
+                    customList = true;
+                }
+                catch (err) {
+                    console.log(err)
+                    if (loading != null && deleted == false) {
+                        loading.delete();
+                        deleted = true;
+                    }
+                    if (loTimeout) clearTimeout(loTimeout);
+                    return message.channel.send("🔎 **No Spotify Album found** for that query!");
+                }
+            }
         }
         else if (args[0].includes("music.apple.com/")) {
             if (loading != null && deleted == false) {
