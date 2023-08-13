@@ -18,7 +18,9 @@ function log(message) {
 
 // For errors which occur when trying to play a song
 function runtimeErrorHandle(error, message) {
-    let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()].join("")).digest('base64')
+    let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()].join("")).digest('base64');
+
+    if (error.message.includes("The Queue was destroyed")) return;
 
     log(`[PLAYER] Error trying to play in ${message.guild.name}: \r\`\`\`\r${error.message}\r\`\`\`Error ID: ${errorid}`);
     if (message.channel) {
@@ -93,6 +95,7 @@ module.exports = {
                 }
                 if (needRestart == 1) return;
                 queue.data.channel.send(`🎤 The queue has **ended**. Add some more songs!`);
+                queue.leave();
             })
             // Emitted when a song changed.
             .on('songChanged', (queue, newSong, oldSong) => {
@@ -339,6 +342,8 @@ async function playSong(message, args) {
         let rickrolled = false;
         let loTimeout = false;
         let deleted = false;
+        let customList = false;
+        let songs = [];
 
         let queue;
         if (guildQueue) {
@@ -402,6 +407,24 @@ async function playSong(message, args) {
                 }
                 args = [details.preview.artist, details.preview.title];
             }
+            else if (args[0].includes("/playlist/")) {
+                try {
+                    details = await getSpotifyDetails(args[0]);
+                    for (let i = 0; i < details.tracks.length; i++) {
+                        songs.push({artist: details.tracks[i].artist, title: details.tracks[i].name});
+                    }
+                    customList = true;
+                }
+                catch (err) {
+                    console.log(err)
+                    if (loading != null && deleted == false) {
+                        loading.delete();
+                        deleted = true;
+                    }
+                    if (loTimeout) clearTimeout(loTimeout);
+                    return message.channel.send("🔎 **No Spotify Playlist found** for that query! Make sure the playlist is public.");
+                }
+            }
         }
         else if (args[0].includes("music.apple.com/")) {
             if (loading != null && deleted == false) {
@@ -411,6 +434,7 @@ async function playSong(message, args) {
             if (loTimeout) clearTimeout(loTimeout);
             return message.channel.send("We currently don't support Apple Music links. If this wasn't one, please contact `R2D2Vader#0693`. 🍎🤨");
         }
+
         if (message.content.toLowerCase().includes("list=")) {
             if (message.content.toLowerCase().includes("?v=")) {
                 message.channel.send("💿 **Adding Full Playlist** to the queue. If you wanted the single song, paste the URL up to the `&list=` part, or try using the song name.");
@@ -423,6 +447,40 @@ async function playSong(message, args) {
                 }
                 if (loTimeout) clearTimeout(loTimeout);
             });
+        }
+        else if (customList == true) {
+            queue.data.hidemsg = true;
+            message.channel.send(`💿 **Adding ${songs.length.toString()} Songs** to the queue.`);
+
+            if (songs.length > 3) {
+                let time = (((songs.length + 2) / 2) * 5 * 1000);
+                let date = new Date(time);
+
+                message.channel.send(`It will take around \`${date.getMinutes()}:${date.getSeconds()}\` to add them all. Please be patient!`)
+            }
+
+            for (let i = 0; i < songs.length; i++) {
+                await queue.play(songs[i].artist + " " + songs[i].title)
+                .then(song => {
+                    if (song.isFirst) {
+                        if (loading != null && deleted == false) {
+                            loading.delete();
+                            deleted = true;
+                        }
+                    }
+                })
+                .catch(err => {
+                    runtimeErrorHandle(err, message);
+                    if (i == songs.length - 1) {
+                        if (loading != null && deleted == false) {
+                            loading.delete();
+                            deleted = true;
+                        }
+                        if (loTimeout) clearTimeout(loTimeout);
+                    }
+                });
+            }
+            queue.data.hidemsg = false;
         }
         else {
             let song = await queue.play(args.join(' ')).catch(err => {
