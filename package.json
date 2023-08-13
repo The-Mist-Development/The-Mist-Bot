@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/R2D2VaderBeef/The-Mist-Bot-Node-v12.git"
+    "url": "git+https://github.com/The-Mist-Development/The-Mist-Bot.git"
   },
   "author": "R2D2Vader",
   "authors": [
@@ -36,6 +36,11 @@
     "spotify-url-info": "^3.2.3",
     "ytdl-core": "^4.11.5",
     "ytsr": "^3.8.4"
+  },
+  "overrides": {
+    "discord-music-player": {
+      "@discordjs/voice": "^0.16.0"
+    }
   },
   "engines": {
     "node": ">=16.8.0"
