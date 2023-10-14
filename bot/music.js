@@ -538,7 +538,7 @@ function sendQueue(message, queue) {
     let seconds = date.getUTCSeconds().toString();
 
     hours = hours == 0 ? "" : hours + ":";
-    minutes = minutes.length == 1 ? "0" + minutes + ":" : minutes + ":";
+    minutes = (minutes.length == 1 && hours != "") ? "0" + minutes + ":" : minutes + ":";
     seconds = seconds.length == 1 ? "0" + seconds : seconds;
 
     let duration = hours + minutes + seconds;
