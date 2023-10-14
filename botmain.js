@@ -46,7 +46,7 @@ client.on("messageCreate", async function (message) {
 
   if (channels.includes(message.channel.id)) {
     if (message.member.displayName.includes("@everyone") || message.member.displayName.includes("@here")) return message.react("💢");
-    if (+message.content === +message.content && !message.content.includes(".")) {
+    if (+message.content === +message.content && !message.content.includes(".") && !(message.content == "")) {
       count(message)
     }
     else {
