@@ -268,7 +268,7 @@ async function updateMessupCache() {
 setInterval(updateMessupCache, 300000);
 
 async function updateUserCount(userid, serverid, newCount) {
-    const res = await dbClient.query(`SELECT * FROM counting_users WHERE userid = Cast(${userid} As varchar); AND serverid = Cast(${serverid} As varchar);`);
+    const res = await dbClient.query(`SELECT * FROM counting_users WHERE userid = Cast(${userid} As varchar) AND serverid = Cast(${serverid} As varchar);`);
     if (res.rows.length == 0) {
         dbClient.query(`INSERT INTO counting_users (userid, serverid, counts, maxcount) VALUES (${userid},${serverid},1,${newCount});`);
     }
