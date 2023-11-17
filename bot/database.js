@@ -268,31 +268,31 @@ async function updateMessupCache() {
 setInterval(updateMessupCache, 300000);
 
 async function updateUserCount(id, newCount) {
-    const res = await dbClient.query(`SELECT * FROM counting_users WHERE discordid=${id};`);
+    const res = await dbClient.query(`SELECT * FROM counting_users WHERE discordid = Cast(${id} As varchar);`);
     if (res.rows.length == 0) {
         dbClient.query(`INSERT INTO counting_users (discordid, counts, maxcount) VALUES (${id},1,${newCount});`);
     }
     else {
         let numCounts = parseInt(res.rows[0]["counts"]) + 1;
-        dbClient.query(`UPDATE counting_users SET counts = ${numCounts} WHERE discordid = ${id};`);
+        dbClient.query(`UPDATE counting_users SET counts = ${numCounts} WHERE discordid = Cast(${id} As varchar);`);
 
         if (newCount > parseInt(res.rows[0]["maxcount"])) {
-            dbClient.query(`UPDATE counting_users SET maxcount = ${newCount} WHERE discordid = ${id}`)
+            dbClient.query(`UPDATE counting_users SET maxcount = ${newCount} WHERE discordid = Cast(${id}As varchar);`)
         }
     }
 }
 
 async function updateUserMessup(id, messupCount) {
-    const res = await dbClient.query(`SELECT * FROM counting_users WHERE discordid=${id};`);
+    const res = await dbClient.query(`SELECT * FROM counting_users WHERE discordid =  Cast(${id} As varchar);`);
     if (res.rows.length == 0) {
         dbClient.query(`INSERT INTO counting_users (discordid, messups, maxmessup) VALUES (${id},1,${messupCount});`);
     }
     else {
         let numMessups = parseInt(res.rows[0]["messups"]) + 1;
-        dbClient.query(`UPDATE counting_users SET messups = ${numMessups} WHERE discordid = ${id};`);
+        dbClient.query(`UPDATE counting_users SET messups = ${numMessups} WHERE discordid =  Cast(${id} As varchar);`);
 
         if (messupCount > parseInt(res.rows[0]["maxmessup"])) {
-            dbClient.query(`UPDATE counting_users SET maxmessup = ${messupCount} WHERE discordid = ${id}`)
+            dbClient.query(`UPDATE counting_users SET maxmessup = ${messupCount} WHERE discordid =  Cast(${id} As varchar);`)
         }
     }
 }
