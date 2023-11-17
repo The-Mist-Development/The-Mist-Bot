@@ -31,7 +31,7 @@ module.exports = {
                 dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameid VARCHAR(255) PRIMARY KEY, lastprice VARCHAR(255));", function (error, results) {
                     if (error) console.log("[WISHLIST] Error creating wishlist_games table: " + error);
                 });
-                dbClient.query("CREATE TABLE IF NOT EXISTS counting_users (discordid VARCHAR(255) PRIMARY KEY, counts BIGINT, messups BIGINT, maxcount BIGINT, maxmessup BIGINT)", function (error, results) {
+                dbClient.query("CREATE TABLE IF NOT EXISTS counting_users (userid VARCHAR(255), serverid VARCHAR(255), counts BIGINT, messups BIGINT, maxcount BIGINT, maxmessup BIGINT, PRIMARY KEY(userid, serverid))", function (error, results) {
                     if (error) console.log("[DB] Error creating counting_users table: " + error);
                 });
                 updateMessupCache();
@@ -77,13 +77,13 @@ module.exports = {
             if (res["lastusertocount"] != message.member.id) {
                 await dbClient.query(`UPDATE counting SET count=${parseInt(res["count"]) + 1}, lastusertocount=${message.member.id} WHERE channelid=${message.channel.id}`)
                 message.react("<a:mistbot_confirmed:870070841268928552>").catch((err) => {message.channel.send("<a:mistbot_confirmed:870070841268928552>")});
-                updateUserCount(message.member.id, parseInt(res["count"]) + 1)
+                updateUserCount(message.member.id, message.guild.id, parseInt(res["count"]) + 1)
             }
             else {
                 await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
                 message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! You cannot count **twice in a row**. `The count reset.`");
                 recordMessup(res["count"]);
-                updateUserMessup(message.member.id, res["count"]);
+                updateUserMessup(message.member.id, message.guild.id, res["count"]);
                 message.channel.send("Next number is `1`.");
                 message.react("❌").catch((err) => {return;});
                 return;
@@ -93,7 +93,7 @@ module.exports = {
             await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
             message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! `The count reset.`");
             recordMessup(res["count"]);
-            updateUserMessup(message.member.id, res["count"]);
+            updateUserMessup(message.member.id, message.guild.id, res["count"]);
             message.channel.send("Next number is `1`.");
             message.react("❌").catch((err) => {return;});
             return;
@@ -267,32 +267,32 @@ async function updateMessupCache() {
 }
 setInterval(updateMessupCache, 300000);
 
-async function updateUserCount(id, newCount) {
-    const res = await dbClient.query(`SELECT * FROM counting_users WHERE discordid = Cast(${id} As varchar);`);
+async function updateUserCount(userid, serverid, newCount) {
+    const res = await dbClient.query(`SELECT * FROM counting_users WHERE userid = Cast(${userid} As varchar); AND serverid = Cast(${serverid} As varchar);`);
     if (res.rows.length == 0) {
-        dbClient.query(`INSERT INTO counting_users (discordid, counts, maxcount) VALUES (${id},1,${newCount});`);
+        dbClient.query(`INSERT INTO counting_users (userid, serverid, counts, maxcount) VALUES (${userid},${serverid},1,${newCount});`);
     }
     else {
         let numCounts = parseInt(res.rows[0]["counts"]) + 1;
-        dbClient.query(`UPDATE counting_users SET counts = ${numCounts} WHERE discordid = Cast(${id} As varchar);`);
+        dbClient.query(`UPDATE counting_users SET counts = ${numCounts} WHERE userid = Cast(${userid} As varchar) AND serverid = Cast(${serverid} As varchar);`);
 
         if (newCount > parseInt(res.rows[0]["maxcount"])) {
-            dbClient.query(`UPDATE counting_users SET maxcount = ${newCount} WHERE discordid = Cast(${id}As varchar);`)
+            dbClient.query(`UPDATE counting_users SET maxcount = ${newCount} WHERE userid = Cast(${userid}As varchar) AND serverid = Cast(${serverid} As varchar);`)
         }
     }
 }
 
-async function updateUserMessup(id, messupCount) {
-    const res = await dbClient.query(`SELECT * FROM counting_users WHERE discordid =  Cast(${id} As varchar);`);
+async function updateUserMessup(userid, serverid, messupCount) {
+    const res = await dbClient.query(`SELECT * FROM counting_users WHERE userid = Cast(${userid} As varchar) AND serverid = Cast(${serverid} As varchar);`);
     if (res.rows.length == 0) {
-        dbClient.query(`INSERT INTO counting_users (discordid, messups, maxmessup) VALUES (${id},1,${messupCount});`);
+        dbClient.query(`INSERT INTO counting_users (userid, serverid, messups, maxmessup) VALUES (${userid},${serverid},1,${messupCount});`);
     }
     else {
         let numMessups = parseInt(res.rows[0]["messups"]) + 1;
-        dbClient.query(`UPDATE counting_users SET messups = ${numMessups} WHERE discordid =  Cast(${id} As varchar);`);
+        dbClient.query(`UPDATE counting_users SET messups = ${numMessups} WHERE userid = Cast(${userid} As varchar) AND serverid = Cast(${serverid} As varchar);`);
 
         if (messupCount > parseInt(res.rows[0]["maxmessup"])) {
-            dbClient.query(`UPDATE counting_users SET maxmessup = ${messupCount} WHERE discordid =  Cast(${id} As varchar);`)
+            dbClient.query(`UPDATE counting_users SET maxmessup = ${messupCount} WHERE userid = Cast(${userid} As varchar) AND serverid = Cast(${serverid} As varchar);`)
         }
     }
 }
