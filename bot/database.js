@@ -182,7 +182,7 @@ module.exports = {
             let maxcount = row["maxcount"]
             let maxmessup = row["maxmessup"]
 
-            let elo = (counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1))
+            let elo = Math.floor((counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
 
             let embed = new EmbedBuilder()
               .setTitle(`${username}'s Counting Stats`)
