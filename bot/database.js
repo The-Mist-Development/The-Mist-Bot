@@ -1,4 +1,4 @@
-const { PermissionsBitField } = require("discord.js");
+const { PermissionsBitField, EmbedBuilder } = require("discord.js");
 const { Client } = require("pg");
 const fs = require("fs");
 const dbClient = new Client({
@@ -168,6 +168,35 @@ module.exports = {
         }
         else {
             message.channel.send("You **don't have permission to do that**! Get someone who can `Manage Channels` to unsubscribe from updates for you.")
+        }
+    },
+    getCountingStats: async function(message, user, username) {
+        const res = await dbClient.query(`SELECT * FROM counting_users WHERE userid = Cast(${user} As varchar) AND serverid = Cast(${message.guild.id} As varchar);`);
+        if (res.rows.length == 0) {
+            message.channel.send("That user hasn't counted in this server!")
+        }
+        else {
+            let row = res.rows[0]
+            let counts = row["counts"]
+            let messups = row["messups"]
+            let maxcount = row["maxcount"]
+            let maxmessup = row["maxmessup"]
+
+            let elo = (counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1))
+
+            let embed = new EmbedBuilder()
+              .setTitle(`${username}'s Counting Stats`)
+              .setDescription("Counting Stats are server-specific.")
+              .setColor("#f2e200")
+              .setFooter({text: "The Mist Bot - made by R2D2Vader"})
+              .addFields(
+                { name: "🎖️ Points", value: `\`${elo}\`` },
+                { name: "🔢 Times Counted", value: `\`${counts}\``, inline: true },
+                { name: "😠 Times Messed Up", value: `\`${messups}\``, inline: true },
+                { name: "😎 Highest Count", value: `\`${maxcount}\``, inline: true },
+                { name: "🥶 Highest Messup", value: `\`${maxmessup}\``, inline: true })
+            
+            message.channel.send({ embeds: [embed] })
         }
     },
     // wishlist mysql database file

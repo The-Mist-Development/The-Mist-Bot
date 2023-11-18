@@ -1,6 +1,6 @@
 const { EmbedBuilder, PermissionsBitField } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
-const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache } = require("./database.js")
+const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache, getCountingStats } = require("./database.js")
 const { restart, cancelRestart, npmInstall } = require("./restart.js");
 const { wishlistCommand } = require("./wishlist.js")
 const simpleGit = require("simple-git");
@@ -70,6 +70,29 @@ module.exports = {
         break;
       case "messups":
         message.channel.send("You can view counting messups by number [on our website](https://mist.invaderj.rocks).")
+        break;
+      case "countstats":
+        if (message.guild == null) {
+          return message.channel.send("This command is server-specific! Run it in a server.")
+        }
+        let userId;
+        if (args[0]) {
+          userId = args[0].replace(/[^0-9]/gm, "");
+          if (userId.length < 17 || parseInt(userId) > 9223372036854775807n) {
+            return message.channel.send(`I can't find that user! Try only \`${prefix}countstats\` to see your own counting stats.`)
+          }
+        }
+        else {
+          userId = message.author.id;
+        }
+        client.users.fetch(userId).then(user => {
+          if (user.username) {
+            getCountingStats(message, userId, user.username)
+          }
+          else {
+            message.channel.send(`I can't find that user! Try only \`${prefix}countstats\` to see your own counting stats.`)
+          }
+        })
         break;
       case "updatecache":
         if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
@@ -247,8 +270,12 @@ function helpMsg(message) {
         value: "Get the highest counted number in a counting channel. Or specify a Channel Tag or ID to see the max count from that channel."
       },
       {
+        name: "`" + prefix + "countstats <optional User Mention or ID>`",
+        value: "Get your (or someone else's) counting stats for the server you run the command in."
+      },
+      {
         name: "`" + prefix + "messups`",
-        value: "See counting messup stats."
+        value: "See global counting messup stats."
       }
     );
   message.author.send({ embeds: [embed] }).catch((err) => {message.channel.send("Unable to DM you the help message. 😔")});
