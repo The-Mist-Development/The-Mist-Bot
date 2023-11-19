@@ -310,7 +310,7 @@ async function updateCountingCache() {
         let elo = Math.floor((counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
         arr.push({counts: counts, messups: messups, maxcount: maxcount, maxmessup: maxmessup, elo: elo})
     }
-    fs.writeFileSync("countingcache.json", JSON.stringify(obj));
+    fs.writeFileSync("countingcache.json", JSON.stringify(arr));
 }
 setInterval(updateCountingCache, 300000);
 
