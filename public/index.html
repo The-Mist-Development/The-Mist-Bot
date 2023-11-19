@@ -69,11 +69,10 @@
       });
 
       const response2 = await fetch('/countstats');
-      const input2 = await response.json();
+      const input2 = await response2.json();
       const numx = document.getElementById("messupsPoints")
 
-      pointscolourseed = Math.floor(((((colourseed / 255) * 360) + 137.5) / 360) * 255);
-      if (pointscolourseed > 255) pointscolourseed -= 255
+      pointscolourseed = Math.floor(Math.random() * 255)
       pointscolour = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
 
       pointsdata = []
@@ -99,7 +98,7 @@
           }
         }  
       });
-      
+
     })();
   </script>
 
