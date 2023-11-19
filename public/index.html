@@ -25,7 +25,7 @@
   </div>
 
   <h2>Points data</h2>
-  <div style="width: 500px">
+  <div style="width: 800px">
     <canvas id="messupsPoints"></canvas>
   </div>
 
@@ -75,13 +75,17 @@
       let pointscolourseed = Math.floor(Math.random() * 255)
       let pointscolour = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
 
+      pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
+      if (pointscolourseed > 255) pointscolourseed -= 255
+      pointscolour2 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
       let pointsdata = []
+      let pointsdata2 = []
 
       for (let i = 0; i < input2.length; i++) {
         pointsdata.push({x: parseInt(input2[i]["messups"]), y: parseInt(input2[i]["elo"])})
+        pointsdata2.push({x: parseInt(input2[i]["maxmessup"]), y: parseInt(input2[i]["elo"])})
       }
-
-      console.log(pointsdata)
 
       new Chart(numx, {
         type: 'scatter',
@@ -90,7 +94,13 @@
             label: 'Number of Messups x Points',
             data: pointsdata,
             backgroundColor: pointscolour
-          }],
+          },
+          {
+            label: 'Highest Messup x Points',
+            data: pointsdata2,
+            backgroundColor: pointscolour2
+          }
+        ],
         },
         options: {
           scales: {
