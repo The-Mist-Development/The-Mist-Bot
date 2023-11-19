@@ -35,6 +35,7 @@ module.exports = {
                     if (error) console.log("[DB] Error creating counting_users table: " + error);
                 });
                 updateMessupCache();
+                updateCountingCache();
             }
           });
     },
@@ -295,6 +296,23 @@ async function updateMessupCache() {
     fs.writeFileSync("messupcache.json", JSON.stringify(obj));
 }
 setInterval(updateMessupCache, 300000);
+
+async function updateCountingCache() {
+    const res = await dbClient.query(`SELECT * FROM counting_users;`);
+    let arr = []
+    for (let i = 0; i < res.rows.length; i++) {
+        let row = res.rows[i]
+        let counts = row["counts"]
+        let messups = row["messups"]
+        let maxcount = row["maxcount"]
+        let maxmessup = row["maxmessup"]
+
+        let elo = Math.floor((counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
+        arr.push({counts: counts, messups: messups, maxcount: maxcount, maxmessup: maxmessup, elo: elo})
+    }
+    fs.writeFileSync("countingcache.json", JSON.stringify(obj));
+}
+setInterval(updateCountingCache, 300000);
 
 async function updateUserCount(userid, serverid, newCount) {
     const res = await dbClient.query(`SELECT * FROM counting_users WHERE userid = Cast(${userid} As varchar) AND serverid = Cast(${serverid} As varchar);`);

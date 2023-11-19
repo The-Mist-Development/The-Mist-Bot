@@ -53,6 +53,11 @@ app.get("/messups", (req, res) => {
   res.sendFile(process.cwd() + "/messupcache.json");
 })
 
+app.get("/countstats", (req, res) => {
+  res.sendFile(process.cwd() + "/countingcache.json");
+})
+
+
 //app.post("/send", (req, res) => {
 //  const { token, chanID, msgContent } = req.body;
 //  if (token != process.env.ADMIN_TOKEN) {
