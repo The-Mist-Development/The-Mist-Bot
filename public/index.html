@@ -19,9 +19,14 @@
     GitHub
   </a><br />
 
-  <h2> Counting messups at each number</h2>
+  <h2>Counting messups at each number</h2>
   <div style="width: 500px">
     <canvas id="myChart"></canvas>
+  </div>
+
+  <h2>Number of Messups x Points</h2>
+  <div style="width: 500px">
+    <canvas id="messupsPoints"></canvas>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -62,6 +67,39 @@
             }]
         },
       });
+
+      const response2 = await fetch('/countstats');
+      const input2 = await response.json();
+      const numx = document.getElementById("messupsPoints")
+
+      pointscolourseed = Math.floor(((((colourseed / 255) * 360) + 137.5) / 360) * 255);
+      if (pointscolourseed > 255) pointscolourseed -= 255
+      pointscolour = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
+      pointsdata = []
+
+      for (let i = 0; i < input2.length; i++) {
+        pointsdata.push(parseInt(input2[i]["messups"]), input2[i]["elo"])
+      }
+
+      new Chart(numx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            data: pointsdata,
+            backgroundColor: pointscolour
+          }],
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'linear',
+              position: 'bottom'
+            }
+          }
+        }  
+      });
+      
     })();
   </script>
 
