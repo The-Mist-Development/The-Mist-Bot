@@ -24,7 +24,7 @@
     <canvas id="myChart"></canvas>
   </div>
 
-  <h2>Number of Messups x Points</h2>
+  <h2>Points data</h2>
   <div style="width: 500px">
     <canvas id="messupsPoints"></canvas>
   </div>
@@ -72,19 +72,22 @@
       const input2 = await response2.json();
       const numx = document.getElementById("messupsPoints")
 
-      pointscolourseed = Math.floor(Math.random() * 255)
-      pointscolour = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+      let pointscolourseed = Math.floor(Math.random() * 255)
+      let pointscolour = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
 
-      pointsdata = []
+      let pointsdata = []
 
       for (let i = 0; i < input2.length; i++) {
-        pointsdata.push(parseInt(input2[i]["messups"]), input2[i]["elo"])
+        pointsdata.push(parseInt(input2[i]["messups"]), parseInt(input2[i]["elo"]))
       }
+
+      print(pointsdata)
 
       new Chart(numx, {
         type: 'scatter',
         data: {
           datasets: [{
+            label: 'Number of Messups x Points',
             data: pointsdata,
             backgroundColor: pointscolour
           }],
