@@ -397,6 +397,7 @@ async function playSong(message, args) {
                     details = await getSpotifyDetails(args[0]);   
                 }
                 catch (err) {
+                    log(err)
                     if (loading != null && deleted == false) {
                         loading.delete();
                         deleted = true;
