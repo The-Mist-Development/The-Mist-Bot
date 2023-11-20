@@ -184,7 +184,8 @@ module.exports = {
             let maxmessup = row["maxmessup"]
 
             //let elo = Math.floor((counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
-            let elo = Math.floor((Math.log10(counts + 1) / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
+            //let elo = Math.floor((Math.log10(counts + 1) / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
+            let elo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 15)) * (maxcount / Math.log10((maxmessup > 0 ? maxmessup : 1) + 20)))
 
             let embed = new EmbedBuilder()
               .setTitle(`${username}'s Counting Stats`)
@@ -308,8 +309,7 @@ async function updateCountingCache() {
         let maxcount = row["maxcount"]
         let maxmessup = row["maxmessup"]
 
-        //let elo = Math.floor((counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
-        let elo = Math.floor((Math.log10(counts + 1) / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
+        let elo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 15)) * (maxcount / Math.log10((maxmessup > 0 ? maxmessup : 1) + 20)))
         arr.push({counts: counts, messups: messups, maxcount: maxcount, maxmessup: maxmessup, elo: elo})
     }
     fs.writeFileSync("countingcache.json", JSON.stringify(arr));
