@@ -79,21 +79,44 @@
       if (pointscolourseed > 255) pointscolourseed -= 255
       pointscolour2 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
 
+      pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
+      if (pointscolourseed > 255) pointscolourseed -= 255
+      pointscolour3 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
+      pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
+      if (pointscolourseed > 255) pointscolourseed -= 255
+      pointscolour4 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
       let pointsdata = []
       let pointsdata2 = []
+      let pointsdata3 = []
+      let pointsdata4 = []
 
       for (let i = 0; i < input2.length; i++) {
         pointsdata.push({x: parseInt(input2[i]["messups"]), y: parseInt(input2[i]["elo"])})
         pointsdata2.push({x: parseInt(input2[i]["maxmessup"]), y: parseInt(input2[i]["elo"])})
+        pointsdata3.push({x: parseInt(input2[i]["maxcount"]), y: parseInt(input2[i]["elo"])})
+        pointsdata4.push({x: parseInt(input2[i]["counts"]), y: parseInt(input2[i]["elo"])})
       }
 
       new Chart(numx, {
         type: 'scatter',
         data: {
-          datasets: [{
+          datasets: [
+          {
+            label: 'Times Counted x Points',
+            data: pointsdata4,
+            backgroundColor: pointscolour4
+          },
+          {
             label: 'Number of Messups x Points',
             data: pointsdata,
             backgroundColor: pointscolour
+          },
+          {
+            label: 'Highest Count x Points',
+            data: pointsdata3,
+            backgroundColor: pointscolour3
           },
           {
             label: 'Highest Messup x Points',
