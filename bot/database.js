@@ -310,7 +310,7 @@ async function updateCountingCache() {
         let maxmessup = row["maxmessup"]
 
         let elo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 15)) * (maxcount / Math.log10((maxmessup > 0 ? maxmessup : 1) + 20)))
-        let newelo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 7)) * (Math.log10(maxcount) / Math.log10((maxmessup > 0 ? maxmessup : 1))))
+        let newelo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 10)) * (Math.log10(maxcount + 1) / Math.log10((maxmessup > 0 ? maxmessup : 1) + 10)))
         arr.push({counts: counts, messups: messups, maxcount: maxcount, maxmessup: maxmessup, elo: elo, newelo: newelo})
     }
     fs.writeFileSync("countingcache.json", JSON.stringify(arr));
