@@ -178,11 +178,11 @@ module.exports = {
         }
         else {
             let row = res.rows[0]
-            let counts = int(row["counts"])
-            let messups = int(row["messups"])
-            let maxcount = int(row["maxcount"])
-            let maxmessup = int(row["maxmessup"])
-
+            let counts = parseInt(row["counts"])
+            let messups = parseInt(row["messups"])
+            let maxcount = parseInt(row["maxcount"])
+            let maxmessup = parseInt(row["maxmessup"])
+            
             //let elo = Math.floor((counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
             //let elo = Math.floor((Math.log10(counts + 1) / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
             let elo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 15)) * (maxcount / Math.log10((maxmessup > 0 ? maxmessup : 1) + 20)))
@@ -304,13 +304,13 @@ async function updateCountingCache() {
     let arr = []
     for (let i = 0; i < res.rows.length; i++) {
         let row = res.rows[i]
-        let counts = int(row["counts"])
-        let messups = int(row["messups"])
-        let maxcount = int(row["maxcount"])
-        let maxmessup = int(row["maxmessup"])
+        let counts = parseInt(row["counts"])
+        let messups = parseInt(row["messups"])
+        let maxcount = parseInt(row["maxcount"])
+        let maxmessup = parseInt(row["maxmessup"])
 
         let elo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 15)) * (maxcount / Math.log10((maxmessup > 0 ? maxmessup : 1) + 20)))
-        let newelo = Math.floor((counts ** (1/2) / Math.log10(messups + 11)) * (maxcount ** (2/3) / Math.log10((maxmessup + 11))))
+        let newelo = Math.floor((counts ** (1/2) / Math.log10(messups + 10)) * (maxcount ** (2/3) / Math.log10((maxmessup + 10))))
         arr.push({counts: counts, messups: messups, maxcount: maxcount, maxmessup: maxmessup, elo: elo, newelo: newelo})
     }
     fs.writeFileSync("countingcache.json", JSON.stringify(arr));
