@@ -178,10 +178,10 @@ module.exports = {
         }
         else {
             let row = res.rows[0]
-            let counts = row["counts"]
-            let messups = row["messups"]
-            let maxcount = row["maxcount"]
-            let maxmessup = row["maxmessup"]
+            let counts = int(row["counts"])
+            let messups = int(row["messups"])
+            let maxcount = int(row["maxcount"])
+            let maxmessup = int(row["maxmessup"])
 
             //let elo = Math.floor((counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
             //let elo = Math.floor((Math.log10(counts + 1) / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
@@ -304,10 +304,10 @@ async function updateCountingCache() {
     let arr = []
     for (let i = 0; i < res.rows.length; i++) {
         let row = res.rows[i]
-        let counts = row["counts"]
-        let messups = row["messups"]
-        let maxcount = row["maxcount"]
-        let maxmessup = row["maxmessup"]
+        let counts = int(row["counts"])
+        let messups = int(row["messups"])
+        let maxcount = int(row["maxcount"])
+        let maxmessup = int(row["maxmessup"])
 
         let elo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 15)) * (maxcount / Math.log10((maxmessup > 0 ? maxmessup : 1) + 20)))
         let newelo = Math.floor((counts ** (1/2) / Math.log10(messups + 11)) * (maxcount ** (2/3) / Math.log10((maxmessup + 11))))
