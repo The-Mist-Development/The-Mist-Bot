@@ -190,7 +190,7 @@ module.exports = {
                         break;
                     case "resume":
                         guildQueue.setPaused(false);
-                        message.channel.send("▶ **Resumed!**");
+                        message.channel.send("▶️ **Resumed!**");
                         break;
                     case "skip":
                     case "s":
