@@ -82,7 +82,7 @@ module.exports = {
             }
             else {
                 await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
-                message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! You cannot count **twice in a row**. `The count reset.`");
+                message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! You cannot count **twice in a row**. The count reset.");
                 recordMessup(res["count"]);
                 updateUserMessup(message.member.id, message.guild.id, res["count"]);
                 message.channel.send("Next number is `1`.");
@@ -92,7 +92,7 @@ module.exports = {
         }
         else {
             await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
-            message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! `The count reset.`");
+            message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! The count reset.");
             recordMessup(res["count"]);
             updateUserMessup(message.member.id, message.guild.id, res["count"]);
             message.channel.send("Next number is `1`.");
