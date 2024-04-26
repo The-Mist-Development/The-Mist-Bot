@@ -75,7 +75,7 @@ module.exports = {
                 queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist.name.replaceAll(/@/g, '@ ')}** to the queue.`))
             // Emitted when the queue was destroyed (by stopping).    
             .on('queueDestroyed', (queue) => {
-                //queue.data.channel.send(`⏹ **Stopped** - Is that all for now?`);
+                //queue.data.channel.send(`⏹️ **Stopped** - Is that all for now?`);
                 let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1);
@@ -204,7 +204,7 @@ module.exports = {
                     case "stop":
                     case "leave":
                         guildQueue.leave();
-                        message.channel.send(`⏹ **Stopping** - Is that all for now?`);
+                        message.channel.send(`⏹️ **Stopping** - Is that all for now?`);
                         break;
                     case "queue":
                     case "q":
