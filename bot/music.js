@@ -474,7 +474,10 @@ async function playSong(message, args) {
                 let time = (((songs.length + 2) / 2) * 5 * 1000);
                 let date = new Date(time);
 
-                message.channel.send(`It will take around \`${date.getMinutes()}:${date.getSeconds()}\` to add them all. Please be patient!`)
+                seconds = date.getSeconds().toString()
+                seconds = seconds.length == 1 ? "0" + seconds : seconds
+
+                message.channel.send(`It will take around \`${date.getMinutes()}:${seconds}\` to add them all. Please be patient!`)
             }
 
             for (let i = 0; i < songs.length; i++) {
