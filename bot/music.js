@@ -185,7 +185,7 @@ module.exports = {
                         }
                         else {
                             guildQueue.setPaused(true);
-                            message.channel.send("⏸ **Paused!**");
+                            message.channel.send("⏸️ **Paused!**");
                         }
                         break;
                     case "resume":
@@ -199,7 +199,7 @@ module.exports = {
                             message.channel.send("Single song **loop disabled**.")
                         }
                         guildQueue.skip();
-                        message.channel.send("⏭ **Skipped!**");
+                        message.channel.send("⏭️ **Skipped!**");
                         break;
                     case "stop":
                     case "leave":
@@ -386,6 +386,7 @@ async function playSong(message, args) {
             if (args[0].startsWith("www.") || args[0].startsWith("youtube.com/") || args[0].startsWith("youtu.be/")) {
                 args[0] = "https://" + args[0];
             }
+            args[0] = args[0].replace("youtu.be/", "youtube.com/watch?v=")
         }
         else if (args[0].includes("open.spotify.com/")) {
             if (args[0].startsWith("www.") || args[0].startsWith("open.spotify.com")) {
