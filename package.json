@@ -39,7 +39,11 @@
   },
   "overrides": {
     "discord-music-player": {
-      "@discordjs/voice": "^0.16.0"
+      "@discordjs/voice": "^0.16.0",
+      "axios": "0.28.0"
+    },
+    "apple-music-metadata": {
+      "axios": "0.28.0"
     }
   },
   "engines": {
