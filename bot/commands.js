@@ -129,6 +129,9 @@ module.exports = {
       case "wishlist":
         wishlistCommand(message, args);
         break;
+      case "ping":
+        message.channel.send(`Websocket Heartbeat: ${client.ws.ping}ms.`);
+        break;
       case "play":
       case "p":
       case "pause":

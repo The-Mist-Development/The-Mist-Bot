@@ -29,6 +29,11 @@
     <canvas id="messupsPoints"></canvas>
   </div>
 
+  <h2>Points data with experimental new Points formula</h2>
+  <div style="width: 800px">
+    <canvas id="newElo"></canvas>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
@@ -79,25 +84,96 @@
       if (pointscolourseed > 255) pointscolourseed -= 255
       pointscolour2 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
 
+      pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
+      if (pointscolourseed > 255) pointscolourseed -= 255
+      pointscolour3 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
+      pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
+      if (pointscolourseed > 255) pointscolourseed -= 255
+      pointscolour4 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
       let pointsdata = []
       let pointsdata2 = []
+      let pointsdata3 = []
+      let pointsdata4 = []
+
+      let newdata = []
+      let newdata2 = []
+      let newdata3 = []
+      let newdata4 = []
 
       for (let i = 0; i < input2.length; i++) {
         pointsdata.push({x: parseInt(input2[i]["messups"]), y: parseInt(input2[i]["elo"])})
         pointsdata2.push({x: parseInt(input2[i]["maxmessup"]), y: parseInt(input2[i]["elo"])})
+        pointsdata3.push({x: parseInt(input2[i]["maxcount"]), y: parseInt(input2[i]["elo"])})
+        pointsdata4.push({x: parseInt(input2[i]["counts"]), y: parseInt(input2[i]["elo"])})
+
+        newdata.push({x: parseInt(input2[i]["messups"]), y: parseInt(input2[i]["newelo"])})
+        newdata2.push({x: parseInt(input2[i]["maxmessup"]), y: parseInt(input2[i]["newelo"])})
+        newdata3.push({x: parseInt(input2[i]["maxcount"]), y: parseInt(input2[i]["newelo"])})
+        newdata4.push({x: parseInt(input2[i]["counts"]), y: parseInt(input2[i]["newelo"])})
       }
 
       new Chart(numx, {
         type: 'scatter',
         data: {
-          datasets: [{
+          datasets: [
+          {
+            label: 'Times Counted x Points',
+            data: pointsdata4,
+            backgroundColor: pointscolour4
+          },
+          {
             label: 'Number of Messups x Points',
             data: pointsdata,
             backgroundColor: pointscolour
           },
           {
+            label: 'Highest Count x Points',
+            data: pointsdata3,
+            backgroundColor: pointscolour3
+          },
+          {
             label: 'Highest Messup x Points',
             data: pointsdata2,
+            backgroundColor: pointscolour2
+          }
+        ],
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'linear',
+              position: 'bottom'
+            }
+          }
+        }  
+      });
+
+      const elox = document.getElementById("newElo");
+
+      new Chart(elox, {
+        type: 'scatter',
+        data: {
+          datasets: [
+          {
+            label: 'Times Counted x Points',
+            data: newdata4,
+            backgroundColor: pointscolour4
+          },
+          {
+            label: 'Number of Messups x Points',
+            data: newdata,
+            backgroundColor: pointscolour
+          },
+          {
+            label: 'Highest Count x Points',
+            data: newdata3,
+            backgroundColor: pointscolour3
+          },
+          {
+            label: 'Highest Messup x Points',
+            data: newdata2,
             backgroundColor: pointscolour2
           }
         ],
