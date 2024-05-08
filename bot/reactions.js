@@ -34,6 +34,11 @@ module.exports = {
             message.react("🅰️").catch((err) => {return;});
             message.react("🇴").catch((err) => {return;});
           }
+          if(msgcontent.includes("mfw")) {
+              message.react("Ⓜ").catch((err) => {return;});
+              message.react("🇫").catch((err) => {return;});
+              message.react("�").catch((err) => {return;});
+          }
           if (msgcontent.includes("bruh")) {
             message.react("<:BRUH:815919351970529290>").catch((err) => {return;});
           }
