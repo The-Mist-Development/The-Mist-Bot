@@ -48,7 +48,7 @@
       colours.push("hsl(" + colourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
 
       for (let p in input) {
-        if (parseInt(input[p]) >= 2) {
+        if (parseInt(input[p]) >= 3) {
           chartdata.push(parseInt(input[p]));
           chartlabels.push(p);
           colourseed = Math.floor(((((colourseed / 255) * 360) + 137.5) / 360) * 255);
