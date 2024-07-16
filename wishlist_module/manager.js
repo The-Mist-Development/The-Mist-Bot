@@ -200,7 +200,7 @@ let gamePriceSync = new CronJob(
                             }
                             else if (response.price_overview.final < oldPrice) {
                                 if (response.price_overview.discount_percent > 0) {
-                                    log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                                    //log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                                     // Make further API request to get the game's info.
                                     steam.getGameInfo(gameid).then(function (response2) {
                                         let embed = new EmbedBuilder()
@@ -226,11 +226,11 @@ let gamePriceSync = new CronJob(
                                     })
                                 }
                                 else {
-                                    log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                                    //log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                                 }
                             }
                             else if (response.price_overview.final > oldPrice) {
-                                log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                                //log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                             }
                         }).catch(function (error) {
                             log("[WISHLIST] Error updating game price in hourly Cron job: " + error + `\r Game ID: ${gameid}`);
