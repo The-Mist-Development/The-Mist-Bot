@@ -212,7 +212,7 @@ function helpMsg(message) {
       },
       {
         name: "`" + prefix + "subscribe`",
-        value: "Subscribe to updates from us in any channel! Requires the `Manage Channels` permission."
+        value: "Subscribe to patch notes and status updates from us in any channel! Requires the `Manage Channels` permission."
       },
       {
         name: "`" + prefix + "unsubscribe`",

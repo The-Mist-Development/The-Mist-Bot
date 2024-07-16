@@ -50,13 +50,13 @@ module.exports = {
     getMaxCount: async function(message, lookupChannel) {
         if (lookupChannel) {
                 const res = await dbClient.query(`SELECT * FROM counting WHERE channelid=${lookupChannel.id};`);
-                if (res.rows.length == 0) return message.channel.send("Counting has not been enabled in this channel.");
-                message.channel.send(`The highest ever count in **${lookupChannel.guild.name}** <#${lookupChannel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
+                if (res.rows.length == 0) return message.channel.send("Counting has not been enabled in that channel.");
+                message.channel.send(`The highest ever count in <#${lookupChannel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
         }
         else {
             const res = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`);
             if (res.rows.length == 0) return message.channel.send("Run this command in a **counting channel** to see the highest ever count in that channel!")
-            message.channel.send(`The highest ever count in **${message.guild.name}** <#${message.channel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
+            message.channel.send(`The highest ever count in <#${message.channel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
         }
     },
     getCurrentCount: async function(message, api) {
@@ -68,7 +68,7 @@ module.exports = {
     },
     count: async function (message) {
         if (connected == false) {
-            message.channel.send("We're having issues **connecting to our database**. Please try again later. If this issue persists, contact R2D2Vader#0693");
+            message.channel.send("We're having issues **connecting to our database**. Please try again later. If this issue persists, contact `@r2d2vader`");
             message.react("❎").catch((err) => {return;});
             return;
         }

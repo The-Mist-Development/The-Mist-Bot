@@ -228,7 +228,7 @@ module.exports = {
                         break;
                     case "loop":
                     case "l":
-                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(1);
                             message.channel.send("🔂 **Looping the current song**");
@@ -240,7 +240,7 @@ module.exports = {
                         break;
                     case "loopqueue":
                     case "loopq":
-                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The queue cannot be looped right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The queue cannot be looped right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(2);
                             message.channel.send("🔁 **Looping the entire queue**");
@@ -332,7 +332,7 @@ module.exports = {
 
 async function playSong(message, args) {
     if (args.length == 0) return message.channel.send("🤔 *Play what?* \rI take song names, and YouTube URLs for videos and playlists.");
-    if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+    if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`");
 
     let guildQueue = client.player.getQueue(message.guild.id);
 
@@ -363,7 +363,7 @@ async function playSong(message, args) {
                 loading.delete()
                     .then(function () {
                         let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()].join("")).digest('base64')
-                        message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693**. Correlation ID: `" + errorid + "`");
+                        message.channel.send("😓 **Something went wrong!** Please contact `@r2d2vader`. Correlation ID: `" + errorid + "`");
                         log(`[PLAYER] Failed while playing a song from cold start. Correlation ID: ${errorid}`);
                     });
             }, 10000);
@@ -451,7 +451,7 @@ async function playSong(message, args) {
                 deleted = true;
             }
             if (loTimeout) clearTimeout(loTimeout);
-            return message.channel.send("We currently don't support Apple Music links. If this wasn't one, please contact `R2D2Vader#0693`. 🍎🤨");
+            return message.channel.send("We currently don't support Apple Music links. If this wasn't one, please contact `@r2d2vader`. 🍎🤨");
         }
 
         if (message.content.toLowerCase().includes("list=")) {

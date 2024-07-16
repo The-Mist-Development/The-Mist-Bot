@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Privacy Policy - The Mist Bot</title>
+    </head>
+    <style>
+        body {
+            font-size: 1.2rem;
+        }
+        table {
+            text-align: left;
+            margin: 1.5em 0;
+        }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.2em 0.5em;
+        }
+    </style>
+    <body>
+        <h1>Privacy Policy</h1>
+        <p>17th July 2024</p>
+        <p>
+            When you use The Mist Bot, it collects the data necessary for certain features to work. This will change over time and as such, this privacy policy is subject to change.
+        </p>
+        <p>
+            All data is stored in a PostgreSQL database. Only the bot itself and I (R2D2Vader) have direct access to this data. <br />
+            You can view the database schema in the source code. It is contained in the file <a href="https://github.com/The-Mist-Development/The-Mist-Bot/blob/master/bot/database.js">/bot/database.js</a>.
+        </p>
+        <h2>Personal information collected by purpose</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Counting Channel</th>
+                    </tr>
+                    <tr>
+                        <th>Information collected</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Channel ID</td>
+                        <td>To enable counting in that channel.</td>
+                    </tr>
+                    <tr>
+                        <td>User ID of the latest user to count</td>
+                        <td>To prevent users counting twice in a row in a specific counting channel.</td>
+                    </tr>
+                    <tr>
+                        <td>User ID</td>
+                        <td>To track counting stats of each user per-server.</td>
+                    </tr>
+                    <tr>
+                        <td>Server ID</td>
+                        <td>To track counting stats of each user per-server.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Update Messages</th>
+                    </tr>
+                    <tr>
+                        <th>Information collected</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Channel ID</td>
+                        <td>To enable sending patch and status updates to that channel.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Steam Wishlist Notifications</th>
+                    </tr>
+                    <tr>
+                        <th>Information collected</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>User ID</td>
+                        <td>To send you a notification when a game on your wishlist goes on sale.</td>
+                    </tr>
+                    <tr>
+                        <td>Steam profile URL substring</td>
+                        <td>To retrieve your wishlist from the Steam API.</td>
+                    </tr>
+                    <tr>
+                        <td>Steam Wishlist, as a list of Game IDs</td>
+                        <td>To retrieve the price of each game on your wishlist and detect when it goes on sale.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                The Mist Bot is not affiliated with Valve or Steam.
+            </p>
+        <h2>Usage data collected</h2>
+        <p>As part of the Counting feature, usage data is collected to display user- and channel-specific counting stats.</p>
+        <h2>Usage data made publicly available</h2>
+        <p>
+            The following data is made publicly available via our website:
+        </p>
+        <ul>
+            <li>The number of counting messups made at each number (only available as a bot-wide statistic).</li>
+            <li>Each user's counting stats for each server they have counted on.</li>
+            <ul>
+                <li>This is anonymised with User ID and Server ID removed.</li>
+                <li>It is impossible to connect a user's stats across multiple servers.</li>
+            </ul>
+        </ul>
+        <p>
+            The following data is made publicly available to any user of the bot via Discord:
+        </p>
+        <ul>
+            <li>The highest count in any channel with counting enabled, given the Channel ID.</li>
+        </ul>
+        <h2>Data Request and Deletion</h2>
+        <p>
+            To request access to your data, please contact @r2d2vader on Discord. Please note that I can only process requests relating to user-specific data.
+        </p>
+        <p>
+            The following data is deleted automatically when you disable the relevant feature:
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature Disabled</th>
+                    <td><b>Personal</b> / Usage <b>Data Deleted</b></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Counting Channel</td>
+                    <td><b>Channel ID</b>, <b>User ID of the latest user to count</b>, channel-specific counting stats</td>
+                </tr>
+                <tr>
+                    <td>Update Messages</td>
+                    <td><b>Channel ID</b></td>
+                </tr>
+                <tr>
+                    <td>Steam Wishlist Notifications</td>
+                    <td><b>User ID</b>, <b>Steam profile URL substring</b>, <b>Steam Wishlist</b></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            The following data is never deleted automatically and will be stored indefinitely. Please contact @r2d2vader on Discord to request deletion.
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <td><b>Personal</b> / Usage <b>Data Stored</b></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Counting Channel</td>
+                    <td><b>User ID</b>, <b>Server ID</b>, user-specific counting stats</td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
