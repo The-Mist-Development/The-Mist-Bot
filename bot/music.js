@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { Player } = require("discord-music-player");
+const { Player } = require("@arthestn/discord-music-player");
 const { restart } = require("./restart.js");
 const { createHash } = require('crypto');
 const fetch = require('isomorphic-unfetch')
@@ -109,8 +109,12 @@ module.exports = {
                 }
             })
             // Emitted when a first song in the queue started playing.
-            .on('songFirst', (queue, song) =>
-                queue.data.channel.send(`🎵 Playing Now: **${song.name.replaceAll(/@/g, '@ ')}** 🎶`)) // replace any @'s to include space to counter pings
+            .on('songFirst', (queue, song) => {
+                if (!queue.data.doneFirst) {
+                    queue.data.channel.send(`🎵 Playing Now: **${song.name.replaceAll(/@/g, '@ ')}** 🎶`) // replace any @'s to include space to counter pings
+                    queue.setData({ channel: queue.data.channel, voicechannel: queue.data.voicechannel, doneFirst: true })
+                }
+            })
             // Emitted when someone disconnected the bot from the channel.
             .on('clientDisconnect', (queue) => {
                 queue.data.channel.send("👋 **Bye then!** I see how it is 😔")

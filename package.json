@@ -22,26 +22,20 @@
   },
   "homepage": "https://github.com/The-Mist-Development/The-Mist-Bot#readme",
   "dependencies": {
+    "@arthestn/discord-music-player": "^1.0.11",
     "@discordjs/opus": "^0.8.0",
     "axios": "^1.6.2",
     "body-parser": "^1.20.1",
     "cron": "^1.8.2",
-    "discord-music-player": "^9.0.2",
     "discord.js": "^14.2.0",
     "dotenv": "^16.0.1",
     "express": "^4.19.2",
     "isomorphic-unfetch": "^4.0.2",
     "pg": "^8.7.3",
     "simple-git": "^3.16.0",
-    "spotify-url-info": "^3.2.6",
-    "ytdl-core": "^4.11.5",
-    "ytsr": "^3.8.4"
+    "spotify-url-info": "^3.2.6"
   },
   "overrides": {
-    "discord-music-player": {
-      "@discordjs/voice": "^0.16.0",
-      "axios": "0.28.0"
-    },
     "apple-music-metadata": {
       "axios": "0.28.0"
     }
