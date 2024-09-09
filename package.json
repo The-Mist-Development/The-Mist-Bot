@@ -37,10 +37,10 @@
   },
   "overrides": {
     "apple-music-metadata": {
-      "axios": "0.28.0"
+      "axios": "^0.28.0"
     }
   },
   "engines": {
-    "node": ">=16.8.0"
+    "node": "^18.20.4"
   }
 }
