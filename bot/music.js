@@ -30,7 +30,7 @@ function runtimeErrorHandle(error, message) {
         if (error.message.includes("permission") || error.message.includes("Permission")) return message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
         if (error.message.includes("Status code:")) return message.channel.send("YouTube returned an error code. Try again in about 5 minutes.");
 
-        message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
+        message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact `@r2d2vader`. Error ID: `" + errorid + "`");
 
     }
     else if (error.message.includes("Status code:")) {
@@ -157,7 +157,7 @@ module.exports = {
                         queue.data.channel.send("😓 You've just encountered our only major bug! **Try playing something again**. Sorry for the inconvenience!")
                     }
                     else {
-                        queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
+                        queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact `@r2d2vader`. Error ID: `" + errorid + "`");
                     }
                     // don't think this is needed here
                     //if (error.message?.includes("permission") || error.includes("Permission")) {
@@ -185,7 +185,7 @@ module.exports = {
                     case "pause":
                         if (needRestart == 1) {
                             guildQueue.leave();
-                            message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. Your song has been stopped and no more songs may be played at this time.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+                            message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. Your song has been stopped and no more songs may be played at this time.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`.");
                         }
                         else {
                             guildQueue.setPaused(true);
@@ -232,7 +232,7 @@ module.exports = {
                         break;
                     case "loop":
                     case "l":
-                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`");
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`.");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(1);
                             message.channel.send("🔂 **Looping the current song**");
@@ -244,7 +244,7 @@ module.exports = {
                         break;
                     case "loopqueue":
                     case "loopq":
-                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The queue cannot be looped right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`");
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The queue cannot be looped right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`.");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(2);
                             message.channel.send("🔁 **Looping the entire queue**");
@@ -336,7 +336,7 @@ module.exports = {
 
 async function playSong(message, args) {
     if (args.length == 0) return message.channel.send("🤔 *Play what?* \rI take song names, and YouTube URLs for videos and playlists.");
-    if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`");
+    if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`.");
 
     let guildQueue = client.player.getQueue(message.guild.id);
 
