@@ -45,7 +45,7 @@ client.on("messageCreate", async function (message) {
 
   if (channels.includes(message.channel.id)) {
     if (message.member.displayName.includes("@everyone") || message.member.displayName.includes("@here")) return message.react("💢");
-    // new number checker by aouab
+    // new number checker by github.com/kateonbxsh
     if (message.content.split("").every(char => char !== " " && char >= '0' && char <= '9') && !(message.content == "")) {
       count(message)
     }

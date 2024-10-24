@@ -2,201 +2,203 @@
 <html>
 
 <head>
-  <title>The Mist Bot</title>
+    <title>The Mist Bot</title>
 
-  <style>
-    a {
-      font-size: 1.2rem;
-    }
-  </style>
+    <meta name="robots" content="noindex,nofollow">
+
+    <style>
+        a {
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 
 <body>
-  <h1>The Mist Bot</h1>
-  <a href="https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot">
-    Add the bot
-  </a><br />
-  <a href="https://github.com/The-Mist-Development/The-Mist-Bot">
-    GitHub
-  </a><br />
-  <a href="/terms.html">
-    Terms of Service
-  </a><br />
-  <a href="/privacy.html">
-    Privacy Policy
-  </a><br />
+    <h1>The Mist Bot</h1>
+    <a href="https://discord.com/api/oauth2/authorize?client_id=630381078963552267&permissions=70634560&scope=bot">
+        Add the bot
+    </a><br />
+    <a href="https://github.com/The-Mist-Development/The-Mist-Bot">
+        GitHub
+    </a><br />
+    <a href="/terms.html">
+        Terms of Service
+    </a><br />
+    <a href="/privacy.html">
+        Privacy Policy
+    </a><br />
 
-  <h2>Counting messups at each number</h2>
-  <div style="width: 500px">
-    <canvas id="myChart"></canvas>
-  </div>
+    <h2>Counting messups at each number</h2>
+    <div style="width: 500px">
+        <canvas id="myChart"></canvas>
+    </div>
 
-  <h2>Points data</h2>
-  <div style="width: 800px">
-    <canvas id="messupsPoints"></canvas>
-  </div>
+    <h2>Points data</h2>
+    <div style="width: 800px">
+        <canvas id="messupsPoints"></canvas>
+    </div>
 
-  <h2>Points data with experimental new Points formula</h2>
-  <div style="width: 800px">
-    <canvas id="newElo"></canvas>
-  </div>
+    <h2>Points data with experimental new Points formula</h2>
+    <div style="width: 800px">
+        <canvas id="newElo"></canvas>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <script>
-    (async () => {
-      const response = await fetch('/messups');
-      const input = await response.json();
-      console.log(input);
-      let chartdata = [0]
-      let chartlabels = ["Other Numbers"]
-      let colours = []
-      let colourseed = Math.floor(Math.random() * 255)
-      colours.push("hsl(" + colourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+    <script>
+        (async () => {
+            const response = await fetch('/messups');
+            const input = await response.json();
+            console.log(input);
+            let chartdata = [0]
+            let chartlabels = ["Other Numbers"]
+            let colours = []
+            let colourseed = Math.floor(Math.random() * 255)
+            colours.push("hsl(" + colourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
 
-      for (let p in input) {
-        if (parseInt(input[p]) >= 3) {
-          chartdata.push(parseInt(input[p]));
-          chartlabels.push(p);
-          colourseed = Math.floor(((((colourseed / 255) * 360) + 137.5) / 360) * 255);
-          if (colourseed > 255) colourseed -= 255
-          colours.push("hsl(" + colourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
-        }
-        else {
-          chartdata[0] += parseInt(input[p]);
-        }
-      }
-
-      const ctx = document.getElementById('myChart');
-      new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: chartlabels,
-            datasets: [{
-                label: 'Counting Messups',
-                data: chartdata,
-                backgroundColor: colours
-            }]
-        },
-      });
-
-      const response2 = await fetch('/countstats');
-      const input2 = await response2.json();
-      const numx = document.getElementById("messupsPoints")
-
-      let pointscolourseed = Math.floor(Math.random() * 255)
-      let pointscolour = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
-
-      pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
-      if (pointscolourseed > 255) pointscolourseed -= 255
-      pointscolour2 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
-
-      pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
-      if (pointscolourseed > 255) pointscolourseed -= 255
-      pointscolour3 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
-
-      pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
-      if (pointscolourseed > 255) pointscolourseed -= 255
-      pointscolour4 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
-
-      let pointsdata = []
-      let pointsdata2 = []
-      let pointsdata3 = []
-      let pointsdata4 = []
-
-      let newdata = []
-      let newdata2 = []
-      let newdata3 = []
-      let newdata4 = []
-
-      for (let i = 0; i < input2.length; i++) {
-        pointsdata.push({x: parseInt(input2[i]["messups"]), y: parseInt(input2[i]["elo"])})
-        pointsdata2.push({x: parseInt(input2[i]["maxmessup"]), y: parseInt(input2[i]["elo"])})
-        pointsdata3.push({x: parseInt(input2[i]["maxcount"]), y: parseInt(input2[i]["elo"])})
-        pointsdata4.push({x: parseInt(input2[i]["counts"]), y: parseInt(input2[i]["elo"])})
-
-        newdata.push({x: parseInt(input2[i]["messups"]), y: parseInt(input2[i]["newelo"])})
-        newdata2.push({x: parseInt(input2[i]["maxmessup"]), y: parseInt(input2[i]["newelo"])})
-        newdata3.push({x: parseInt(input2[i]["maxcount"]), y: parseInt(input2[i]["newelo"])})
-        newdata4.push({x: parseInt(input2[i]["counts"]), y: parseInt(input2[i]["newelo"])})
-      }
-
-      new Chart(numx, {
-        type: 'scatter',
-        data: {
-          datasets: [
-          {
-            label: 'Times Counted x Points',
-            data: pointsdata4,
-            backgroundColor: pointscolour4
-          },
-          {
-            label: 'Number of Messups x Points',
-            data: pointsdata,
-            backgroundColor: pointscolour
-          },
-          {
-            label: 'Highest Count x Points',
-            data: pointsdata3,
-            backgroundColor: pointscolour3
-          },
-          {
-            label: 'Highest Messup x Points',
-            data: pointsdata2,
-            backgroundColor: pointscolour2
-          }
-        ],
-        },
-        options: {
-          scales: {
-            x: {
-              type: 'linear',
-              position: 'bottom'
+            for (let p in input) {
+                if (parseInt(input[p]) >= 3) {
+                    chartdata.push(parseInt(input[p]));
+                    chartlabels.push(p);
+                    colourseed = Math.floor(((((colourseed / 255) * 360) + 137.5) / 360) * 255);
+                    if (colourseed > 255) colourseed -= 255
+                    colours.push("hsl(" + colourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+                }
+                else {
+                    chartdata[0] += parseInt(input[p]);
+                }
             }
-          }
-        }  
-      });
 
-      const elox = document.getElementById("newElo");
+            const ctx = document.getElementById('myChart');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: chartlabels,
+                    datasets: [{
+                        label: 'Counting Messups',
+                        data: chartdata,
+                        backgroundColor: colours
+                    }]
+                },
+            });
 
-      new Chart(elox, {
-        type: 'scatter',
-        data: {
-          datasets: [
-          {
-            label: 'Times Counted x Points',
-            data: newdata4,
-            backgroundColor: pointscolour4
-          },
-          {
-            label: 'Number of Messups x Points',
-            data: newdata,
-            backgroundColor: pointscolour
-          },
-          {
-            label: 'Highest Count x Points',
-            data: newdata3,
-            backgroundColor: pointscolour3
-          },
-          {
-            label: 'Highest Messup x Points',
-            data: newdata2,
-            backgroundColor: pointscolour2
-          }
-        ],
-        },
-        options: {
-          scales: {
-            x: {
-              type: 'linear',
-              position: 'bottom'
+            const response2 = await fetch('/countstats');
+            const input2 = await response2.json();
+            const numx = document.getElementById("messupsPoints")
+
+            let pointscolourseed = Math.floor(Math.random() * 255)
+            let pointscolour = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
+            pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
+            if (pointscolourseed > 255) pointscolourseed -= 255
+            pointscolour2 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
+            pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
+            if (pointscolourseed > 255) pointscolourseed -= 255
+            pointscolour3 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
+            pointscolourseed = Math.floor(((((pointscolourseed / 255) * 360) + 137.5) / 360) * 255);
+            if (pointscolourseed > 255) pointscolourseed -= 255
+            pointscolour4 = ("hsl(" + pointscolourseed.toString() + ", " + Math.floor((Math.random() * 50) + 50).toString() + "%, " + Math.floor((Math.random() * 20) + 40).toString() + "%)");
+
+            let pointsdata = []
+            let pointsdata2 = []
+            let pointsdata3 = []
+            let pointsdata4 = []
+
+            let newdata = []
+            let newdata2 = []
+            let newdata3 = []
+            let newdata4 = []
+
+            for (let i = 0; i < input2.length; i++) {
+                pointsdata.push({ x: parseInt(input2[i]["messups"]), y: parseInt(input2[i]["elo"]) })
+                pointsdata2.push({ x: parseInt(input2[i]["maxmessup"]), y: parseInt(input2[i]["elo"]) })
+                pointsdata3.push({ x: parseInt(input2[i]["maxcount"]), y: parseInt(input2[i]["elo"]) })
+                pointsdata4.push({ x: parseInt(input2[i]["counts"]), y: parseInt(input2[i]["elo"]) })
+
+                newdata.push({ x: parseInt(input2[i]["messups"]), y: parseInt(input2[i]["newelo"]) })
+                newdata2.push({ x: parseInt(input2[i]["maxmessup"]), y: parseInt(input2[i]["newelo"]) })
+                newdata3.push({ x: parseInt(input2[i]["maxcount"]), y: parseInt(input2[i]["newelo"]) })
+                newdata4.push({ x: parseInt(input2[i]["counts"]), y: parseInt(input2[i]["newelo"]) })
             }
-          }
-        }  
-      });
 
-    })();
-  </script>
+            new Chart(numx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Times Counted x Points',
+                            data: pointsdata4,
+                            backgroundColor: pointscolour4
+                        },
+                        {
+                            label: 'Number of Messups x Points',
+                            data: pointsdata,
+                            backgroundColor: pointscolour
+                        },
+                        {
+                            label: 'Highest Count x Points',
+                            data: pointsdata3,
+                            backgroundColor: pointscolour3
+                        },
+                        {
+                            label: 'Highest Messup x Points',
+                            data: pointsdata2,
+                            backgroundColor: pointscolour2
+                        }
+                    ],
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            const elox = document.getElementById("newElo");
+
+            new Chart(elox, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Times Counted x Points',
+                            data: newdata4,
+                            backgroundColor: pointscolour4
+                        },
+                        {
+                            label: 'Number of Messups x Points',
+                            data: newdata,
+                            backgroundColor: pointscolour
+                        },
+                        {
+                            label: 'Highest Count x Points',
+                            data: newdata3,
+                            backgroundColor: pointscolour3
+                        },
+                        {
+                            label: 'Highest Messup x Points',
+                            data: newdata2,
+                            backgroundColor: pointscolour2
+                        }
+                    ],
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+        })();
+    </script>
 
 
 </body>
