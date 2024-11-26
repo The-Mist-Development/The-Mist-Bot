@@ -38,6 +38,14 @@ module.exports = {
             message.react("🅰️").catch((err) => {return;});
             message.react("🇴").catch((err) => {return;});
           }
+
+          if (msgcontent.includes("lamof")) {
+            message.react("🇱").catch((err) => {return;});
+            message.react("🅰️").catch((err) => {return;});
+            message.react("Ⓜ").catch((err) => {return;});
+            message.react("🇴").catch((err) => {return;});
+            message.react("🇫").catch((err) => {return;});
+          }
           
 
           if (msgcontent.includes("100%")) {
