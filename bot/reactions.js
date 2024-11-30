@@ -19,6 +19,13 @@ module.exports = {
             message.react("🇴").catch((err) => {return;});
             message.react("🇫").catch((err) => {return;});
           }
+          else if (msgcontent.includes("lamof")) {
+            message.react("🇱").catch((err) => {return;});
+            message.react("🅰️").catch((err) => {return;});
+            message.react("Ⓜ").catch((err) => {return;});
+            message.react("🇴").catch((err) => {return;});
+            message.react("🇫").catch((err) => {return;});
+          }
           else if (msgcontent.includes("lmfao")) {
             message.react("🇱").catch((err) => {return;});
             message.react("Ⓜ").catch((err) => {return;});
@@ -31,22 +38,12 @@ module.exports = {
             message.react("🇫").catch((err) => {return;});
             message.react("🇼").catch((err) => {return;});
           }
-
-          if (msgcontent.includes("lmao")) {
+          else if (msgcontent.includes("lmao")) {
             message.react("🇱").catch((err) => {return;});
             message.react("Ⓜ").catch((err) => {return;});
             message.react("🅰️").catch((err) => {return;});
             message.react("🇴").catch((err) => {return;});
-          }
-
-          if (msgcontent.includes("lamof")) {
-            message.react("🇱").catch((err) => {return;});
-            message.react("🅰️").catch((err) => {return;});
-            message.react("Ⓜ").catch((err) => {return;});
-            message.react("🇴").catch((err) => {return;});
-            message.react("🇫").catch((err) => {return;});
-          }
-          
+          }      
 
           if (msgcontent.includes("100%")) {
             message.react("💯").catch((err) => {return;});
