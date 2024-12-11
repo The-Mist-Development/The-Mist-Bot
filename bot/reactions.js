@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 
 // Settings
-const lmaomode = true;
+const lmaomode = false;
 const janmode = true;
 
 module.exports = {
