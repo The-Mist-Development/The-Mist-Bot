@@ -29,14 +29,13 @@ module.exports = {
     },
     addUser: function (discordId, steamUrl) {
         return new Promise(function (resolve, reject) {
-            //db.getUser(discordId).then(function (response) {
-            //    if (response.rows.length > 0) return reject("USER_ALREADY_EXISTS");
-            //    if (!steamUrl.includes("steamcommunity.com")) return reject("INVALID_URL");
+            db.getUser(discordId).then(function (response) {
+                if (response.rows.length > 0) return reject("USER_ALREADY_EXISTS");
+                if (!steamUrl.includes("steamcommunity.com")) return reject("INVALID_URL");
                 let steamSnippet = steamUrl.split("steamcommunity.com")[1];
                 if (steamSnippet.startsWith("/profiles/")) {
                     let steamId = steamSnippet.split("/profiles/")[1].split("/")[0];
                     steam.getUserWishlist(steamId).then(function (games) {
-                        return console.log(games);
                         db.addUser(discordId, steamId).then(function (response2) {
                             resyncSingle(discordId, games);
                             resolve();
@@ -65,9 +64,9 @@ module.exports = {
                     });
                 }
                 else return reject("INVALID_URL");
-            //}).catch(function (error) {
-            //    return reject(error);
-            //});
+            }).catch(function (error) {
+                return reject(error);
+            });
         })
     },
     deleteUser: function (discordId) {
