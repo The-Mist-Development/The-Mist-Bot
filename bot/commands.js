@@ -150,7 +150,8 @@ module.exports = {
       case "forcerickroll":
       case "clear":
       case "leave":
-        music(message, command, args);
+        message.channel.send("Music commands have been **permanently disabled** as the feature is broken 😔")
+        //music(message, command, args);
         break;
       default:
         message.channel.send(
@@ -218,47 +219,47 @@ function helpMsg(message) {
         name: "`" + prefix + "unsubscribe`",
         value: "Unsubscribe from our updates in an already subscribed channel. Requires the `Manage Channels` permission."
       },
-      {
-        name: "`" + prefix + "wishlist`",
-        value: "Get notified when games on your Steam Wishlist go on sale! Run this command for the subcommand help menu."
-      },
-      { name: "🎵 Music Commands", value: "===" },
-      {
-        name: "`" + prefix + "play <Song Name / YouTube Video or Playlist URL / Spotify Track or Album or Playlist URL>`",
-        value: "Play the first result on YouTube for the Song Name, or the content at the link you provide. We convert each Spotify song into its title and artist and search for it."
-      },
-      {
-        name: "`" + prefix + "pause` / `" + prefix + "resume`",
-        value: "Pause or Resume the music."
-      },
-      {
-        name: "`" + prefix + "skip`",
-        value: "Skip the currently playing song."
-      },
-      {
-        name: "`" + prefix + "stop` / `" + prefix + "leave`",
-        value: "Clear the queue and stop the music."
-      },
-      {
-        name: "`" + prefix + "queue`",
-        value: "View the queue."
-      },
-      {
-        name: "`" + prefix + "remove <Song Index>`",
-        value: "Remove the specified song from the queue."
-      },
-      {
-        name: "`" + prefix + "clear`",
-        value: "Clear the entire queue."
-      },
-      {
-        name: "`" + prefix + "np`",
-        value: "View information about the currently playing song."
-      },
-      {
-        name: "`" + prefix + "loop` / `" + prefix + "loopqueue`",
-        value: "Toggle either looping the current song or looping the whole queue."
-      },
+      //{
+      //  name: "`" + prefix + "wishlist`",
+      //  value: "Get notified when games on your Steam Wishlist go on sale! Run this command for the subcommand help menu."
+      //},
+      //{ name: "🎵 Music Commands", value: "===" },
+      //{
+      //  name: "`" + prefix + "play <Song Name / YouTube Video or Playlist URL / Spotify Track or Album or Playlist URL>`",
+      //  value: "Play the first result on YouTube for the Song Name, or the content at the link you provide. We convert each Spotify song into its title and artist and search for it."
+      //},
+      //{
+      //  name: "`" + prefix + "pause` / `" + prefix + "resume`",
+      //  value: "Pause or Resume the music."
+      //},
+      //{
+      //  name: "`" + prefix + "skip`",
+      //  value: "Skip the currently playing song."
+      //},
+      //{
+      //  name: "`" + prefix + "stop` / `" + prefix + "leave`",
+      //  value: "Clear the queue and stop the music."
+      //},
+      //{
+      //  name: "`" + prefix + "queue`",
+      //  value: "View the queue."
+      //},
+      //{
+      //  name: "`" + prefix + "remove <Song Index>`",
+      //  value: "Remove the specified song from the queue."
+      //},
+      //{
+      //  name: "`" + prefix + "clear`",
+      //  value: "Clear the entire queue."
+      //},
+      //{
+      //  name: "`" + prefix + "np`",
+      //  value: "View information about the currently playing song."
+      //},
+      //{
+      //  name: "`" + prefix + "loop` / `" + prefix + "loopqueue`",
+      //  value: "Toggle either looping the current song or looping the whole queue."
+      //},
       { name: "🔢 Counting", value: "===" },
       {
         name: "`" + prefix + "enablecounting`",
@@ -281,7 +282,7 @@ function helpMsg(message) {
         value: "See global counting messup stats."
       }
     );
-  message.author.send({ embeds: [embed] }).catch((err) => {message.channel.send("Unable to DM you the help message. 😔")});
+  message.author.send({ embeds: [embed] }).catch((err) => {message.channel.send("Unable to DM you the help message - you likely don't have DMs open for this server 😔")});
 }
 
 function adminHelpMsg(message) {
@@ -329,7 +330,7 @@ function adminHelpMsg(message) {
       },
       {
         name: "`" + prefix + "npmi`",
-        value: "Run the `npm install` command on the system. Not sure if it works or serves a purpose."
+        value: "Run the `npm install` command on the system."
       },
     );
 

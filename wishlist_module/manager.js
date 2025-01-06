@@ -159,7 +159,7 @@ let wishlistSync = new CronJob(
     },
     null,
     //SET TO TRUE BELOW TO RUN
-    true,
+    false,
     'Europe/London'
 );
 
@@ -251,6 +251,6 @@ let gamePriceSync = new CronJob(
     },
     null,
     //SET TO TRUE BELOW TO RUN
-    true,
+    false,
     'Europe/London'
 );
