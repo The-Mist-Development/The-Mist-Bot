@@ -230,7 +230,7 @@ let gamePriceSync = new CronJob(
                 }
                 else if (response.price_overview.final < oldPrice) {
                     if (response.price_overview.discount_percent > 0) {
-                        //log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                        log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                         // Make further API request to get the game's info.
                         gamesObj[gameid] = await steam.getGameInfo(gameid);
                     }
@@ -262,6 +262,7 @@ let gamePriceSync = new CronJob(
                 log(`[WISHLIST][DEBUG] User ${users[i]} has no games on sale.`)
             }
             else if (userGamesOnSale.length == 1) {
+                log(`[WISHLIST][DEBUG] User ${users[i]} has one game on sale.`)
                 let response2 = gamesObj[userGamesOnSale[0]]
                 let embed = new EmbedBuilder()
                     .setTitle(response2.name)
@@ -280,13 +281,14 @@ let gamePriceSync = new CronJob(
                     });
             }
             else {
+                log(`[WISHLIST][DEBUG] User ${users[i]} has multiple games on sale.`)
                 let embed = new EmbedBuilder()
                     .setTitle("Sale Summary")
                     .setDescription("[Check Steam](https://store.steampowered.com/wishlist/) for the full details!")
                     .setColor("#a83e32");
                 let limit = userGamesOnSale.length
                 if (limit > 24) {
-                    embed.addFields({name: "Too many of your games are on sale!", value: "The first 24 items will be displayed below."})
+                    embed.addFields({name: "Too many of your games are on sale!", value: "The first 24 will be displayed below."})
                     limit = 24;
                 }
                 for (let i = 0; i < limit; i++) {
