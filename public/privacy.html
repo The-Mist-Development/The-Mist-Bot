@@ -25,13 +25,16 @@
     </head>
     <body>
         <h1>Privacy Policy</h1>
-        <p>17th July 2024</p>
+        <p>7th January 2025</p>
         <p>
             When you use The Mist Bot, it collects the data necessary for certain features to work. This will change over time and as such, this privacy policy is subject to change.
         </p>
         <p>
             All data is stored in a PostgreSQL database. Only the bot itself and I (R2D2Vader) have direct access to this data. <br />
             You can view the database schema in the source code. It is contained in the file <a href="https://github.com/The-Mist-Development/The-Mist-Bot/blob/master/bot/database.js">/bot/database.js</a>.
+        </p>
+        <p>
+            We share some of your personal information with Steam and playerdb.co to retrieve the necessary information for the Steam Wishlist Notifications feature to work. <br /> Full details below.
         </p>
         <h2>Personal information collected by purpose</h2>
             <table>
@@ -96,12 +99,20 @@
                         <td>To send you a notification when a game on your wishlist goes on sale.</td>
                     </tr>
                     <tr>
-                        <td>Steam profile URL substring</td>
-                        <td>To retrieve your wishlist from the Steam API.</td>
+                        <td>Steam Profile URL</td>
+                        <td>To extract your Steam ID, either directly or by sharing a substring of it with a third-party API - playerdb.co. <br />Discarded after use.</td>
+                    </tr>
+                    <tr>
+                        <td>Steam Profile URL substring</td>
+                        <td>Used previously to retrieve your wishlist from the Steam API. <br />Stored for anyone who registered for the feature before 7th January 2025.</td>
+                    </tr>
+                    <tr>
+                        <td>Steam ID</td>
+                        <td>Shared with Steam to retrieve your Steam wishlist.</td>
                     </tr>
                     <tr>
                         <td>Steam Wishlist, as a list of Game IDs</td>
-                        <td>To retrieve the price of each game on your wishlist and detect when it goes on sale.</td>
+                        <td>Shared with Steam to retrieve the price of each game on your wishlist and detect when it goes on sale.</td>
                     </tr>
                 </tbody>
             </table>
@@ -153,7 +164,7 @@
                 </tr>
                 <tr>
                     <td>Steam Wishlist Notifications</td>
-                    <td><b>User ID</b>, <b>Steam profile URL substring</b>, <b>Steam Wishlist</b></td>
+                    <td><b>User ID</b>, <b>Steam Profile URL substring (if still stored)</b>, <b>Steam ID</b>, <b>Steam Wishlist</b></td>
                 </tr>
             </tbody>
         </table>
