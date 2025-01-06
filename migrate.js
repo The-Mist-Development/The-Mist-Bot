@@ -18,7 +18,7 @@ discord.on("ready", () => {
         } else {
             w_getAllUsers().then(async function (response) {
                 for (let i = 0; i < response.rowCount; i++) {
-                    let steamId = steam.getId64(response.rows[i]["steamsnippet"].split("/")[2]);
+                    let steamId = await steam.getId64(response.rows[i]["steamsnippet"].split("/")[2]);
                     await setSteamId(response.rows[i]["discordid"], steamId);
                     await manager.resyncSingle(response.rows[i]["discordid"], null, steamId);
                     discord.users.fetch(response.rows[i]["discordid"]).then(user => {
