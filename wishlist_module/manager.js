@@ -29,17 +29,17 @@ module.exports = {
     },
     addUser: function (discordId, steamUrl) {
         return new Promise(function (resolve, reject) {
-            db.getUser(discordId).then(function (response) {
-                if (response.rows.length > 0) return reject("USER_ALREADY_EXISTS");
-                if (!steamUrl.includes("steamcommunity.com")) return reject("INVALID_URL");
+            //db.getUser(discordId).then(function (response) {
+            //    if (response.rows.length > 0) return reject("USER_ALREADY_EXISTS");
+            //    if (!steamUrl.includes("steamcommunity.com")) return reject("INVALID_URL");
                 let steamSnippet = steamUrl.split("steamcommunity.com")[1];
-                if (steamSnippet.startsWith("/id/") || steamSnippet.startsWith("/profiles/")) {
-                    let array = steamSnippet.split("");
-                    if (array[array.length - 1] != "/") steamSnippet = steamSnippet + "/";
-                    steam.getUserWishlist(steamSnippet).then(function (response) {
-                        db.addUser(discordId, steamSnippet).then(function (response2) {
-                            resyncSingle(discordId, response);
-                            resolve(response);
+                if (steamSnippet.startsWith("/profiles/")) {
+                    let steamId = steamSnippet.split("/profiles/")[1].split("/")[0];
+                    steam.getUserWishlist(steamId).then(function (games) {
+                        return console.log(games);
+                        db.addUser(discordId, steamId).then(function (response2) {
+                            resyncSingle(discordId, games);
+                            resolve();
                         }).catch(function (error2) {
                             return reject(error2);
                         })
@@ -47,10 +47,27 @@ module.exports = {
                         return reject(error);
                     })
                 }
+                else if (steamSnippet.startsWith("/id/")) {
+                    let customId = steamSnippet.split("/id/")[1].split("/")[0];
+                    steam.getId64(customId).then(function (steamId) {
+                        steam.getUserWishlist(steamId).then(function (games) {
+                            db.addUser(discordId, steamId).then(function (response2) {
+                                resyncSingle(discordId, games);
+                                resolve();
+                            }).catch(function (error2) {
+                                return reject(error2);
+                            })
+                        }).catch(function (error) {
+                            return reject(error);
+                        })
+                    }).catch(function (error) {
+                        return reject(error);
+                    });
+                }
                 else return reject("INVALID_URL");
-            }).catch(function (error) {
-                return reject(error);
-            });
+            //}).catch(function (error) {
+            //    return reject(error);
+            //});
         })
     },
     deleteUser: function (discordId) {
@@ -93,21 +110,28 @@ module.exports = {
 
 module.exports.log = log
 
-function resyncSingle(discordId, steamWishlist = null, steamSnippet = null) {
+function resyncSingle(discordId, steamWishlist = null, steamId = null) {
     if (steamWishlist == null) {
         return new Promise(function (resolve, reject) {
             if (steamSnippet == null) {
                 db.getUser(discordId).then(function (response) {
                     if (response.rowCount == 0) return reject("USER_NOT_FOUND");
-                    steam.getUserWishlist(response.rows[0]["steamsnippet"]).then(function (response) {
-                        let keys = Object.keys(response);
-                        db.writeWishlist(discordId, keys).then(function (response) {
+                    steam.getUserWishlist(response.rows[0]["steamid"]).then(function (response) {
+                        let games = response.map(i => i.appid);
+                        db.writeWishlist(discordId, games).then(function (response) {
                             return resolve("success");
                         }).catch(function (error) {
                             reject(error);
                         })
                     }).catch(function (error) {
-                        return reject(error);
+                        if (error == "WISHLIST_LENGTH_0") {
+                            db.writeWishlist(discordId, []).then(function (response) {
+                                return resolve("success");
+                            }).catch(function (error) {
+                                reject(error);
+                            })
+                        }
+                        else return reject(error);
                     })
 
                 }).catch(function (error) {
@@ -115,22 +139,29 @@ function resyncSingle(discordId, steamWishlist = null, steamSnippet = null) {
                 });
             }
             else {
-                steam.getUserWishlist(steamSnippet).then(function (response) {
-                    let keys = Object.keys(response);
-                    db.writeWishlist(discordId, keys).then(function (response) {
+                steam.getUserWishlist(steamId).then(function (response) {
+                    let games = response.map(i => i.appid);
+                    db.writeWishlist(discordId, games).then(function (response) {
                         return resolve("success");
                     }).catch(function (error) {
                         reject(error);
                     })
                 }).catch(function (error) {
+                    if (error == "WISHLIST_LENGTH_0") {
+                        db.writeWishlist(discordId, []).then(function (response) {
+                            return resolve("success");
+                        }).catch(function (error) {
+                            reject(error);
+                        })
+                    }
                     return reject(error);
                 })
             }
         })
     }
     else {
-        let keys = Object.keys(steamWishlist);
-        db.writeWishlist(discordId, keys).then(function (response) {
+        let games = response.map(i => i.appid);
+        db.writeWishlist(discordId, games).then(function (response) {
             return;
         }).catch(function (error) {
             log("[WISHLIST] Error setting wishlist with provided data: " + error);
@@ -147,7 +178,7 @@ let wishlistSync = new CronJob(
         //log("[WISHLIST] Starting daily wishlist sync.");
         db.getAllUsers().then(function (response) {
             for (let i = 0; i < response.rowCount; i++) {
-                resyncSingle(response.rows[i]["discordid"], null, response.rows[i]["steamsnippet"])
+                resyncSingle(response.rows[i]["discordid"], null, response.rows[i]["steamid"])
                     .catch((err) => {
                         log("[WISHLIST] Error syncing a single wishlist in daily Cron job:: " + err)
                     });
@@ -159,7 +190,7 @@ let wishlistSync = new CronJob(
     },
     null,
     //SET TO TRUE BELOW TO RUN
-    false,
+    true,
     'Europe/London'
 );
 
@@ -251,6 +282,6 @@ let gamePriceSync = new CronJob(
     },
     null,
     //SET TO TRUE BELOW TO RUN
-    false,
+    true,
     'Europe/London'
 );

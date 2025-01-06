@@ -219,10 +219,10 @@ function helpMsg(message) {
         name: "`" + prefix + "unsubscribe`",
         value: "Unsubscribe from our updates in an already subscribed channel. Requires the `Manage Channels` permission."
       },
-      //{
-      //  name: "`" + prefix + "wishlist`",
-      //  value: "Get notified when games on your Steam Wishlist go on sale! Run this command for the subcommand help menu."
-      //},
+      {
+        name: "`" + prefix + "wishlist`",
+        value: "Get notified when games on your Steam Wishlist go on sale! Run this command for the subcommand help menu."
+      },
       //{ name: "🎵 Music Commands", value: "===" },
       //{
       //  name: "`" + prefix + "play <Song Name / YouTube Video or Playlist URL / Spotify Track or Album or Playlist URL>`",

@@ -32,22 +32,43 @@ module.exports = {
                 });
         });
     },
-    getUserWishlist: function (snippet) {
+    getUserWishlist: function (steamId) {
         return new Promise(function (resolve, reject) {
-            axios.get(`https://store.steampowered.com/wishlist${snippet}wishlistdata/`)
+            axios.get(`https://api.steampowered.com/IWishlistService/GetWishlist/v1?steamid=${steamId}`)
                 .then(function (response) {
-                    if (response.success) {
-                        if (response.success == 2) {
+                    let resdata = response.data.response;
+                    if (resdata.success) {
+                        if (resdata.success == 2) {
                             return reject("WISHLIST_NOT_FOUND");
                         }
                         else return reject("IDK");
                     }
-                    resolve(response.data);
+                    if (resdata.items) resolve(resdata.items);
+                    else reject("WISHLIST_LENGTH_0");
                 })
                 .catch(function (error) {
-                    if (error.toString().includes("status code 500")) reject("WISHLIST_NOT_FOUND");
-                    else reject(error.toString());
+                    string = error.toString()
+                    if (string.includes("status code 500")) reject("WISHLIST_NOT_FOUND");
+                    else if (string.includes("status code 400")) reject("INVALID_URL");
+                    else reject(string);
                 });
         });
+    },
+    getId64: function (customId) {
+        return new Promise(function (resolve, reject) {
+            axios.get(`https://playerdb.co/api/player/steam/${customId}`)
+                .then(function (response) {
+                    let resdata = response.data;
+                    if (resdata.code && resdata.code == "player.found") {
+                        resolve(resdata.data.player.meta.steam64id);
+                    }
+                    else reject("WISHLIST_NOT_FOUND");
+                })
+                .catch(function (error) {
+                    string = error.toString()
+                    if (string.includes("status code 400")) reject("WISHLIST_NOT_FOUND");
+                    else reject(string);
+                });
+        })
     }
 }

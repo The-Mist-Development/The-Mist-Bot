@@ -25,7 +25,7 @@ module.exports = {
                 dbClient.query("CREATE TABLE IF NOT EXISTS subscribed (channelid VARCHAR(255) PRIMARY KEY);", function (error, results) {
                     if (error) console.log("[DB] Error creating subscribed table: " + error);
                 });
-                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamsnippet VARCHAR(255), gamelist TEXT);", function (error, results) {
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamid VARCHAR(255), gamelist TEXT);", function (error, results) {
                     if (error) console.log("[WISHLIST] Error creating wishlist_users table: " + error);
                 });
                 dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameid VARCHAR(255) PRIMARY KEY, lastprice VARCHAR(255));", function (error, results) {
@@ -203,9 +203,9 @@ module.exports = {
         }
     },
     // wishlist mysql database file
-    w_addUser(discordId, steamSnippet) {
+    w_addUser(discordId, steamId) {
         return new Promise((resolve, reject) => {
-            dbClient.query("INSERT INTO wishlist_users (discordid, steamsnippet) VALUES ($1, $2)", [discordId, steamSnippet], function (error, results) {
+            dbClient.query("INSERT INTO wishlist_users (discordid, steamid) VALUES ($1, $2)", [discordId, steamId], function (error, results) {
                 if (error) reject(error);
                 resolve(results);
             });

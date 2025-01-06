@@ -1,9 +1,9 @@
 const db = require("../bot/database.js");
 
 module.exports = {
-    addUser(discordId, steamSnippet) {
+    addUser(discordId, steamId) {
         return new Promise((resolve, reject) => {
-            db.w_addUser(discordId, steamSnippet).then(function (response) {
+            db.w_addUser(discordId, steamId).then(function (response) {
                 resolve(response);
             }).catch(function (error) {
                 reject(error);
