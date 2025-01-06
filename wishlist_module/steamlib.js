@@ -56,7 +56,7 @@ module.exports = {
     },
     getId64: function (customId) {
         return new Promise(function (resolve, reject) {
-            axios.get(`https://playerdb.co/api/player/steam/${customId}`)
+            axios.get(`https://playerdb.co/api/player/steam/${customId}`, {headers: {"User-Agent": "mist.invaderj.rocks"}})
                 .then(function (response) {
                     let resdata = response.data;
                     if (resdata.code && resdata.code == "player.found") {
