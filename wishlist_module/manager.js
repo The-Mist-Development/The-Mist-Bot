@@ -112,7 +112,7 @@ module.exports.log = log
 function resyncSingle(discordId, steamWishlist = null, steamId = null) {
     if (steamWishlist == null) {
         return new Promise(function (resolve, reject) {
-            if (steamSnippet == null) {
+            if (steamId == null) {
                 db.getUser(discordId).then(function (response) {
                     if (response.rowCount == 0) return reject("USER_NOT_FOUND");
                     steam.getUserWishlist(response.rows[0]["steamid"]).then(function (response) {
