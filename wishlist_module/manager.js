@@ -238,6 +238,7 @@ let gamePriceSync = new CronJob(
                                             .setDescription(response2.short_description)
                                             .setImage(response2.header_image)
                                             .setColor("#a83e32")
+                                            .setURL(`https://store.steampowered.com/app/${response2.steam_appid}`)
                                             .addFields(
                                                 {
                                                     name: `Price: ${response2.price_overview.final_formatted}`,

@@ -49,6 +49,7 @@ function sendGameInfo(message, id) {
             .setDescription(response.short_description)
             .setImage(response.header_image)
             .setColor("#de66d0")
+            .setURL(`https://store.steampowered.com/app/${id}`)
         if (response.price_overview) {
             embed.addFields(
                 {
@@ -176,13 +177,13 @@ function sendList(message) {
         }
         for (let i = 0; i < limit; i++) {
             if (response[i].price_overview) {
-                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`})`});
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`}). [View on Steam](https://store.steampowered.com/app/${response[i].steam_appid})`});
             }
             else if (response[i].is_free) {
-                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Free**"});
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **Free**. [View on Steam](https://store.steampowered.com/app/${response[i].steam_appid})`});
             }
             else {
-                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Unknown** / not available"});
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **Unknown** / not available. [View on Steam](https://store.steampowered.com/app/${response[i].steam_appid})`});
             }
         }
         message.channel.send({ embeds: [embed] });
@@ -245,7 +246,7 @@ function privacyembed() {
         .addFields(
             {
                 name: "Data we store",
-                value: "When you register, we store part of your Steam profile link and your Discord ID in our database. This allows us to update which games we should notify you about when your wishlist changes. \r We also store Steam's Game ID for all of the games in your wishlist, along with your Discord ID. This allows us to notify you when we detect a sale."
+                value: "When you register, we fetch your Steam ID from a third party (playerdb.co) and store it along with your Discord ID in our database. This allows us to update which games we should notify you about when your wishlist changes. \r We also store Steam's Game ID for all of the games in your wishlist. This allows us to notify you when we detect a sale."
             },
             {
                 name: "How we access data from Steam",
