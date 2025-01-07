@@ -19,7 +19,7 @@ client.login(token).catch(log);
 
 client.on("ready", async () => {
   ready = true;
-  client.user.setActivity(`no features work anymore | ${prefix}help`, { type: ActivityType.Playing });
+  client.user.setActivity(`with the few features I have left! | ${prefix}help`, { type: ActivityType.Playing });
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);

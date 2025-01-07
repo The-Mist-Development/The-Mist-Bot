@@ -126,6 +126,9 @@ module.exports = {
       case "statusupdate":
         sendStatusUpdate(message, args.shift(), args.join(" "))
         break;
+      case "activity":
+        setActivity(message, args.join(" "));
+        break;
       case "wishlist":
         wishlistCommand(message, args);
         break;
@@ -321,6 +324,10 @@ function adminHelpMsg(message) {
         value: "Sends a status update message out to all subscribed channels. You will be prompted to provide fields for the embed."
       },
       {
+        name: "`" + prefix + "activity <Status>`",
+        value: `Sets the bot's Playing status (with the hardcoded suffix \` | ${prefix}help\`).`
+      },
+      {
         name: "`" + prefix + "updatecache`",
         value: "Manually updates the list of counting channels from the database."
       },
@@ -383,8 +390,8 @@ function sendMessage(message, args) {
 }
 
 async function sendUpdate(fmessage, title) {
-  if (title == "") return fmessage.channel.send("You need to provide a title!");
   if (fmessage.author.id == process.env.OWNER_ID || staffArray.includes(fmessage.author.id)) {
+    if (title == "") return fmessage.channel.send("You need to provide a title!");
     fmessage.channel.send("What should the fields be for update **" + title + "**? (Type `cancel` to cancel)\rFormat:\r```Field name=Field value|Field name=Field value|...```");
     let filter = m => m.author.id == fmessage.author.id
     fmessage.channel.awaitMessages({
@@ -451,8 +458,8 @@ async function sendUpdate(fmessage, title) {
 }
 
 async function sendStatusUpdate(fmessage, color, title) {
-  if (title == "") return fmessage.channel.send("You need to provide a title!");
   if (fmessage.author.id == process.env.OWNER_ID || staffArray.includes(fmessage.author.id)) {
+    if (title == "") return fmessage.channel.send("You need to provide a title!");
     fmessage.channel.send("What should the fields be for status update **" + title + "**? (Type `cancel` to cancel)\rFormat:\r```Field name=Field value|Field name=Field value|...```");
     let filter = m => m.author.id == fmessage.author.id
     fmessage.channel.awaitMessages({
@@ -523,6 +530,13 @@ async function sendStatusUpdate(fmessage, color, title) {
 
   }
   else fmessage.channel.send(`\`statusupdate\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
+}
+
+function setActivity(message, newActivity) {
+  if (fmessage.author.id == process.env.OWNER_ID || staffArray.includes(fmessage.author.id)) {
+    client.user.setActivity(`${newActivity} | ${prefix}help`, { type: ActivityType.Playing });
+  }
+  else fmessage.channel.send(`\`activity\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
 }
 
 
