@@ -1,4 +1,4 @@
-const { EmbedBuilder, PermissionsBitField } = require("discord.js");
+const { EmbedBuilder, PermissionsBitField, ActivityType } = require("discord.js");
 const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache, getCountingStats } = require("./database.js")
 const { restart, cancelRestart, npmInstall } = require("./restart.js");
