@@ -260,7 +260,7 @@ let gamePriceSync = new CronJob(
                 }
             }
             if (userGamesOnSale.length < 1) {
-                log(`[WISHLIST][DEBUG] User ${users[i]} has no games on sale.`)
+                //log(`[WISHLIST][DEBUG] User ${users[i]} has no games on sale.`)
             }
             else if (userGamesOnSale.length == 1) {
                 log(`[WISHLIST][DEBUG] User ${users[i]} has one game on sale.`)
