@@ -278,7 +278,8 @@ let gamePriceSync = new CronJob(
                         },
                     );
                     client.users.fetch(users[i]).then(user => {
-                        user.send({ content: `**${response2.name}** is on sale on Steam!`, embeds: [embed] });
+                        user.send({ content: `**${response2.name}** is on sale on Steam!`, embeds: [embed] })
+                            .catch(err => {log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)});
                     });
             }
             else {
@@ -296,7 +297,8 @@ let gamePriceSync = new CronJob(
                     embed.addFields({name: `\`${userGamesOnSale[i].steam_appid}\` ${userGamesOnSale[i].name}`, value: `Price: **${userGamesOnSale[i].price_overview.final_formatted}** (**${userGamesOnSale[i].price_overview.discount_percent}%** Discount). [View on Steam](https://store.steampowered.com/app/${userGamesOnSale[i].steam_appid})`});
                 }
                 client.users.fetch(users[i]).then(user => {
-                    user.send({ content: `Multiple games are on sale on Steam!`, embeds: [embed] });
+                    user.send({ content: `Multiple games are on sale on Steam!`, embeds: [embed] })
+                        .catch(err => {log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)});
                 });
             }
         }

@@ -109,7 +109,14 @@ async function startRegister(message) {
                 value: "Then, paste the link here."
             }
         )
-    let dm = await message.author.send({ content: "Follow the instructions below to register your Wishlist and enable notifications.", embeds: [embed] });
+    let dm;
+    try {
+        dm = await message.author.send({ content: "Follow the instructions below to register your Wishlist and enable notifications.", embeds: [embed] });
+    } 
+    catch (err) {
+        return message.channel.send("Please unblock me or enable DMs for this server for this feature to work!");
+    }
+    
     let filter = m => m.author.id == message.author.id
     dm.channel.awaitMessages({
         filter,

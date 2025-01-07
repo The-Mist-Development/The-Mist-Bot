@@ -24,7 +24,12 @@ discord.on("ready", () => {
                     await resyncSingle(response.rows[i]["discordid"], steamId);
                     console.log("Resynced their wishlist");
                     discord.users.fetch(response.rows[i]["discordid"]).then(user => {
-                        user.send("We've **fixed our Wishlist notifications** and migrated your account to our new system! No action should be required from you. We expect the new system to have some bugs - if you encounter any issues, please contact `@r2d2vader`.");
+                        try {
+                            user.send("We've **fixed our Wishlist notifications** and migrated your account to our new system! No action should be required from you. We expect the new system to have some bugs - if you encounter any issues, please contact `@r2d2vader`.");
+                        }
+                        catch (err) {
+                            console.log("Failed to DM this user. Oh well.")
+                        }
                         console.log("Sent them the message.")
                     }).catch(err, console.error)
                 }
