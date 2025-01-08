@@ -174,11 +174,11 @@ module.exports.resyncSingle = resyncSingle;
 let wishlistSync = new CronJob(
     '0 0 12 * * *',
     function () {
-        log("[WISHLIST] Starting daily wishlist sync.");
+        //log("[WISHLIST] Starting daily wishlist sync.");
         db.getAllUsers().then(function (response) {
             for (let i = 0; i < response.rowCount; i++) {
                 resyncSingle(response.rows[i]["discordid"], null, response.rows[i]["steamid"])
-                    .then(() => {log("[WISHLIST][DEBUG] Finished syncing wishlist for Discord user " + response.rows[i]["discordid"])})
+                    //.then(() => {log("[WISHLIST][DEBUG] Finished syncing wishlist for Discord user " + response.rows[i]["discordid"])})
                     .catch((err) => {
                         log("[WISHLIST] Error syncing a single wishlist in daily Cron job:: " + err)
                     });
