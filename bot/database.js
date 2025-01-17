@@ -25,7 +25,7 @@ module.exports = {
                 dbClient.query("CREATE TABLE IF NOT EXISTS subscribed (channelid VARCHAR(255) PRIMARY KEY);", function (error, results) {
                     if (error) console.log("[DB] Error creating subscribed table: " + error);
                 });
-                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamsnippet VARCHAR(255), gamelist TEXT);", function (error, results) {
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamid VARCHAR(255), gamelist TEXT);", function (error, results) {
                     if (error) console.log("[WISHLIST] Error creating wishlist_users table: " + error);
                 });
                 dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameid VARCHAR(255) PRIMARY KEY, lastprice VARCHAR(255));", function (error, results) {
@@ -50,13 +50,13 @@ module.exports = {
     getMaxCount: async function(message, lookupChannel) {
         if (lookupChannel) {
                 const res = await dbClient.query(`SELECT * FROM counting WHERE channelid=${lookupChannel.id};`);
-                if (res.rows.length == 0) return message.channel.send("Counting has not been enabled in this channel.");
-                message.channel.send(`The highest ever count in **${lookupChannel.guild.name}** <#${lookupChannel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
+                if (res.rows.length == 0) return message.channel.send("Counting has not been enabled in that channel.");
+                message.channel.send(`The highest ever count in <#${lookupChannel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
         }
         else {
             const res = await dbClient.query(`SELECT * FROM counting WHERE channelid=${message.channel.id};`);
             if (res.rows.length == 0) return message.channel.send("Run this command in a **counting channel** to see the highest ever count in that channel!")
-            message.channel.send(`The highest ever count in **${message.guild.name}** <#${message.channel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
+            message.channel.send(`The highest ever count in <#${message.channel.id}> was \`${res.rows[0]["maxcount"]}\`.`);
         }
     },
     getCurrentCount: async function(message, api) {
@@ -68,7 +68,7 @@ module.exports = {
     },
     count: async function (message) {
         if (connected == false) {
-            message.channel.send("We're having issues **connecting to our database**. Please try again later. If this issue persists, contact R2D2Vader#0693");
+            message.channel.send("We're having issues **connecting to our database**. Please try again later. If this issue persists, contact `@r2d2vader`");
             message.react("❎").catch((err) => {return;});
             return;
         }
@@ -82,7 +82,7 @@ module.exports = {
             }
             else {
                 await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
-                message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! You cannot count **twice in a row**. `The count reset.`");
+                message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! You cannot count **twice in a row**. The count reset.");
                 recordMessup(res["count"]);
                 updateUserMessup(message.member.id, message.guild.id, res["count"]);
                 message.channel.send("Next number is `1`.");
@@ -92,7 +92,7 @@ module.exports = {
         }
         else {
             await dbClient.query(`UPDATE counting SET count=0, lastusertocount=-1 WHERE channelid=${message.channel.id}`)
-            message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! `The count reset.`");
+            message.channel.send("**<@" + message.member.id + ">** ruined the count at `" + res["count"] + "`! The count reset.");
             recordMessup(res["count"]);
             updateUserMessup(message.member.id, message.guild.id, res["count"]);
             message.channel.send("Next number is `1`.");
@@ -178,11 +178,11 @@ module.exports = {
         }
         else {
             let row = res.rows[0]
-            let counts = row["counts"]
-            let messups = row["messups"]
-            let maxcount = row["maxcount"]
-            let maxmessup = row["maxmessup"]
-
+            let counts = parseInt(row["counts"])
+            let messups = parseInt(row["messups"])
+            let maxcount = parseInt(row["maxcount"])
+            let maxmessup = parseInt(row["maxmessup"])
+            
             //let elo = Math.floor((counts / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
             //let elo = Math.floor((Math.log10(counts + 1) / (messups > 0 ? messups : 1)) * (maxcount / (maxmessup > 0 ? maxmessup : 1)))
             let elo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 15)) * (maxcount / Math.log10((maxmessup > 0 ? maxmessup : 1) + 20)))
@@ -203,9 +203,9 @@ module.exports = {
         }
     },
     // wishlist mysql database file
-    w_addUser(discordId, steamSnippet) {
+    w_addUser(discordId, steamId) {
         return new Promise((resolve, reject) => {
-            dbClient.query("INSERT INTO wishlist_users (discordid, steamsnippet) VALUES ($1, $2)", [discordId, steamSnippet], function (error, results) {
+            dbClient.query("INSERT INTO wishlist_users (discordid, steamid) VALUES ($1, $2)", [discordId, steamId], function (error, results) {
                 if (error) reject(error);
                 resolve(results);
             });
@@ -304,13 +304,14 @@ async function updateCountingCache() {
     let arr = []
     for (let i = 0; i < res.rows.length; i++) {
         let row = res.rows[i]
-        let counts = row["counts"]
-        let messups = row["messups"]
-        let maxcount = row["maxcount"]
-        let maxmessup = row["maxmessup"]
+        let counts = parseInt(row["counts"])
+        let messups = parseInt(row["messups"])
+        let maxcount = parseInt(row["maxcount"])
+        let maxmessup = parseInt(row["maxmessup"])
 
         let elo = Math.floor((Math.log10(counts + 1) / Math.log10((messups > 0 ? messups : 1) + 15)) * (maxcount / Math.log10((maxmessup > 0 ? maxmessup : 1) + 20)))
-        arr.push({counts: counts, messups: messups, maxcount: maxcount, maxmessup: maxmessup, elo: elo})
+        let newelo = Math.floor((counts ** (1/2) / Math.log10(messups + 10)) * (maxcount ** (2/3) / Math.log10((maxmessup + 10))))
+        arr.push({counts: counts, messups: messups, maxcount: maxcount, maxmessup: maxmessup, elo: elo, newelo: newelo})
     }
     fs.writeFileSync("countingcache.json", JSON.stringify(arr));
 }

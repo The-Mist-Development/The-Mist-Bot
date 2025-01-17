@@ -19,7 +19,7 @@ client.login(token).catch(log);
 
 client.on("ready", async () => {
   ready = true;
-  client.user.setActivity(`music again! | ${prefix}help`, { type: ActivityType.Playing });
+  client.user.setActivity(`with the few features I have left! | ${prefix}help`, { type: ActivityType.Playing });
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);
@@ -45,7 +45,8 @@ client.on("messageCreate", async function (message) {
 
   if (channels.includes(message.channel.id)) {
     if (message.member.displayName.includes("@everyone") || message.member.displayName.includes("@here")) return message.react("💢");
-    if (+message.content === +message.content && !message.content.includes(".") && !(message.content == "")) {
+    // new number checker by github.com/kateonbxsh
+    if (message.content.split("").every(char => char !== " " && char >= '0' && char <= '9') && !(message.content == "")) {
       count(message)
     }
     else {
@@ -84,7 +85,7 @@ client.on('messageUpdate', async (oldmessage, newmessage) => {
 
   if (+oldmessage.content === +oldmessage.content) {
     let truecount = await getCurrentCount(oldmessage, true);
-    oldmessage.channel.send("⚠ **" + oldmessage.author.username + "**, we all saw you edit that message! The count is now **" + truecount + "**.")
+    oldmessage.channel.send("⚠️ **" + oldmessage.author.username + "**, we all saw you edit that message! The count is now `" + truecount + "`.")
   }
 });
 
@@ -94,7 +95,7 @@ client.on('messageDelete', async (message) => {
 
   if (+message.content === +message.content) {
     let truecount = await getCurrentCount(message, true);
-    message.channel.send("⚠ A message by **" + message.author.username + "** was deleted! The count is now **" + truecount + "**.")
+    message.channel.send("⚠️ A message by **" + message.author.username + "** was deleted! The count is now `" + truecount + "`.")
   }
 });
 

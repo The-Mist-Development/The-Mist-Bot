@@ -32,7 +32,6 @@ module.exports = {
         return "";
     },
     npmInstall: function() {
-        console.log("haha")
         cp.exec('npm install', function(err, stdout, stderr) {
             if (err) {
                 log("[APP] Error executing `npm install`: ", err)

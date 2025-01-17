@@ -33,19 +33,35 @@ module.exports = {
                 if (response.rows.length > 0) return reject("USER_ALREADY_EXISTS");
                 if (!steamUrl.includes("steamcommunity.com")) return reject("INVALID_URL");
                 let steamSnippet = steamUrl.split("steamcommunity.com")[1];
-                if (steamSnippet.startsWith("/id/") || steamSnippet.startsWith("/profiles/")) {
-                    let array = steamSnippet.split("");
-                    if (array[array.length - 1] != "/") steamSnippet = steamSnippet + "/";
-                    steam.getUserWishlist(steamSnippet).then(function (response) {
-                        db.addUser(discordId, steamSnippet).then(function (response2) {
-                            resyncSingle(discordId, response);
-                            resolve(response);
+                if (steamSnippet.startsWith("/profiles/")) {
+                    let steamId = steamSnippet.split("/profiles/")[1].split("/")[0];
+                    steam.getUserWishlist(steamId).then(function (games) {
+                        db.addUser(discordId, steamId).then(function (response2) {
+                            resyncSingle(discordId, games);
+                            resolve();
                         }).catch(function (error2) {
                             return reject(error2);
                         })
                     }).catch(function (error) {
                         return reject(error);
                     })
+                }
+                else if (steamSnippet.startsWith("/id/")) {
+                    let customId = steamSnippet.split("/id/")[1].split("/")[0];
+                    steam.getId64(customId).then(function (steamId) {
+                        steam.getUserWishlist(steamId).then(function (games) {
+                            db.addUser(discordId, steamId).then(function (response2) {
+                                resyncSingle(discordId, games);
+                                resolve();
+                            }).catch(function (error2) {
+                                return reject(error2);
+                            })
+                        }).catch(function (error) {
+                            return reject(error);
+                        })
+                    }).catch(function (error) {
+                        return reject(error);
+                    });
                 }
                 else return reject("INVALID_URL");
             }).catch(function (error) {
@@ -93,21 +109,28 @@ module.exports = {
 
 module.exports.log = log
 
-function resyncSingle(discordId, steamWishlist = null, steamSnippet = null) {
+function resyncSingle(discordId, steamWishlist = null, steamId = null) {
     if (steamWishlist == null) {
         return new Promise(function (resolve, reject) {
-            if (steamSnippet == null) {
+            if (steamId == null) {
                 db.getUser(discordId).then(function (response) {
                     if (response.rowCount == 0) return reject("USER_NOT_FOUND");
-                    steam.getUserWishlist(response.rows[0]["steamsnippet"]).then(function (response) {
-                        let keys = Object.keys(response);
-                        db.writeWishlist(discordId, keys).then(function (response) {
+                    steam.getUserWishlist(response.rows[0]["steamid"]).then(function (response) {
+                        let games = response.map(i => i.appid);
+                        db.writeWishlist(discordId, games).then(function (response) {
                             return resolve("success");
                         }).catch(function (error) {
                             reject(error);
                         })
                     }).catch(function (error) {
-                        return reject(error);
+                        if (error == "WISHLIST_LENGTH_0") {
+                            db.writeWishlist(discordId, []).then(function (response) {
+                                return resolve("success");
+                            }).catch(function (error) {
+                                reject(error);
+                            })
+                        }
+                        else return reject(error);
                     })
 
                 }).catch(function (error) {
@@ -115,22 +138,29 @@ function resyncSingle(discordId, steamWishlist = null, steamSnippet = null) {
                 });
             }
             else {
-                steam.getUserWishlist(steamSnippet).then(function (response) {
-                    let keys = Object.keys(response);
-                    db.writeWishlist(discordId, keys).then(function (response) {
+                steam.getUserWishlist(steamId).then(function (response) {
+                    let games = response.map(i => i.appid);
+                    db.writeWishlist(discordId, games).then(function (response) {
                         return resolve("success");
                     }).catch(function (error) {
                         reject(error);
                     })
                 }).catch(function (error) {
+                    if (error == "WISHLIST_LENGTH_0") {
+                        db.writeWishlist(discordId, []).then(function (response) {
+                            return resolve("success");
+                        }).catch(function (error) {
+                            reject(error);
+                        })
+                    }
                     return reject(error);
                 })
             }
         })
     }
     else {
-        let keys = Object.keys(steamWishlist);
-        db.writeWishlist(discordId, keys).then(function (response) {
+        let games = response.map(i => i.appid);
+        db.writeWishlist(discordId, games).then(function (response) {
             return;
         }).catch(function (error) {
             log("[WISHLIST] Error setting wishlist with provided data: " + error);
@@ -147,7 +177,8 @@ let wishlistSync = new CronJob(
         //log("[WISHLIST] Starting daily wishlist sync.");
         db.getAllUsers().then(function (response) {
             for (let i = 0; i < response.rowCount; i++) {
-                resyncSingle(response.rows[i]["discordid"], null, response.rows[i]["steamsnippet"])
+                resyncSingle(response.rows[i]["discordid"], null, response.rows[i]["steamid"])
+                    //.then(() => {log("[WISHLIST][DEBUG] Finished syncing wishlist for Discord user " + response.rows[i]["discordid"])})
                     .catch((err) => {
                         log("[WISHLIST] Error syncing a single wishlist in daily Cron job:: " + err)
                     });
@@ -165,89 +196,112 @@ let wishlistSync = new CronJob(
 
 let gamePriceSync = new CronJob(
     '0 30 * * * *',
-    function () {
+    async function () {
         //log("[WISHLIST] Starting hourly game price sync.");
-        db.getAllUsers().then(function (response) {
-            let gamesObj = {};
-            for (let i = 0; i < response.rowCount; i++) {
-                let games = response.rows[i]["gamelist"].split("|");
-                for (let j = 0; j < games.length; j++) {
-                    if (gamesObj[games[j]] == undefined) {
-                        gamesObj[games[j]] = [response.rows[i]["discordid"]];
+        let response = await db.getAllUsers()
+        let gamesList = []
+        let gamesObj = {};
+        let usersObj = {};
+
+        for (let i = 0; i < response.rowCount; i++) {
+            let games = response.rows[i]["gamelist"].split("|");
+            usersObj[response.rows[i]["discordid"]] = games;
+            for (let j = 0; j < games.length; j++) {
+                gamesList.push(games[j]);
+            }
+        }
+
+        let allresponse = await steam.getGamePrices(gamesList)
+        let responses = Object.keys(allresponse);
+        for (let i = 0; i < responses.length; i++) {
+            let response = allresponse[responses[i]];
+            let gameid = responses[i]
+            if (response.is_free) {
+                // Should never happen under new API
+                //log(`[WISHLIST][DEBUG] Game ${gameid} is free, skipping.`);
+            }
+            else if (response.price_overview) {
+                oldPrice = db.updateGame(gameid, response.price_overview.final)
+                //log(`[WISHLIST][DEBUG] Game ${gameid}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
+                if (oldPrice == -1) {
+                    //log(`[WISHLIST][DEBUG] Game ${gameid} not previously in database.`);
+                }
+                else if (oldPrice == response.price_overview.final) {
+                    //log(`[WISHLIST][DEBUG] Game ${gameid} has not changed in price.`);
+                }
+                else if (response.price_overview.final < oldPrice) {
+                    if (response.price_overview.discount_percent > 0) {
+                        log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                        // Make further API request to get the game's info.
+                        gamesObj[gameid] = await steam.getGameInfo(gameid);
                     }
                     else {
-                        gamesObj[games[j]].push(response.rows[i]["discordid"]);
+                        //log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                     }
+                }
+                else if (response.price_overview.final > oldPrice) {
+                    //log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                 }
             }
-            steam.getGamePrices(Object.keys(gamesObj)).then(function (allresponse) {
-                let responses = Object.keys(allresponse);
-                for (let i = 0; i < responses.length; i++) {
-                    let response = allresponse[responses[i]];
-                    let gameid = responses[i]
-                    if (response.is_free) {
-                        // Should never happen under new API
-                        //log(`[WISHLIST][DEBUG] Game ${gameid} is free, skipping.`);
-                    }
-                    else if (response.price_overview) {
-                        db.updateGame(gameid, response.price_overview.final).then(function (oldPrice) {
-                            //log(`[WISHLIST][DEBUG] Game ${gameid}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
-                            if (oldPrice == -1) {
-                                //log(`[WISHLIST][DEBUG] Game ${gameid} not previously in database.`);
-                            }
-                            else if (oldPrice == response.price_overview.final) {
-                                //log(`[WISHLIST][DEBUG] Game ${gameid} has not changed in price.`);
-                            }
-                            else if (response.price_overview.final < oldPrice) {
-                                if (response.price_overview.discount_percent > 0) {
-                                    log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
-                                    // Make further API request to get the game's info.
-                                    steam.getGameInfo(gameid).then(function (response2) {
-                                        let embed = new EmbedBuilder()
-                                            .setTitle(response2.name)
-                                            .setDescription(response2.short_description)
-                                            .setImage(response2.header_image)
-                                            .setColor("#a83e32")
-                                            .addFields(
-                                                {
-                                                    name: `Price: ${response2.price_overview.final_formatted}`,
-                                                    value: response2.price_overview.discount_percent > 0 ? `Discount: **${response2.price_overview.discount_percent}%**` : "Currently no discount."
-                                                },
-
-                                            )
-                                        for (let g = 0; g < gamesObj[gameid].length; g++) {
-                                            client.users.fetch(gamesObj[gameid][g]).then(user => {
-                                                user.send({ content: `**${response2.name}** is on sale on Steam!`, embeds: [embed] });
-                                            });
-                                        }
-
-                                    }).catch(function (error) {
-                                        log("[WISHLIST] Error in second API call to announce sale: " + error + `\r Game ID: ${gameid}`);
-                                    })
-                                }
-                                else {
-                                    log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
-                                }
-                            }
-                            else if (response.price_overview.final > oldPrice) {
-                                log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
-                            }
-                        }).catch(function (error) {
-                            log("[WISHLIST] Error updating game price in hourly Cron job: " + error + `\r Game ID: ${gameid}`);
-                        });
-                    }
-                    else {
-                        //log(`[WISHLIST][DEBUG] Game ${response.name} has no price overview, skipping.`);
-                    }
+            else {
+                //log(`[WISHLIST][DEBUG] Game ${response.name} has no price overview, skipping.`);
+            }
+        }
+        
+        // Notify users which of their games are on sale.
+        let gamesOnSale = Object.keys(gamesObj);
+        let users = Object.keys(usersObj);
+        for (let i = 0; i < users.length; i++) {
+            let userGames = usersObj[users[i]];
+            let userGamesOnSale = [];
+            for (let j = 0; j < userGames.length; j++) {
+                if (gamesOnSale.includes(userGames[j])) {
+                    userGamesOnSale.push(userGames[j]);
                 }
-            }).catch(function (error) {
-                log("[WISHLIST] Error updating game prices in hourly Cron job: " + error);
-            })
-
-            //log("[WISHLIST] Sent the command to update the prices of " + games.length.toString() + " games.")
-        }).catch(function (error) {
-            log("[WISHLIST] Error automatically syncing game prices in hourly Cron job: " + error);
-        })
+            }
+            if (userGamesOnSale.length < 1) {
+                //log(`[WISHLIST][DEBUG] User ${users[i]} has no games on sale.`)
+            }
+            else if (userGamesOnSale.length == 1) {
+                log(`[WISHLIST][DEBUG] User ${users[i]} has one game on sale.`)
+                let response2 = gamesObj[userGamesOnSale[0]]
+                let embed = new EmbedBuilder()
+                    .setTitle(response2.name)
+                    .setDescription(response2.short_description)
+                    .setImage(response2.header_image)
+                    .setColor("#a83e32")
+                    .setURL(`https://store.steampowered.com/app/${response2.steam_appid}`)
+                    .addFields(
+                        {
+                            name: `Price: ${response2.price_overview.final_formatted}`,
+                            value: response2.price_overview.discount_percent > 0 ? `Discount: **${response2.price_overview.discount_percent}%**` : "Currently no discount."
+                        },
+                    );
+                    client.users.fetch(users[i]).then(user => {
+                        user.send({ content: `**${response2.name}** is on sale on Steam!`, embeds: [embed] })
+                            .catch(err => {log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)});
+                    });
+            }
+            else {
+                log(`[WISHLIST][DEBUG] User ${users[i]} has multiple games on sale.`)
+                let embed = new EmbedBuilder()
+                    .setTitle("Sale Summary")
+                    .setDescription("[Check Steam](https://store.steampowered.com/wishlist/) for the full details!")
+                    .setColor("#a83e32");
+                let limit = userGamesOnSale.length
+                if (limit > 24) {
+                    embed.addFields({name: "Too many of your games are on sale!", value: "The first 24 will be displayed below."})
+                    limit = 24;
+                }
+                for (let i = 0; i < limit; i++) {
+                    embed.addFields({name: `\`${userGamesOnSale[i].steam_appid}\` ${userGamesOnSale[i].name}`, value: `Price: **${userGamesOnSale[i].price_overview.final_formatted}** (**${userGamesOnSale[i].price_overview.discount_percent}%** Discount). [View on Steam](https://store.steampowered.com/app/${userGamesOnSale[i].steam_appid})`});
+                }
+                client.users.fetch(users[i]).then(user => {
+                    user.send({ content: `Multiple games are on sale on Steam!`, embeds: [embed] })
+                        .catch(err => {log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)});
+                });
+            }
+        }
     },
     null,
     //SET TO TRUE BELOW TO RUN

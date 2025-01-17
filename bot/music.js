@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { Player } = require("discord-music-player");
+const { Player } = require("@arthestn/discord-music-player");
 const { restart } = require("./restart.js");
 const { createHash } = require('crypto');
 const fetch = require('isomorphic-unfetch')
@@ -30,7 +30,7 @@ function runtimeErrorHandle(error, message) {
         if (error.message.includes("permission") || error.message.includes("Permission")) return message.channel.send("🚫 I don't have the permissions I need - Discord told me this: `" + error.message + "`");
         if (error.message.includes("Status code:")) return message.channel.send("YouTube returned an error code. Try again in about 5 minutes.");
 
-        message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
+        message.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact `@r2d2vader`. Error ID: `" + errorid + "`");
 
     }
     else if (error.message.includes("Status code:")) {
@@ -75,7 +75,7 @@ module.exports = {
                 queue.data.channel.send(`Added ${playlist.songs.length} videos from playlist **${playlist.name.replaceAll(/@/g, '@ ')}** to the queue.`))
             // Emitted when the queue was destroyed (by stopping).    
             .on('queueDestroyed', (queue) => {
-                //queue.data.channel.send(`⏹ **Stopped** - Is that all for now?`);
+                //queue.data.channel.send(`⏹️ **Stopped** - Is that all for now?`);
                 let index = playingServers.indexOf(playingServers.find(o => o.guildId == queue.data.channel.guildId));
                 if (index > -1) {
                     playingServers.splice(index, 1);
@@ -109,8 +109,12 @@ module.exports = {
                 }
             })
             // Emitted when a first song in the queue started playing.
-            .on('songFirst', (queue, song) =>
-                queue.data.channel.send(`🎵 Playing Now: **${song.name.replaceAll(/@/g, '@ ')}** 🎶`)) // replace any @'s to include space to counter pings
+            .on('songFirst', (queue, song) => {
+                if (!queue.data.doneFirst) {
+                    queue.data.channel.send(`🎵 Playing Now: **${song.name.replaceAll(/@/g, '@ ')}** 🎶`) // replace any @'s to include space to counter pings
+                    queue.setData({ channel: queue.data.channel, voicechannel: queue.data.voicechannel, doneFirst: true })
+                }
+            })
             // Emitted when someone disconnected the bot from the channel.
             .on('clientDisconnect', (queue) => {
                 queue.data.channel.send("👋 **Bye then!** I see how it is 😔")
@@ -153,7 +157,7 @@ module.exports = {
                         queue.data.channel.send("😓 You've just encountered our only major bug! **Try playing something again**. Sorry for the inconvenience!")
                     }
                     else {
-                        queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact R2D2Vader#0693. Error ID: `" + errorid + "`");
+                        queue.data.channel.send("😓 **Something went wrong!** Please try again in a few minutes. If the issue persists, contact `@r2d2vader`. Error ID: `" + errorid + "`");
                     }
                     // don't think this is needed here
                     //if (error.message?.includes("permission") || error.includes("Permission")) {
@@ -181,16 +185,16 @@ module.exports = {
                     case "pause":
                         if (needRestart == 1) {
                             guildQueue.leave();
-                            message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. Your song has been stopped and no more songs may be played at this time.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+                            message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. Your song has been stopped and no more songs may be played at this time.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`.");
                         }
                         else {
                             guildQueue.setPaused(true);
-                            message.channel.send("⏸ **Paused!**");
+                            message.channel.send("⏸️ **Paused!**");
                         }
                         break;
                     case "resume":
                         guildQueue.setPaused(false);
-                        message.channel.send("▶ **Resumed!**");
+                        message.channel.send("▶️ **Resumed!**");
                         break;
                     case "skip":
                     case "s":
@@ -199,12 +203,12 @@ module.exports = {
                             message.channel.send("Single song **loop disabled**.")
                         }
                         guildQueue.skip();
-                        message.channel.send("⏭ **Skipped!**");
+                        message.channel.send("⏭️ **Skipped!**");
                         break;
                     case "stop":
                     case "leave":
                         guildQueue.leave();
-                        message.channel.send(`⏹ **Stopping** - Is that all for now?`);
+                        message.channel.send(`⏹️ **Stopping** - Is that all for now?`);
                         break;
                     case "queue":
                     case "q":
@@ -228,7 +232,7 @@ module.exports = {
                         break;
                     case "loop":
                     case "l":
-                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The song cannot be looped right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`.");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(1);
                             message.channel.send("🔂 **Looping the current song**");
@@ -240,7 +244,7 @@ module.exports = {
                         break;
                     case "loopqueue":
                     case "loopq":
-                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The queue cannot be looped right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+                        if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. The queue cannot be looped right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`.");
                         if (guildQueue.repeatMode == 0) {
                             guildQueue.setRepeatMode(2);
                             message.channel.send("🔁 **Looping the entire queue**");
@@ -332,7 +336,7 @@ module.exports = {
 
 async function playSong(message, args) {
     if (args.length == 0) return message.channel.send("🤔 *Play what?* \rI take song names, and YouTube URLs for videos and playlists.");
-    if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact R2D2Vader#0693");
+    if (needRestart == 1) return message.channel.send("Sorry, the bot is **getting ready to restart** for maintenance. No music can be played right now.\nIf this lasts longer than 10 minutes, contact `@r2d2vader`.");
 
     let guildQueue = client.player.getQueue(message.guild.id);
 
@@ -363,7 +367,7 @@ async function playSong(message, args) {
                 loading.delete()
                     .then(function () {
                         let errorid = createHash('sha1').update([message.guild.id, message.member.id, Date.now()].join("")).digest('base64')
-                        message.channel.send("😓 **Something went wrong!** Please contact **R2D2Vader#0693**. Correlation ID: `" + errorid + "`");
+                        message.channel.send("😓 **Something went wrong!** Please contact `@r2d2vader`. Correlation ID: `" + errorid + "`");
                         log(`[PLAYER] Failed while playing a song from cold start. Correlation ID: ${errorid}`);
                     });
             }, 10000);
@@ -386,6 +390,7 @@ async function playSong(message, args) {
             if (args[0].startsWith("www.") || args[0].startsWith("youtube.com/") || args[0].startsWith("youtu.be/")) {
                 args[0] = "https://" + args[0];
             }
+            args[0] = args[0].replace("youtu.be/", "youtube.com/watch?v=")
         }
         else if (args[0].includes("open.spotify.com/")) {
             if (args[0].startsWith("www.") || args[0].startsWith("open.spotify.com")) {
@@ -450,7 +455,7 @@ async function playSong(message, args) {
                 deleted = true;
             }
             if (loTimeout) clearTimeout(loTimeout);
-            return message.channel.send("We currently don't support Apple Music links. If this wasn't one, please contact `R2D2Vader#0693`. 🍎🤨");
+            return message.channel.send("We currently don't support Apple Music links. If this wasn't one, please contact `@r2d2vader`. 🍎🤨");
         }
 
         if (message.content.toLowerCase().includes("list=")) {
@@ -474,7 +479,10 @@ async function playSong(message, args) {
                 let time = (((songs.length + 2) / 2) * 5 * 1000);
                 let date = new Date(time);
 
-                message.channel.send(`It will take around \`${date.getMinutes()}:${date.getSeconds()}\` to add them all. Please be patient!`)
+                seconds = date.getSeconds().toString()
+                seconds = seconds.length == 1 ? "0" + seconds : seconds
+
+                message.channel.send(`It will take around \`${date.getMinutes()}:${seconds}\` to add them all. Please be patient!`)
             }
 
             for (let i = 0; i < songs.length; i++) {

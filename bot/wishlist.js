@@ -49,6 +49,7 @@ function sendGameInfo(message, id) {
             .setDescription(response.short_description)
             .setImage(response.header_image)
             .setColor("#de66d0")
+            .setURL(`https://store.steampowered.com/app/${id}`)
         if (response.price_overview) {
             embed.addFields(
                 {
@@ -108,7 +109,14 @@ async function startRegister(message) {
                 value: "Then, paste the link here."
             }
         )
-    let dm = await message.author.send({ content: "Follow the instructions below to register your Wishlist and enable notifications.", embeds: [embed] });
+    let dm;
+    try {
+        dm = await message.author.send({ content: "Follow the instructions below to register your Wishlist and enable notifications.", embeds: [embed] });
+    } 
+    catch (err) {
+        return message.channel.send("Please unblock me or enable DMs for this server for this feature to work!");
+    }
+    
     let filter = m => m.author.id == message.author.id
     dm.channel.awaitMessages({
         filter,
@@ -117,28 +125,21 @@ async function startRegister(message) {
         errors: ['time']
     }).then(collected => {
         let url = collected.first().content;
-        wishlist.addUser(message.author.id, url).then(function (wishlist) {
+        wishlist.addUser(message.author.id, url).then(function () {
             let embed2 = new EmbedBuilder()
                 .setTitle("Success")
                 .setDescription("Your Wishlist has successfully been added to our database to alert you when one of your games goes on sale. We will automatically keep your wishlist updated, but you can manually update our copy of it by running `" + process.env.PREFIX + "wishlist resync`. To disable notifications, run `" + process.env.PREFIX + "wishlist delete`.")
                 .setColor("#382bc4")
-            embed2.addFields({name: "Games currently on your wishlist", value: "---"});
-            let keys = Object.keys(wishlist);
-            let length = keys.length <= 8 ? keys.length : 8;
-            for (let i = 0; i < length; i++) {
-                let cprice = wishlist[keys[i]].subs[0] ? wishlist[keys[i]].subs[0].discount_block.split("<div class=\"discount_final_price\">")[1].split("</div>")[0] : "Not available";
-                embed2.addFields({name: `\`${keys[i]}\` ${wishlist[keys[i]].name}`, value: `Estimated price: **${cprice}**`});
-            }
-            if (keys.length - length > 0) {
-                embed2.addFields({name: `Plus ${keys.length - length} more game${keys.length - length > 1 ? "s" : ""}.`, value: "---"});
-            }
             dm.channel.send({ embeds: [embed2] });
         }).catch(error => {
             if (error == "INVALID_URL") {
-                dm.channel.send("Invalid Steam Profile URL! Registration cancelled.");
+                dm.channel.send("Invalid Steam Profile URL! Please find the correct URL using the steps above and try again.");
             }
             else if (error == "WISHLIST_NOT_FOUND") {
-                dm.channel.send("Couldn't find your wishlist! Make sure that your profile URL is correct and that your Game Details are set to public.");
+                dm.channel.send("Couldn't find your wishlist! \n- Make sure that your profile URL is correct \n- Make sure your Game Details are set to public (under Edit Profile -> Privacy Settings on Steam)\n- Try again. If you're having trouble, contact `@r2d2vader`!");
+            }
+            else if (error == "WISHLIST_LENGTH_0") {
+                dm.channel.send("Your wishlist is either private or has no games on it. \n- Make sure your Game Details are set to public (under Edit Profile -> Privacy Settings on Steam)\n- Add a game to your wishlist\n- Try again. If you're having trouble, contact `@r2d2vader`!")
             }
             else if (error == "USER_ALREADY_EXISTS") {
                 dm.channel.send("Wait a minute - you are already registered! To update your wishlist, run `" + process.env.PREFIX + "wishlist resync`.");
@@ -183,13 +184,13 @@ function sendList(message) {
         }
         for (let i = 0; i < limit; i++) {
             if (response[i].price_overview) {
-                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`})`});
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **${response[i].price_overview.final_formatted}** (${response[i].price_overview.discount_percent > 0 ? `**${response[i].price_overview.discount_percent}%** Discount` : `Full Price`}). [View on Steam](https://store.steampowered.com/app/${response[i].steam_appid})`});
             }
             else if (response[i].is_free) {
-                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Free**"});
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **Free**. [View on Steam](https://store.steampowered.com/app/${response[i].steam_appid})`});
             }
             else {
-                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: "Price: **Unknown** / not available"});
+                embed.addFields({name: `\`${response[i].steam_appid}\` ${response[i].name}`, value: `Price: **Unknown** / not available. [View on Steam](https://store.steampowered.com/app/${response[i].steam_appid})`});
             }
         }
         message.channel.send({ embeds: [embed] });
@@ -216,7 +217,7 @@ function helpembed () {
         .addFields(
             {
                 name: `\`${prefix}help\``,
-                value: "Gives you a list of the bot's commands"
+                value: "Gives you a list of the wishlist module's commands"
             },
             {
                 name: `\`${prefix}register\``,
@@ -252,7 +253,7 @@ function privacyembed() {
         .addFields(
             {
                 name: "Data we store",
-                value: "When you register, we store part of your Steam profile link and your Discord ID in our database. This allows us to update which games we should notify you about when your wishlist changes. \r We also store Steam's Game ID for all of the games in your wishlist, along with your Discord ID. This allows us to notify you when we detect a sale."
+                value: "When you register, we fetch your Steam ID from a third party (playerdb.co) and store it along with your Discord ID in our database. This allows us to update which games we should notify you about when your wishlist changes. \r We also store Steam's Game ID for all of the games in your wishlist. This allows us to notify you when we detect a sale."
             },
             {
                 name: "How we access data from Steam",
