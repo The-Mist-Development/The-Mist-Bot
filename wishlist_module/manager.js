@@ -236,29 +236,31 @@ let gamePriceSync = new CronJob(
                         gamesObj[gameid] = await steam.getGameInfo(gameid);
                     }
                     else {
-                        //log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                        log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                     }
                 }
                 else if (response.price_overview.final > oldPrice) {
-                    //log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                    log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                 }
             }
             else {
-                //log(`[WISHLIST][DEBUG] Game ${response.name} has no price overview, skipping.`);
+                log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
             }
         }
         
         // Notify users which of their games are on sale.
         let gamesOnSale = Object.keys(gamesObj);
+        log(`[WISHLIST][DEBUG] Games on sale: ${gamesOnSale}`)
         let users = Object.keys(usersObj);
         for (let i = 0; i < users.length; i++) {
             let userGames = usersObj[users[i]];
             let userGamesOnSale = [];
-            for (let j = 0; j < userGames.length; j++) {
-                if (gamesOnSale.includes(userGames[j])) {
-                    userGamesOnSale.push(userGames[j]);
+            for (let j = 0; j < gamesOnSale.length; j++) {
+                if (userGames.includes(gamesOnSale[j])) {
+                    userGamesOnSale.push(gamesOnSale[j]);
                 }
             }
+            log(`[WISHLIST][DEBUG] User ${users[i]}, userGames ${userGames}, userGamesOnSale ${userGamesOnSale}`)
             if (userGamesOnSale.length < 1) {
                 //log(`[WISHLIST][DEBUG] User ${users[i]} has no games on sale.`)
             }
