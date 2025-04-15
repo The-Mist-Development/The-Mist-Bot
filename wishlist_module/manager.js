@@ -244,7 +244,7 @@ let gamePriceSync = new CronJob(
                 }
             }
             else {
-                log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
+                //log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
             }
         }
         
