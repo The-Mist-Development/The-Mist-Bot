@@ -20,8 +20,8 @@ module.exports = {
                 .then(function (response) {
                     let formatted = {};
                     for (let i = 0; i < gameids.length; i++) {
-                        if (response.data[gameids[i]].success) {
-                            formatted[gameids[i]] = response.data[gameids[i]].data;
+                        if (response[gameids[i]].success) {
+                            formatted[gameids[i]] = response[gameids[i]].data;
                         }
                     }
                     if (Object.keys(formatted).length > 0) resolve(formatted);
