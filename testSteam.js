@@ -1,8 +1,9 @@
 const steam = require("./wishlist_module/steamlib")
-const db = require("./wishlist_module/dbwrapper")
+const db = require("./bot/database")
+db.dbConnect()
 
 async function dewit() {
-    let response = await db.getAllUsers()
+    let response = await db.w_getAllUsers()
     let gamesList = []
     let gamesObj = {};
     let usersObj = {};
