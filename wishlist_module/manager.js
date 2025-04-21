@@ -214,40 +214,43 @@ let gamePriceSync = new CronJob(
         let allresponse = await steam.getGamePrices(gamesList)
         let responses = Object.keys(allresponse);
         for (let i = 0; i < responses.length; i++) {
-            let responseData = allresponse[responses[i]];
+            let response = allresponse[responses[i]];
             let gameid = responses[i]
-            if (responseData == []) {
-                //log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
+            if (response.is_free) {
+                // Should never happen under new API
+                //log(`[WISHLIST][DEBUG] Game ${gameid} is free, skipping.`);
             }
-            else {
-                priceOverview = responseData.price_overview;
-                oldPrice = db.updateGame(gameid, priceOverview.final)
-                //log(`[WISHLIST][DEBUG] Game ${gameid}, OldPrice: ${oldPrice}, New Price: ${priceOverview.final}`)
+            else if (response.price_overview) {
+                oldPrice = db.updateGame(gameid, response.price_overview.final)
+                //log(`[WISHLIST][DEBUG] Game ${gameid}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
                 if (oldPrice == -1) {
                     //log(`[WISHLIST][DEBUG] Game ${gameid} not previously in database.`);
                 }
-                else if (priceOverview.final == oldPrice) {
+                else if (oldPrice == response.price_overview.final) {
                     //log(`[WISHLIST][DEBUG] Game ${gameid} has not changed in price.`);
                 }
-                else if (priceOverview.final < oldPrice) {
-                    if (priceOverview.discount_percent > 0) {
-                        log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${priceOverview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${priceOverview.final}`);
+                else if (response.price_overview.final < oldPrice) {
+                    if (response.price_overview.discount_percent > 0) {
+                        log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                         // Make further API request to get the game's info.
                         gamesObj[gameid] = await steam.getGameInfo(gameid);
                     }
                     else {
-                        //log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${priceOverview.final}`);
+                        log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                     }
                 }
-                else if (priceOverview.final > oldPrice) {
-                    //log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${priceOverview.final}`);
+                else if (response.price_overview.final > oldPrice) {
+                    log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                 }
+            }
+            else {
+                //log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
             }
         }
         
         // Notify users which of their games are on sale.
         let gamesOnSale = Object.keys(gamesObj);
-        //log(`[WISHLIST][DEBUG] Games on sale: ${gamesOnSale}`)
+        log(`[WISHLIST][DEBUG] Games on sale: ${gamesOnSale}`)
         let users = Object.keys(usersObj);
         for (let i = 0; i < users.length; i++) {
             let userGames = usersObj[users[i]];
@@ -257,7 +260,7 @@ let gamePriceSync = new CronJob(
                     userGamesOnSale.push(gamesOnSale[j]);
                 }
             }
-            //log(`[WISHLIST][DEBUG] User ${users[i]}, userGames ${userGames}, userGamesOnSale ${userGamesOnSale}`)
+            log(`[WISHLIST][DEBUG] User ${users[i]}, userGames ${userGames}, userGamesOnSale ${userGamesOnSale}`)
             if (userGamesOnSale.length < 1) {
                 //log(`[WISHLIST][DEBUG] User ${users[i]} has no games on sale.`)
             }
