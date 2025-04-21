@@ -207,7 +207,9 @@ let gamePriceSync = new CronJob(
             let games = response.rows[i]["gamelist"].split("|");
             usersObj[response.rows[i]["discordid"]] = games;
             for (let j = 0; j < games.length; j++) {
-                gamesList.push(games[j]);
+                if (!gamesList.includes(games[j])) {
+                    gamesList.push(games[j]);
+                }
             }
         }
 
@@ -216,11 +218,7 @@ let gamePriceSync = new CronJob(
         for (let i = 0; i < responses.length; i++) {
             let response = allresponse[responses[i]];
             let gameid = responses[i]
-            if (response.is_free) {
-                // Should never happen under new API
-                //log(`[WISHLIST][DEBUG] Game ${gameid} is free, skipping.`);
-            }
-            else if (response.price_overview) {
+            if (response.price_overview) {
                 oldPrice = db.updateGame(gameid, response.price_overview.final)
                 //log(`[WISHLIST][DEBUG] Game ${gameid}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
                 if (oldPrice == -1) {
@@ -250,7 +248,7 @@ let gamePriceSync = new CronJob(
         
         // Notify users which of their games are on sale.
         let gamesOnSale = Object.keys(gamesObj);
-        log(`[WISHLIST][DEBUG] Games on sale: ${gamesOnSale}`)
+        //log(`[WISHLIST][DEBUG] Games on sale: ${gamesOnSale}`)
         let users = Object.keys(usersObj);
         for (let i = 0; i < users.length; i++) {
             let userGames = usersObj[users[i]];
@@ -260,7 +258,7 @@ let gamePriceSync = new CronJob(
                     userGamesOnSale.push(gamesOnSale[j]);
                 }
             }
-            log(`[WISHLIST][DEBUG] User ${users[i]}, userGames ${userGames}, userGamesOnSale ${userGamesOnSale}`)
+            //log(`[WISHLIST][DEBUG] User ${users[i]}, userGames ${userGames}, userGamesOnSale ${userGamesOnSale}`)
             if (userGamesOnSale.length < 1) {
                 //log(`[WISHLIST][DEBUG] User ${users[i]} has no games on sale.`)
             }
