@@ -1,6 +1,26 @@
 const steam = require("./wishlist_module/steamlib")
+const db = require("./wishlist_module/dbwrapper")
 
 async function dewit() {
+    let response = await db.getAllUsers()
+    let gamesList = []
+    let gamesObj = {};
+    let usersObj = {};
+
+    for (let i = 0; i < response.rowCount; i++) {
+        let games = response.rows[i]["gamelist"].split("|");
+        console.log(response.rows[i]["discordid"], games)
+        usersObj[response.rows[i]["discordid"]] = games;
+        for (let j = 0; j < games.length; j++) {
+            if (!gamesList.includes(games[j])) {
+                gamesList.push(games[j]);
+            }
+        }
+    }
+
+    console.log("gamesList", gamesList)
+    console.log("usersObj", usersObj)
+
     gamesObj = {}
     let allresponse = await steam.getGamePrices(["638970","989790","1105510","2001120","2950710","1295320","1260520","736260","1730360","2060590"])
     let responses = Object.keys(allresponse);
@@ -36,7 +56,19 @@ async function dewit() {
     }
 
     let gamesOnSale = Object.keys(gamesObj);
-    console.log(`[WISHLIST][DEBUG] Games on sale: ${gamesOnSale}`)
+    console.log(`[WISHLIST][DEBUG] Games on sale: ${gamesOnSale}`);
+
+    let users = Object.keys(usersObj);
+    for (let i = 0; i < users.length; i++) {
+        let userGames = usersObj[users[i]];
+        let userGamesOnSale = [];
+        for (let j = 0; j < gamesOnSale.length; j++) {
+            if (userGames.includes(gamesOnSale[j])) {
+                userGamesOnSale.push(gamesOnSale[j]);
+            }
+        }
+        console.log(`[WISHLIST][DEBUG] User ${users[i]}, userGames ${userGames}, userGamesOnSale ${userGamesOnSale}`)
+    }
 }
 
 dewit()
