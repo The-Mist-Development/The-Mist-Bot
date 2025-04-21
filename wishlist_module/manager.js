@@ -219,7 +219,7 @@ let gamePriceSync = new CronJob(
             let response = allresponse[responses[i]];
             let gameid = responses[i]
             if (response.price_overview) {
-                oldPrice = db.updateGame(gameid, response.price_overview.final)
+                oldPrice = await db.updateGame(gameid, response.price_overview.final)
                 //log(`[WISHLIST][DEBUG] Game ${gameid}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
                 if (oldPrice == -1) {
                     //log(`[WISHLIST][DEBUG] Game ${gameid} not previously in database.`);
