@@ -264,7 +264,7 @@ let gamePriceSync = new CronJob(
             }
             else if (userGamesOnSale.length == 1) {
                 log(`[WISHLIST][DEBUG] User ${users[i]} has one game on sale.`)
-                let response2 = gamesObj[userGamesOnSale[0]]
+                let response2 = userGamesOnSale[0];
                 let embed = new EmbedBuilder()
                     .setTitle(response2.name)
                     .setDescription(response2.short_description)
