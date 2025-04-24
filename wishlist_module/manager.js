@@ -255,7 +255,7 @@ let gamePriceSync = new CronJob(
             let userGamesOnSale = [];
             for (let j = 0; j < gamesOnSale.length; j++) {
                 if (userGames.includes(gamesOnSale[j])) {
-                    userGamesOnSale.push(gamesOnSale[j]);
+                    userGamesOnSale.push(gamesObj[gamesOnSale[j]]);
                 }
             }
             //log(`[WISHLIST][DEBUG] User ${users[i]}, userGames ${userGames}, userGamesOnSale ${userGamesOnSale}`)
