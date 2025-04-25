@@ -55,5 +55,14 @@ module.exports = {
                 reject(error);
             });
         });
+    },
+    recordFailedDM(discordId) {
+        return new Promise((resolve, reject) => {
+            db.w_recordFailedDM(discordId).then(function (response) {
+                resolve(response);
+            }).catch(function (error) {
+                reject(error);
+            });
+        })
     }
 }

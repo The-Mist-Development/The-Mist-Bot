@@ -202,6 +202,7 @@ let gamePriceSync = new CronJob(
         let gamesList = []
         let gamesObj = {};
         let usersObj = {};
+        let failedUsers = []
 
         for (let i = 0; i < response.rowCount; i++) {
             let games = response.rows[i]["gamelist"].split("|");
@@ -210,6 +211,9 @@ let gamePriceSync = new CronJob(
                 if (!gamesList.includes(games[j])) {
                     gamesList.push(games[j]);
                 }
+            }
+            if (parseInt(response.rows[i]["failcount"]) >= 1)  {
+                failedUsers.push(response.rows[i]["discordid"]);
             }
         }
 
@@ -301,7 +305,16 @@ let gamePriceSync = new CronJob(
                 }
                 client.users.fetch(users[i]).then(user => {
                     user.send({ content: `Multiple games are on sale on Steam!`, embeds: [embed] })
-                        .catch(err => {log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)});
+                        .catch(async (err) => {
+                            log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)
+                            if (failedUsers.includes(users[i])) {
+                                log(`[WISHLIST] Deleting user ${users[i]} from the database as too many DMs to them have failed.`);
+                                await db.deleteUser(users[i]);
+                            }
+                            else {
+                                await db.recordFailedDM(users[i]);
+                            }
+                        });
                 });
             }
         }

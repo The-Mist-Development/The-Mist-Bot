@@ -25,7 +25,7 @@ module.exports = {
                 dbClient.query("CREATE TABLE IF NOT EXISTS subscribed (channelid VARCHAR(255) PRIMARY KEY);", function (error, results) {
                     if (error) console.log("[DB] Error creating subscribed table: " + error);
                 });
-                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamid VARCHAR(255), gamelist TEXT);", function (error, results) {
+                dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_users (discordid VARCHAR(255) PRIMARY KEY, steamid VARCHAR(255), gamelist TEXT, failcount INTEGER DEFAULT 0);", function (error, results) {
                     if (error) console.log("[WISHLIST] Error creating wishlist_users table: " + error);
                 });
                 dbClient.query("CREATE TABLE IF NOT EXISTS wishlist_games (gameid VARCHAR(255) PRIMARY KEY, lastprice VARCHAR(255));", function (error, results) {
@@ -268,6 +268,14 @@ module.exports = {
                 else {
                     updateGames(gameId, price, results.rows[0]["lastprice"], resolve, reject);
                 }
+            });
+        });
+    },
+    w_recordFailedDM(discordId) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("UPDATE wishlist_users SET failcount = failcount + 1 WHERE discordid = $1", [discordId], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
             });
         });
     }
