@@ -229,16 +229,16 @@ let gamePriceSync = new CronJob(
                 }
                 else if (response.price_overview.final < oldPrice) {
                     if (response.price_overview.discount_percent > 0) {
-                        log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                        //log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                         // Make further API request to get the game's info.
                         gamesObj[gameid] = await steam.getGameInfo(gameid);
                     }
                     else {
-                        log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                        //log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                     }
                 }
                 else if (response.price_overview.final > oldPrice) {
-                    log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                    //log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                 }
             }
             else {
@@ -248,6 +248,9 @@ let gamePriceSync = new CronJob(
         
         // Notify users which of their games are on sale.
         let gamesOnSale = Object.keys(gamesObj);
+        if (gamesOnSale.length > 0) {
+            log(`[WISHLIST][DEBUG] ${gamesOnSale.length} ${gamesOnSale.length == 1 ? "game has" : `games have`} a new discount.`);
+        }
         //log(`[WISHLIST][DEBUG] Games on sale: ${gamesOnSale}`)
         let users = Object.keys(usersObj);
         for (let i = 0; i < users.length; i++) {
@@ -263,7 +266,7 @@ let gamePriceSync = new CronJob(
                 //log(`[WISHLIST][DEBUG] User ${users[i]} has no games on sale.`)
             }
             else if (userGamesOnSale.length == 1) {
-                log(`[WISHLIST][DEBUG] User ${users[i]} has one game on sale.`)
+                //log(`[WISHLIST][DEBUG] User ${users[i]} has one game on sale.`)
                 let response2 = userGamesOnSale[0];
                 let embed = new EmbedBuilder()
                     .setTitle(response2.name)
@@ -283,7 +286,7 @@ let gamePriceSync = new CronJob(
                     });
             }
             else {
-                log(`[WISHLIST][DEBUG] User ${users[i]} has multiple games on sale.`)
+                //log(`[WISHLIST][DEBUG] User ${users[i]} has multiple games on sale.`)
                 let embed = new EmbedBuilder()
                     .setTitle("Sale Summary")
                     .setDescription("[Check Steam](https://store.steampowered.com/wishlist/) for the full details!")
