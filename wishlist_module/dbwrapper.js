@@ -64,5 +64,14 @@ module.exports = {
                 reject(error);
             });
         })
+    },
+    resetFailedDM(discordId) {
+        return new Promise((resolve, reject) => {
+            db.w_resetFailedDM(discordId).then(function (response) {
+                resolve(response);
+            }).catch(function (error) {
+                reject(error);
+            });
+        })
     }
 }

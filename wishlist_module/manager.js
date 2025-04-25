@@ -286,7 +286,12 @@ let gamePriceSync = new CronJob(
                     );
                     client.users.fetch(users[i]).then(user => {
                         user.send({ content: `**${response2.name}** is on sale on Steam!`, embeds: [embed] })
-                            .catch(err => {log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)});
+                            .then(async () => {
+                                if (failedUsers.includes(users[i])) {
+                                    await db.resetFailedDM(users[i]);
+                                }
+                            })
+                            .catch(err => handleDMError(err));
                     });
             }
             else {
@@ -305,16 +310,12 @@ let gamePriceSync = new CronJob(
                 }
                 client.users.fetch(users[i]).then(user => {
                     user.send({ content: `Multiple games are on sale on Steam!`, embeds: [embed] })
-                        .catch(async (err) => {
-                            log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)
+                        .then(async () => {
                             if (failedUsers.includes(users[i])) {
-                                log(`[WISHLIST] Deleting user ${users[i]} from the database as too many DMs to them have failed.`);
-                                await db.deleteUser(users[i]);
+                                await db.resetFailedDM(users[i]);
                             }
-                            else {
-                                await db.recordFailedDM(users[i]);
-                            }
-                        });
+                        })
+                        .catch(err => handleDMError(err));
                 });
             }
         }
@@ -324,3 +325,15 @@ let gamePriceSync = new CronJob(
     true,
     'Europe/London'
 );
+
+async function handleDMError(err) {
+    log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)
+    if (!(err.includes("50007") || err.includes("Cannot send messages to this user"))) return;
+    if (failedUsers.includes(users[i])) {
+        log(`[WISHLIST] Deleting user ${users[i]} from the database as too many DMs to them have failed.`);
+        await db.deleteUser(users[i]);
+    }
+    else {
+        await db.recordFailedDM(users[i]);
+    }
+}

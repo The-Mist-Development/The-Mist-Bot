@@ -278,6 +278,14 @@ module.exports = {
                 resolve(results);
             });
         });
+    },
+    w_resetFailedDM(discordId) {
+        return new Promise((resolve, reject) => {
+            dbClient.query("UPDATE wishlist_users SET failcount = 0 WHERE discordid = $1", [discordId], function (error, results) {
+                if (error) reject(error);
+                resolve(results);
+            });
+        });
     }
 }
 
