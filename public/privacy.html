@@ -25,7 +25,7 @@
     </head>
     <body>
         <h1>Privacy Policy</h1>
-        <p>7th January 2025</p>
+        <p>25th April 2025</p>
         <p>
             When you use The Mist Bot, it collects the data necessary for certain features to work. This will change over time and as such, this privacy policy is subject to change.
         </p>
@@ -121,6 +121,11 @@
             </p>
         <h2>Usage data collected</h2>
         <p>As part of the Counting feature, usage data is collected to display user- and channel-specific counting stats.</p>
+        <p>
+            If a Steam Wishlist Notification DM fails with an error that suggests you have left your mutual server with the bot / you have blocked the bot / 
+            the bot is otherwise permanently unable to contact you, this will be recorded. <br />
+            This is collected so that once you reach a certain number of consecutive failures, we can stop tracking your Wishlist and automatically delete the associated data.
+        </p>        
         <h2>Usage data made publicly available</h2>
         <p>
             The following data is made publicly available via our website:
@@ -164,10 +169,17 @@
                 </tr>
                 <tr>
                     <td>Steam Wishlist Notifications</td>
-                    <td><b>User ID</b>, <b>Steam Profile URL substring (if still stored)</b>, <b>Steam ID</b>, <b>Steam Wishlist</b></td>
+                    <td><b>User ID</b>, <b>Steam Profile URL substring (if still stored)</b>, <b>Steam ID</b>, <b>Steam Wishlist</b>, Number of consecutive DM failures</td>
                 </tr>
             </tbody>
         </table>
+        <p>
+            All of your data related to the Steam Wishlist Notifications feature will be automatically deleted if:
+        </p>
+        <ul>
+            <li>The bot fails to DM you a certain number of consecutive times</li>
+            <li>These failures suggest you have left your mutual server with the bot / you have blocked the bot / the bot is otherwise permanently unable to contact you</li>
+        </ul>
         <p>
             The following data is never deleted automatically and will be stored indefinitely. Please contact @r2d2vader on Discord to request deletion.
         </p>
