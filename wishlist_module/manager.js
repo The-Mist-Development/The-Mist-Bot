@@ -291,7 +291,7 @@ let gamePriceSync = new CronJob(
                                     await db.resetFailedDM(users[i]);
                                 }
                             })
-                            .catch(err => handleDMError(err));
+                            .catch(err => handleDMError(err, users[i]));
                     });
             }
             else {
@@ -315,7 +315,7 @@ let gamePriceSync = new CronJob(
                                 await db.resetFailedDM(users[i]);
                             }
                         })
-                        .catch(err => handleDMError(err));
+                        .catch(err => handleDMError(err, users[i]));
                 });
             }
         }
@@ -326,14 +326,14 @@ let gamePriceSync = new CronJob(
     'Europe/London'
 );
 
-async function handleDMError(err) {
-    log(`[WISHLIST] Error while trying to DM user ${users[i]}: ${err}`)
+async function handleDMError(err, userId) {
+    log(`[WISHLIST] Error while trying to DM user ${userId}: ${err}`)
     if (!(err.includes("50007") || err.includes("Cannot send messages to this user"))) return;
-    if (failedUsers.includes(users[i])) {
-        log(`[WISHLIST] Deleting user ${users[i]} from the database as too many DMs to them have failed.`);
-        await db.deleteUser(users[i]);
+    if (failedUsers.includes(userId)) {
+        log(`[WISHLIST] Deleting user ${userId} from the database as too many DMs to them have failed.`);
+        await db.deleteUser(userId);
     }
     else {
-        await db.recordFailedDM(users[i]);
+        await db.recordFailedDM(userId);
     }
 }
