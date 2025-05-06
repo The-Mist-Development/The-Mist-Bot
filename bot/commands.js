@@ -173,7 +173,7 @@ function log(message) {
 }
 
 // Error Handling
-// not crash on unhandled promise rejection, log then exit (auto restarts on Heroku)
+// not crash on unhandled promise rejection, log then restart
 process.on('unhandledRejection', (reason, promise) => {
   log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
   if (reason.stack?.startsWith("DiscordAPIError[50013]:") || reason.stack?.includes("Missing Permissions")) {
@@ -191,6 +191,7 @@ process.on('uncaughtException', (reason) => {
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
     setDisconnected();
   }
+  if (reason.stack?.includes("Found unknown component type")) return log("[DEBUG] Discord.js is trolling. Maybe an update is advisable?")
   if (reason.stack?.includes("NothingPlaying")) return log("[MUSIC] Lagging! By the time a command was executed, the bot was no longer playing! Not restarting.")
   if (reason.stack?.includes("Unexpected token < in JSON at position 0")) return log("[APP] A server responded with HTML or an error instead of JSON. Not restarting.")
   requestRestart();
