@@ -106,11 +106,6 @@ module.exports = {
           gitPull();
         }
         break;
-      case "eval":
-        if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
-          log(message.content)
-        }
-        break;
       case "sendmsg":
         sendMessage(message, args);
         break;
@@ -308,10 +303,10 @@ function adminHelpMsg(message) {
         name: "`" + prefix + "cancel`",
         value: "Cancel a manual or automatic restart."
       },
-      {
-        name: "`" + prefix + "forcerickroll <Server ID>`",
-        value: "Forces the next song played, in the specified server, to be a Rickroll. Only works while music is playing and single song loop **is not enabled**."
-      },
+      //{
+      //  name: "`" + prefix + "forcerickroll <Server ID>`",
+      //  value: "Forces the next song played, in the specified server, to be a Rickroll. Only works while music is playing and single song loop **is not enabled**."
+      //},
       {
         name: "`" + prefix + "sendmsg <Text Channel ID> <Message>`",
         value: "Sends a message in the specified text channel."
@@ -361,6 +356,7 @@ function adminHelpMsg(message) {
 function tryRestart(message) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
     message.react("👌");
+    log("Restart requested by <@" + message.author.id + ">.");
     requestRestart(message);
   }
 }
@@ -368,7 +364,10 @@ function tryRestart(message) {
 function tryCancel(message) {
   let result = cancelRestart(message);
   if (result) {
-    if (result == "cancelled") resetVar();
+    if (result == "cancelled") {
+      resetVar();
+      log("Restart successfully cancelled by <@" + message.author.id + ">.");
+    }
   }
 }
 
@@ -379,7 +378,8 @@ function sendMessage(message, args) {
       if (channel.type == 0 || channel.type ==  2 || channel.type == 10 || channel.type == 11) {
         if (channel.permissionsFor(client.user).has(PermissionsBitField.Flags.ViewChannel) && channel.permissionsFor(client.user).has(PermissionsBitField.Flags.SendMessages)) {
           message.react("📤");
-            channel.send(args.join(" "));
+          channel.send(args.join(" "));
+          log(`Message sent to <#${channel.id}> (Channel ${channel.id}) by <@${message.author.id}>: \`\`\`${args.join(" ")}\`\`\``);
         }
         else return message.channel.send(`I **don't have permission** to send messages in <#${channel.id}>!`);
       }
@@ -433,6 +433,7 @@ async function sendUpdate(fmessage, title) {
 
             if (message2.content.toLowerCase() == "confirm") {
               message2.react("✅");
+              log("Update dispatched by <@" + message2.author.id + ">.");
               let channels = await getSubscribedChannels();
               for (let i = 0; i < channels.length; i++) {
                 client.channels.cache.get(channels[i]).send({ embeds: [embed] });
@@ -508,6 +509,7 @@ async function sendStatusUpdate(fmessage, color, title) {
 
             if (message2.content.toLowerCase() == "confirm") {
               message2.react("✅");
+              log("Status Update dispatched by <@" + message2.author.id + ">.");
               let channels = await getSubscribedChannels();
               for (let i = 0; i < channels.length; i++) {
                 client.channels.cache.get(channels[i]).send({ embeds: [embed] });
@@ -535,6 +537,7 @@ async function sendStatusUpdate(fmessage, color, title) {
 
 function setActivity(message, newActivity) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
+    log("New activity set by <@" + message.author.id + ">: " + newActivity);
     client.user.setActivity(`${newActivity} | ${prefix}help`, { type: ActivityType.Playing });
     message.react("✅");
   }
