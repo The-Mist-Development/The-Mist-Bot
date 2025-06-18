@@ -194,10 +194,25 @@ let wishlistSync = new CronJob(
     'Europe/London'
 );
 
-let gamePriceSync = new CronJob(
+let hourlyGamePriceSync = new CronJob(
     '0 30 * * * *',
-    async function () {
-        //log("[WISHLIST] Starting hourly game price sync.");
+    gamePriceSync,
+    null,
+    //SET TO TRUE BELOW TO RUN
+    true,
+    'Europe/London'
+);
+
+let boostedGamePriceSync = new CronJob(
+    '0 0,15,45 17-20 * * *',
+    gamePriceSync,
+    null,
+    //SET TO TRUE BELOW TO RUN
+    true,
+    'Europe/London'
+);
+
+async function gamePriceSync() {
         let response = await db.getAllUsers()
         let gamesList = []
         let gamesObj = {};
@@ -319,12 +334,7 @@ let gamePriceSync = new CronJob(
                 });
             }
         }
-    },
-    null,
-    //SET TO TRUE BELOW TO RUN
-    true,
-    'Europe/London'
-);
+    }
 
 async function handleDMError(err, userId, failedUsers) {
     log(`[WISHLIST] Error while trying to DM user ${userId}: ${err}`)
