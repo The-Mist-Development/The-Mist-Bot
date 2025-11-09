@@ -85,7 +85,7 @@ client.on('messageUpdate', async (oldmessage, newmessage) => {
 
   if (+oldmessage.content === +oldmessage.content) {
     let truecount = await getCurrentCount(oldmessage, true);
-    oldmessage.channel.send("⚠️ **" + oldmessage.author.username + "**, we all saw you edit that message! The count is now `" + truecount + "`.")
+    oldmessage.channel.send("⚠️ **" + oldmessage.author.username + "**, we all saw you edit that message! The next number is `" + (parseInt(truecount) + 1) + "`.")
   }
 });
 
@@ -95,7 +95,7 @@ client.on('messageDelete', async (message) => {
 
   if (+message.content === +message.content) {
     let truecount = await getCurrentCount(message, true);
-    message.channel.send("⚠️ A message by **" + message.author.username + "** was deleted! The count is now `" + truecount + "`.")
+    message.channel.send("⚠️ A message by **" + message.author.username + "** was deleted! The next number is `" + (parseInt(truecount) + 1) + "`.")
   }
 });
 
