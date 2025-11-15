@@ -44,7 +44,7 @@ client.on("messageCreate", async function (message) {
   let channels = await getCountingChannels();
 
   if (channels.includes(message.channel.id)) {
-    if (message.member.displayName.includes("@everyone") || message.member.displayName.includes("@here")) return message.react("💢");
+    //if (message.member.displayName.includes("@everyone") || message.member.displayName.includes("@here")) return message.react("💢");
     // new number checker by github.com/kateonbxsh
     if (message.content.split("").every(char => char !== " " && char >= '0' && char <= '9') && !(message.content == "")) {
       count(message)
@@ -83,9 +83,10 @@ client.on('messageUpdate', async (oldmessage, newmessage) => {
   let channels = await getCountingChannels();
   if (!channels.includes(oldmessage.channel.id)) return;
 
-  if (+oldmessage.content === +oldmessage.content) {
+  if (oldmessage.content.split("").every(char => char !== " " && char >= '0' && char <= '9') && !(oldmessage.content == "")) {
+    if (oldmessage.author.id == client.user.id) return;
     let truecount = await getCurrentCount(oldmessage, true);
-    oldmessage.channel.send("⚠️ **" + oldmessage.author.username + "**, we all saw you edit that message! The next number is `" + (parseInt(truecount) + 1) + "`.")
+    oldmessage.channel.send("⚠️ ** <@" + oldmessage.author.id + ">**, we all saw you edit that message! The next number is `" + (parseInt(truecount) + 1) + "`.")
   }
 });
 
@@ -93,9 +94,9 @@ client.on('messageDelete', async (message) => {
   let channels = await getCountingChannels();
   if (!channels.includes(message.channel.id)) return;
 
-  if (+message.content === +message.content) {
+  if (message.content.split("").every(char => char !== " " && char >= '0' && char <= '9') && !(message.content == "")) {
     let truecount = await getCurrentCount(message, true);
-    message.channel.send("⚠️ A message by **" + message.author.username + "** was deleted! The next number is `" + (parseInt(truecount) + 1) + "`.")
+    message.channel.send("⚠️ A message by **<@" + message.author.id + ">** was deleted! The next number is `" + (parseInt(truecount) + 1) + "`.")
   }
 });
 
