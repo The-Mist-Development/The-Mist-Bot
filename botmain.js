@@ -109,6 +109,7 @@ function log(message) {
     client.channels.cache.get("850844368679862282").send(message);
   }
 }
+module.exports.log = log;
 
 // cron job for clearing dark playground every week (Mist server exclusive functionality)
 const CronJob = require('cron').CronJob;

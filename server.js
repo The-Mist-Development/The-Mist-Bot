@@ -1,5 +1,5 @@
 // Debug Function
-const { log, updateFromWeb, sendMsg, evalInBot } = require("./botmain");
+const { log } = require("./botmain");
 
 // Constants
 const fs = require("fs");
