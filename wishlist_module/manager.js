@@ -238,30 +238,34 @@ async function gamePriceSync() {
             let response = allresponse[responses[i]];
             let gameid = responses[i]
             if (response.price_overview) {
-                oldPrice = await db.updateGame(gameid, response.price_overview.final)
-                //log(`[WISHLIST][DEBUG] Game ${gameid}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
-                if (oldPrice == -1) {
-                    //log(`[WISHLIST][DEBUG] Game ${gameid} not previously in database.`);
-                }
-                else if (oldPrice == response.price_overview.final) {
-                    //log(`[WISHLIST][DEBUG] Game ${gameid} has not changed in price.`);
-                }
-                else if (response.price_overview.final < oldPrice) {
-                    if (response.price_overview.discount_percent > 0) {
-                        //log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
-                        // Make further API request to get the game's info.
-                        gamesObj[gameid] = await steam.getGameInfo(gameid);
+                db.updateGame(gameid, response.price_overview.final).then(async (oldPrice) => {
+                    //log(`[WISHLIST][DEBUG] Game ${gameid}, OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`)
+                    if (oldPrice == -1) {
+                        //log(`[WISHLIST][DEBUG] Game ${gameid} not previously in database.`);
                     }
-                    else {
-                        //log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                    else if (oldPrice == response.price_overview.final) {
+                        //log(`[WISHLIST][DEBUG] Game ${gameid} has not changed in price.`);
                     }
-                }
-                else if (response.price_overview.final > oldPrice) {
-                    //log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
-                }
+                    else if (response.price_overview.final < oldPrice) {
+                        if (response.price_overview.discount_percent > 0) {
+                            log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                            // Make further API request to get the game's info.
+                            gamesObj[gameid] = await steam.getGameInfo(gameid);
+                        }
+                        else {
+                            log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                        }
+                    }
+                    else if (response.price_overview.final > oldPrice) {
+                        log(`[WISHLIST][DEBUG] Game ${gameid} has risen in price. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
+                    }
+                })
+                .catch((err) => {
+                    log(`[WISHLIST][DEBUG] Error saving game ${gameid}'s new price: ${err}`)
+                })
             }
             else {
-                //log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
+                log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
             }
         }
         
