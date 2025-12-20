@@ -255,7 +255,7 @@ module.exports = {
         const updateGames = (gameId, price, oldPrice, resolve, reject) => {
             dbClient.query("UPDATE wishlist_games SET lastprice = $1 WHERE gameid = $2", [price, gameId], function (error, results) {
                 if (error) reject(error);
-                resolve(oldPrice);
+                resolve(parseInt(oldPrice));
             });
         }
 
