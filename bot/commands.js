@@ -170,19 +170,21 @@ function log(message) {
 // Error Handling
 // not crash on unhandled promise rejection, log then restart
 process.on('unhandledRejection', (reason, promise) => {
-  log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + reason.stack + "```" || reason + "```");
+  log("[APP] **ERR** | **Unhandled Promise Rejection:** ```" + (reason.stack || reason) + "```");
   if (reason.stack?.startsWith("DiscordAPIError[50013]:") || reason.stack?.includes("Missing Permissions")) {
     return log("Missing Permissions for something basic. No big deal.");
   }
   else if (reason.stack?.startsWith("DiscordAPIError[50001]:")) {
     return log("Missing Access to something. No big deal.");
   }
+  else if (reason.stack?.startsWith("ConnectTimeoutError")) {
+    return log("Looks like we're having connection issues. Waiting for the issue to fix itself...")
+  }
   requestRestart();
 });
 
 process.on('uncaughtException', (reason) => {
-  console.error('Uncaught Error! \n ' + reason.stack || reason);
-  log("[APP] **ERR** | **Uncaught Exception:** ```" + reason.stack + "```" || reason + "```");
+  log("[APP] **ERR** | **Uncaught Exception:** ```"+ (reason.stack || reason) + "```");
   if (reason.stack?.startsWith("Error: Connection terminated unexpectedly")) {
     setDisconnected();
   }
