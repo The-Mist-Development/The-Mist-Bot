@@ -265,7 +265,7 @@ async function gamePriceSync() {
                 })
             }
             else {
-                log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
+                //log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
             }
         }
         
