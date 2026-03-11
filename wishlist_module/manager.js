@@ -250,7 +250,9 @@ async function gamePriceSync() {
                         if (response.price_overview.discount_percent > 0) {
                             log(`[WISHLIST][DEBUG] Game ${gameid} has a new discount of ${response.price_overview.discount_percent}%. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
                             // Make further API request to get the game's info.
-                            gamesObj[gameid] = await steam.getGameInfo(gameid);
+                            let gamedata = await steam.getGameInfo(gameid);
+                            console.log(`[WISHLIST][DEBUG] Got the game info for game ${gamedata.name} (${gamedata.steam_appid})`);
+                            gamesObj[gameid] = {...gamedata}
                         }
                         else {
                             log(`[WISHLIST][DEBUG] Game ${gameid} has lowered in price off sale. OldPrice: ${oldPrice}, New Price: ${response.price_overview.final}`);
@@ -268,7 +270,7 @@ async function gamePriceSync() {
                 //log(`[WISHLIST][DEBUG] Game ${gameid} has no price overview, skipping.`);
             }
         }
-        
+        log(`[WISHLIST][DEBUG] Sync finished. Got data for games: ${Object.keys(gamesObj)}`)
         // Notify users which of their games are on sale.
         let gamesOnSale = Object.keys(gamesObj);
         if (gamesOnSale.length > 0) {
