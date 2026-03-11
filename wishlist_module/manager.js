@@ -208,7 +208,7 @@ let boostedGamePriceSync = new CronJob(
     gamePriceSync,
     null,
     //SET TO TRUE BELOW TO RUN
-    true,
+    false,
     'Europe/London'
 );
 
