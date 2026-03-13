@@ -5,7 +5,7 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             axios.get(`https://store.steampowered.com/api/appdetails?appids=${gameid}&cc=us`)
                 .then(function (response) {
-                    if (response.data[gameid].success) {
+                    if (response.data[gameid] && response.data[gameid].success) {
                         resolve(response.data[gameid].data);
                     } else reject("GAME_NOT_FOUND");
                 })
@@ -20,7 +20,7 @@ module.exports = {
                 .then(function (response) {
                     let formatted = {};
                     for (let i = 0; i < gameids.length; i++) {
-                        if (response.data[gameids[i]].success) {
+                        if (response.data[gameids[i]] && response.data[gameids[i]].success) {
                             formatted[gameids[i]] = response.data[gameids[i]].data;
                         }
                     }
