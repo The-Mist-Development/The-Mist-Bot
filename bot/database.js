@@ -205,8 +205,9 @@ module.exports = {
     // wishlist mysql database file
     w_addUser(discordId, steamId) {
         return new Promise((resolve, reject) => {
-            dbClient.query("INSERT INTO wishlist_users (discordid, steamid) VALUES ($1, $2)", [discordId, steamId], function (error, results) {
+            dbClient.query("INSERT INTO wishlist_users (discordid, steamid, gamelist) VALUES ($1, $2, '')", [discordId, steamId], function (error, results) {
                 if (error) reject(error);
+                console.log(`[DB][DEBUG] Inserted a user into wishlist_users successfully. Results: \`\`\`\n${results}\n\`\`\``)
                 resolve(results);
             });
         });

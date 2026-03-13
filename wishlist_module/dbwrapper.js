@@ -1,9 +1,12 @@
 const db = require("../bot/database.js");
+const { log } = require("./manager.js");
 
 module.exports = {
     addUser(discordId, steamId) {
         return new Promise((resolve, reject) => {
             db.w_addUser(discordId, steamId).then(function (response) {
+                log("[WISHLIST][DEBUG] Successfully added user to the wishlist table.")
+                log(`[WISHLIST][DEBUG] Response: ${response}`)
                 resolve(response);
             }).catch(function (error) {
                 reject(error);
