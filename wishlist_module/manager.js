@@ -115,16 +115,16 @@ function resyncSingle(discordId, steamWishlist = null, steamId = null) {
             if (steamId == null) {
                 db.getUser(discordId).then(function (response) {
                     if (response.rowCount == 0) return reject("USER_NOT_FOUND");
-                    steam.getUserWishlist(response.rows[0]["steamid"]).then(function (response) {
-                        let games = response.map(i => i.appid);
-                        db.writeWishlist(discordId, games).then(function (response) {
+                    steam.getUserWishlist(response.rows[0]["steamid"]).then(function (response2) {
+                        let games = response2.map(i => i.appid);
+                        db.writeWishlist(discordId, games).then(function (response3) {
                             return resolve("success");
                         }).catch(function (error) {
                             reject(error);
                         })
                     }).catch(function (error) {
                         if (error == "WISHLIST_LENGTH_0") {
-                            db.writeWishlist(discordId, []).then(function (response) {
+                            db.writeWishlist(discordId, []).then(function (response3) {
                                 return resolve("success");
                             }).catch(function (error) {
                                 reject(error);
@@ -140,14 +140,14 @@ function resyncSingle(discordId, steamWishlist = null, steamId = null) {
             else {
                 steam.getUserWishlist(steamId).then(function (response) {
                     let games = response.map(i => i.appid);
-                    db.writeWishlist(discordId, games).then(function (response) {
+                    db.writeWishlist(discordId, games).then(function (response2) {
                         return resolve("success");
                     }).catch(function (error) {
                         reject(error);
                     })
                 }).catch(function (error) {
                     if (error == "WISHLIST_LENGTH_0") {
-                        db.writeWishlist(discordId, []).then(function (response) {
+                        db.writeWishlist(discordId, []).then(function (response2) {
                             return resolve("success");
                         }).catch(function (error) {
                             reject(error);
@@ -159,7 +159,7 @@ function resyncSingle(discordId, steamWishlist = null, steamId = null) {
         })
     }
     else {
-        let games = response.map(i => i.appid);
+        let games = steamWishlist.map(i => i.appid);
         db.writeWishlist(discordId, games).then(function (response) {
             return;
         }).catch(function (error) {
