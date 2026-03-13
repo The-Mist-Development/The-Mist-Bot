@@ -19,7 +19,7 @@ client.login(token).catch(log);
 
 client.on("ready", async () => {
   ready = true;
-  client.user.setActivity(`with the few features I have left! | ${prefix}help`, { type: ActivityType.Playing });
+  client.user.setActivity(`:star: Try registering for Wishlist Notifications again, it works now! | ${prefix}help`, { type: ActivityType.Custom });
   log("[BOT] **Bot Started**");
   setClient(client);
   setup(client);

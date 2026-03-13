@@ -540,7 +540,7 @@ async function sendStatusUpdate(fmessage, color, title) {
 function setActivity(message, newActivity) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
     log("New activity set by <@" + message.author.id + ">: " + newActivity);
-    client.user.setActivity(`${newActivity} | ${prefix}help`, { type: ActivityType.Playing });
+    client.user.setActivity(`${newActivity} | ${prefix}help`, { type: ActivityType.Custom });
     message.react("✅");
   }
   else message.channel.send(`\`activity\` is not a command. **Type** \`${prefix}help\` **to see the list of commands**.`)
