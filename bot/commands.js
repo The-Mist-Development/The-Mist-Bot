@@ -1,5 +1,4 @@
 const { EmbedBuilder, PermissionsBitField, ActivityType } = require("discord.js");
-const { music, requestRestart, resetVar } = require("./music.js");
 const { enableCounting, disableCounting, getMaxCount, setDisconnected, subscribe, unsubscribe, getSubscribedChannels, updateCache, getCountingStats } = require("./database.js")
 const { restart, cancelRestart, npmInstall } = require("./restart.js");
 const { wishlistCommand } = require("./wishlist.js")
@@ -44,7 +43,7 @@ module.exports = {
           tryCancel(message);
         }
         break;
-      case "npmi":
+      case "npmci":
         if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
           npmInstall();
         }
@@ -148,8 +147,7 @@ module.exports = {
       case "forcerickroll":
       case "clear":
       case "leave":
-        message.channel.send("Music commands have been **permanently disabled** as the feature is broken 😔")
-        //music(message, command, args);
+        message.channel.send("Music commands have been **permanently removed from the bot** as the feature is untenable 😔")
         break;
       default:
         message.channel.send(
@@ -180,7 +178,7 @@ process.on('unhandledRejection', (reason, promise) => {
   else if (reason.stack?.startsWith("ConnectTimeoutError")) {
     return log("Looks like we're having connection issues. Waiting for the issue to fix itself...")
   }
-  requestRestart();
+  restart();
 });
 
 process.on('uncaughtException', (reason) => {
@@ -189,9 +187,8 @@ process.on('uncaughtException', (reason) => {
     setDisconnected();
   }
   if (reason.stack?.includes("Found unknown component type")) return log("[DEBUG] Discord.js is trolling. Maybe an update is advisable?")
-  if (reason.stack?.includes("NothingPlaying")) return log("[MUSIC] Lagging! By the time a command was executed, the bot was no longer playing! Not restarting.")
   if (reason.stack?.includes("Unexpected token < in JSON at position 0")) return log("[APP] A server responded with HTML or an error instead of JSON. Not restarting.")
-  requestRestart();
+  restart();
 });
 
 // Help and Admin commands
@@ -224,43 +221,6 @@ function helpMsg(message) {
         name: "`" + prefix + "wishlist`",
         value: "Get notified when games on your Steam Wishlist go on sale! Run this command for the subcommand help menu."
       },
-      //{ name: "🎵 Music Commands", value: "===" },
-      //{
-      //  name: "`" + prefix + "play <Song Name / YouTube Video or Playlist URL / Spotify Track or Album or Playlist URL>`",
-      //  value: "Play the first result on YouTube for the Song Name, or the content at the link you provide. We convert each Spotify song into its title and artist and search for it."
-      //},
-      //{
-      //  name: "`" + prefix + "pause` / `" + prefix + "resume`",
-      //  value: "Pause or Resume the music."
-      //},
-      //{
-      //  name: "`" + prefix + "skip`",
-      //  value: "Skip the currently playing song."
-      //},
-      //{
-      //  name: "`" + prefix + "stop` / `" + prefix + "leave`",
-      //  value: "Clear the queue and stop the music."
-      //},
-      //{
-      //  name: "`" + prefix + "queue`",
-      //  value: "View the queue."
-      //},
-      //{
-      //  name: "`" + prefix + "remove <Song Index>`",
-      //  value: "Remove the specified song from the queue."
-      //},
-      //{
-      //  name: "`" + prefix + "clear`",
-      //  value: "Clear the entire queue."
-      //},
-      //{
-      //  name: "`" + prefix + "np`",
-      //  value: "View information about the currently playing song."
-      //},
-      //{
-      //  name: "`" + prefix + "loop` / `" + prefix + "loopqueue`",
-      //  value: "Toggle either looping the current song or looping the whole queue."
-      //},
       { name: "🔢 Counting", value: "===" },
       {
         name: "`" + prefix + "enablecounting`",
@@ -305,10 +265,6 @@ function adminHelpMsg(message) {
         name: "`" + prefix + "cancel`",
         value: "Cancel a manual or automatic restart."
       },
-      //{
-      //  name: "`" + prefix + "forcerickroll <Server ID>`",
-      //  value: "Forces the next song played, in the specified server, to be a Rickroll. Only works while music is playing and single song loop **is not enabled**."
-      //},
       {
         name: "`" + prefix + "sendmsg <Text Channel ID> <Message>`",
         value: "Sends a message in the specified text channel."
@@ -334,8 +290,8 @@ function adminHelpMsg(message) {
         value: "Make the bot run `git pull` to update itself to the latest version."
       },
       {
-        name: "`" + prefix + "npmi`",
-        value: "Run the `npm install` command on the system."
+        name: "`" + prefix + "npmci`",
+        value: "Run the `npm ci` command on the system."
       },
     );
 
@@ -359,17 +315,14 @@ function tryRestart(message) {
   if (message.author.id == process.env.OWNER_ID || staffArray.includes(message.author.id)) {
     message.react("👌");
     log("Restart requested by <@" + message.author.id + ">.");
-    requestRestart(message);
+    restart()
   }
 }
 
 function tryCancel(message) {
   let result = cancelRestart(message);
-  if (result) {
-    if (result == "cancelled") {
-      resetVar();
+  if (result && result == "cancelled") {
       log("Restart successfully cancelled by <@" + message.author.id + ">.");
-    }
   }
 }
 
@@ -552,5 +505,5 @@ async function gitPull() {
   await git.pull(["origin", "master"]);
   let hash = await git.revparse(["HEAD"]);
   log("[GIT] Now up-to-date with `" + hash.slice(0, 7) + "`");
-  requestRestart("", true);
+  restart()
 }

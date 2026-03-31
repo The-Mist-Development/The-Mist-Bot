@@ -32,12 +32,12 @@ module.exports = {
         return "";
     },
     npmInstall: function() {
-        cp.exec('npm install', function(err, stdout, stderr) {
+        cp.exec('npm ci', function(err, stdout, stderr) {
             if (err) {
-                log("[APP] Error executing `npm install`: ", err)
+                log("[APP] Error executing `npm ci`: ", err)
                 return;
               }
-              log("[APP] Ran `npm install`.");
+              log("[APP] Ran `npm ci`.");
               if (stdout) log("`stdout` ```" + stdout + "```");
               if (stderr) log("`stderr` ```" + stderr + "```");
         });
