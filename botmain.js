@@ -8,7 +8,6 @@ const prefix = process.env.PREFIX;
 const { respond, setClient } = require("./bot/commands.js");
 const { react } = require("./bot/reactions.js");
 const { artValidate } = require("./bot/exclusive.js");
-const { setup } = require("./bot/music.js");
 const { setRestartClient } = require("./bot/restart.js");
 const { getCountingChannels, count, dbConnect, getCurrentCount } = require("./bot/database.js");
 const { wishlistSetup } = require("./wishlist_module/manager.js");
@@ -22,7 +21,6 @@ client.on("ready", async () => {
   client.user.setActivity(`I'm being fixed, little by little... | ${prefix}help`, { type: ActivityType.Custom });
   log("[BOT] **Bot Started**");
   setClient(client);
-  setup(client);
   setRestartClient(client);
   clearPlayground.start();
   dbConnect();
@@ -104,7 +102,7 @@ client.on('messageDelete', async (message) => {
 
 // Logging function used in a couple of files.
 function log(message) {
-  console.log(message.replaceAll("*", "").replaceAll("`", ""));
+  console.log(message.toString().replaceAll("*", "").replaceAll("`", ""));
   if (ready == true) {
     client.channels.cache.get("850844368679862282").send(message);
   }
