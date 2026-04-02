@@ -26,4 +26,4 @@ The restart functionality, triggered when the bot errors badly or when you run t
 ## Contributing
 If you have any ideas for this bot, we'd love to hear them! 
 
-You can PR useful edits too. Make sure all PRs target the `test-chamber` branch.
+You can PR useful edits too. Developing and testing this project might be unnecessarily hard, given that I've not really set it up to be reproducible for anyone else. 
