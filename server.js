@@ -24,8 +24,8 @@ if (sslEnabled == "TRUE") {
   https = require('https').Server(credentials, app);
 }
 
-http.listen(80, () => {
-  log("[HTTP] Listening on port 80");
+http.listen(process.env.PORT || 80, () => {
+  log(`[HTTP] Listening on port ${process.env.PORT || 80}`);
 });
 
 if (sslEnabled == "TRUE") https.listen(443, () => {
