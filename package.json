@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/The-Mist-Development/The-Mist-Bot#readme",
   "dependencies": {
-    "axios": "^1.13.5",
+    "axios": "^1.15.0",
     "body-parser": "^1.20.1",
     "cron": "^1.8.2",
     "discord.js": "^14.21.0",
